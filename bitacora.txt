@@ -1,0 +1,11 @@
+10-2-2024 03:15 (StoneySpring688):
+No hubo demasidos problemas en la implementación, ya que sobretodo fue seguir el boletín, hubo dos errores principalmente:
+
+*Usé el método close del socket UDP dentro del bucle while, lo cual hacía que una vez se recibía el primer paquete, no se pudiera volver a abrir el socket,
+la solución fué no  cerrarlo. Por ahora la lección es cerrar el socke solo en el cliente
+
+*Tras hacer el debug comprobando NFDirectoryServer y Directoryconnector seguía sin encontrar el  error, aunque lo acoté a los métodos sendAndReciveDatagram
+y testSendAndRecive, ya que haciendo uso de println comprobe que enviaba "loginok" pero no extraía  correctamente el String, logré arreglar la extracción del
+String del Datagrama recibido, pero continuaba fallando, volvía a hacer uso de println para comprobar y para mi sorpresa se enviaba, y recibía "loginok", 
+por lo que la solucción fué crear un String con la información recibida de sendAndRecive pero usando el constructor en lugar de hacer toString a response(byte[]),
+seguía sin pasar el test, así usando el contructor de estring hice un objeto que usando la cadena "loginok" y la comprobaba usando el método equals.
