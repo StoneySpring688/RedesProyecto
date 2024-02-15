@@ -133,6 +133,13 @@ public class NFDirectoryServer {
 				messageFromClient =  new String(receptionBuffer, 0, pakFromClient.getLength());
 
 				if (NanoFiles.testMode) { // En modo de prueba (mensajes en "crudo", boletín UDP)
+					
+					double rand = Math.random();
+					if (rand < messageDiscardProbability) {
+						System.err.println("Directory DISCARDED datagram from " + clientAddr);
+						continue;
+					}
+					
 					System.out.println("[testMode] Contents interpreted as " + dataLength + "-byte String: \""
 							+ messageFromClient + "\"");
 																												/*
@@ -167,7 +174,8 @@ public class NFDirectoryServer {
 																												 * Después, usar la cadena para construir un objeto DirMessage que contenga en
 																												 * sus atributos los valores del mensaje (fromString).
 																												 */
-					String clientResponse = new String(pakFromClient.getData().toString());
+					
+					String clientResponse = new String(pakFromClient.getData(),0,pakFromClient.getData().length);
 					System.out.println("La cadena contenida en el datagrama pakFromClient es : "+clientResponse);
 					DirMessage msg  = new DirMessage(clientResponse);
 																												/*
@@ -177,7 +185,8 @@ public class NFDirectoryServer {
 																												 * DirMessage de respuesta deben haber sido establecidos con los valores
 																												 * adecuados para los diferentes campos del mensaje (operation, etc.)
 																												 */
-					DirMessage msgResponse = buildResponseFromRequest(msg, clientAddr);
+					//DirMessage msgResponse = buildResponseFromRequest(msg, clientAddr);
+					String msgResponse = buildResponseFromRequest(msg, clientAddr);
 																												/*
 																												 * Convertir en string el objeto DirMessage con el mensaje de respuesta a
 																												 * enviar, extraer los bytes en que se codifica el string (getBytes), y
@@ -196,24 +205,44 @@ public class NFDirectoryServer {
 		}
 	}
 
-	private DirMessage buildResponseFromRequest(DirMessage msg, InetSocketAddress clientAddr) {
+	//private DirMessage buildResponseFromRequest(DirMessage msg, InetSocketAddress clientAddr) {
+	private String buildResponseFromRequest(DirMessage msg, InetSocketAddress clientAddr) {
 		/*
 		 * TODO: Construir un DirMessage con la respuesta en función del tipo de mensaje
 		 * recibido, leyendo/modificando según sea necesario los atributos de esta clase
 		 * (el "estado" guardado en el directorio: nicks, sessionKeys, servers,
 		 * files...)
 		 */
-		String operation = msg.getOperation();
+	
+		String[] sep1 = msg.toString().split(":");
+		String cadena = sep1[1];
+		String[] sep2 = cadena.split("&");
+		String op = sep2[0];
+		String nick = sep2[1];
+		
+		String operation = op;
 
-		DirMessage response = null;
+		//DirMessage response = null; esta hay que usarla al implementar DirMessage
+		String response = null;
 
 
 
 
 		switch (operation) {
 		case DirMessageOps.OPERATION_LOGIN: {
-			String username = msg.getNickname();
-
+			String username = nick;
+			
+			if(this.nicks.containsKey(nick)) {
+				response = "loginok"+"&"+this.nicks.get(nick);
+			}
+			else {
+				int sesionKey = random.nextInt(10000);
+				this.nicks.put(username, sesionKey);
+				this.sessionKeys.put(sesionKey, nick);
+				response ="loginok"+"&"+sesionKey;
+				System.out.println(response);
+			}
+			
 			/*
 			 * TODO: Comprobamos si tenemos dicho usuario registrado (atributo "nicks"). Si
 			 * no está, generamos su sessionKey (número aleatorio entre 0 y 1000) y añadimos

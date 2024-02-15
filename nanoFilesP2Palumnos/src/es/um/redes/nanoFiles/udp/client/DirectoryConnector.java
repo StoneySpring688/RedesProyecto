@@ -188,26 +188,50 @@ public class DirectoryConnector {
 		return sessionKey;
 	}
 
-	/**
-	 * Método para "iniciar sesión" en el directorio, comprobar que está operativo y
-	 * obtener la clave de sesión asociada a este usuario.
-	 * 
-	 * @param nickname El nickname del usuario a registrar
-	 * @return La clave de sesión asignada al usuario que acaba de loguearse, o -1
-	 *         en caso de error
-	 */
+																/**
+																 * Método para "iniciar sesión" en el directorio, comprobar que está operativo y
+																 * obtener la clave de sesión asociada a este usuario.
+																 * 
+																 * @param nickname El nickname del usuario a registrar
+																 * @return La clave de sesión asignada al usuario que acaba de loguearse, o -1
+																 *         en caso de error
+																 */
 	public boolean logIntoDirectory(String nickname) {
 		assert (sessionKey == INVALID_SESSION_KEY);
 		boolean success = false;
-		// TODO: 1.Crear el mensaje a enviar (objeto DirMessage) con atributos adecuados
-		// (operation, etc.) NOTA: Usar como operaciones las constantes definidas en la clase
-		// DirMessageOps
-		// TODO: 2.Convertir el objeto DirMessage a enviar a un string (método toString)
-		// TODO: 3.Crear un datagrama con los bytes en que se codifica la cadena
-		// TODO: 4.Enviar datagrama y recibir una respuesta (sendAndReceiveDatagrams).
-		// TODO: 5.Convertir respuesta recibida en un objeto DirMessage (método
-		// DirMessage.fromString)
-		// TODO: 6.Extraer datos del objeto DirMessage y procesarlos (p.ej., sessionKey)
+																// TODO: 1.Crear el mensaje a enviar (objeto DirMessage) con atributos adecuados
+																// (operation, etc.) NOTA: Usar como operaciones las constantes definidas en la clase
+																// DirMessageOps
+		
+																// TODO: 2.Convertir el objeto DirMessage a enviar a un string (método toString)
+		String dirmsgString = new String("login"+"&"+nickname); //cadena forma "login&nickname"
+		//System.out.println(dirmsgString);
+																// TODO: 3.Crear un datagrama con los bytes en que se codifica la cadena
+		byte[] byteBuff = dirmsgString.getBytes();
+			//DatagramPacket dirmsgDatagram = new DatagramPacket(byteBuff, byteBuff.length, DirectoryConnector.DIRECTORY_PORT);
+																// TODO: 4.Enviar datagrama y recibir una respuesta (sendAndReceiveDatagrams).
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+																// TODO: 5.Convertir respuesta recibida en un objeto DirMessage (método
+																// DirMessage.fromString)
+		String recived =  new String(byteDataRecived, 0, byteDataRecived.length);
+		String[] part1 = recived.split("&");
+		String confirmacion = part1[0];
+		String key = part1[1];
+		
+		if(confirmacion.matches("loginok")&& key.matches("\\d+")) {//usamos una expresion regular para ver si key contiene uno o más digitos numéricos
+			this.sessionKey = Integer.parseInt(key);
+			//System.out.println(this.sessionKey);
+		}
+		if(confirmacion.matches("loginok")) {
+			System.out.println("[Succesfull login] "+ nickname +" SessionKey : "+this.sessionKey);
+		}else {
+			System.err.println("[login error] confirmation does not match [loginok]");
+		}
+		
+		
+																// TODO: 6.Extraer datos del objeto DirMessage y procesarlos (p.ej., sessionKey)
+		
+		
 		// TODO: 7.Devolver éxito/fracaso de la operación
 
 
