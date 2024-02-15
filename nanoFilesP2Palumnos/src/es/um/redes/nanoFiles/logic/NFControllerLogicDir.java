@@ -62,7 +62,18 @@ public class NFControllerLogicDir {
 		 * sesión asignada por el directorio. Devolver éxito/fracaso de la operación.
 		 */
 		boolean result = false;
-
+		try {
+			this.directoryConnector = new DirectoryConnector(directoryHostname);
+		} catch (IOException e) {
+			System.err.println("I/O error : "+ e);
+			System.exit(1); // no es posible recuperarse de un error I/O, se informa del error y se termina la ejecución
+		}
+		result=this.directoryConnector.logIntoDirectory(nickname);
+		if(!result) {
+			System.err.println("Could not log into the directory");
+		}else if(result) {
+			System.out.println("[Logged] SessionKey : ");
+		}
 
 
 		return result;
