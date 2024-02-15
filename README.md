@@ -22,3 +22,4 @@ en la terminal introducir uno de los comandos:
 ## Autores
 
 - [@StoneySpring688](https://github.com/StoneySpring688)
+- [@pabletel](https://github.com/pabletel).
