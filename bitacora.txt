@@ -1,4 +1,4 @@
-10-2-2024 03:15 (StoneySpring688):
+-----10-2-2024 03:15 (StoneySpring688):
 No hubo demasidos problemas en la implementación, ya que sobretodo fue seguir el boletín, hubo dos errores principalmente:
 
 *Usé el método close del socket UDP dentro del bucle while, lo cual hacía que una vez se recibía el primer paquete, no se pudiera volver a abrir el socket,
@@ -11,9 +11,20 @@ por lo que la solucción fué crear un String con la información recibida de se
 seguía sin pasar el test, así usando el contructor de estring hice un objeto que usando la cadena "loginok" y la comprobaba usando el método equals.
 
 
-15-2-2024 13:30 (StoneySpring688):
+-----15-2-2024 13:30 (StoneySpring688):
 La unica complicación fue :
 *rehacer el algoritmo de retransmision para la función sendAndReciveDatagrams de DirectoryConnector, antes trataba de reenviar por
 todas las veces que el máximo numero de intentos le permitía, por lo que hice una función de tipo booleano (resend) en el mismo archivo, que simplemente vuelve
 a enviar con un try catch, la función recive como parametros el paquete que se solicita al servidor, y en caso de un SocketTimeoutException devuelve false, si
 todo sale bien devuelve true. así el for la usará  para retransmitir el paquete hasta que se envie con exito o hasta alcanzar el máximo de intentos.
+
+
+-----15-2-2024 19:10 (StoneySpring688):
+Se adaptó el método buildResponseFromRequest para que sea de tipo String en lugar de DirMessage, ya que DirMessage aun no se ha terminado de implementar, habrá que hacer :
+
+- msgResponse volver a hacerlo DirMessage
+- cambiar el tipo del método buildFromRequest a DirMessage
+- dentro de buildResponseFromRequest cambiar response al tipo DirMessage
+- los valores con los que se ha igualador response, arreglarlos con DirMessage.fromString() para que una vez cambiado el tipo de response, no hayan errores
+
+Esas son las cosas que hay que arrgelar.
