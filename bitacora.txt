@@ -12,7 +12,8 @@ seguía sin pasar el test, así usando el contructor de estring hice un objeto q
 
 
 15-2-2024 13:30 (StoneySpring688):
-La unica complicación fue rehacer el algoritmo de retransmision para la función sendAndReciveDatagrams de DirectoryConnector, antes trataba de reenviar por
+La unica complicación fue :
+*rehacer el algoritmo de retransmision para la función sendAndReciveDatagrams de DirectoryConnector, antes trataba de reenviar por
 todas las veces que el máximo numero de intentos le permitía, por lo que hice una función de tipo booleano (resend) en el mismo archivo, que simplemente vuelve
 a enviar con un try catch, la función recive como parametros el paquete que se solicita al servidor, y en caso de un SocketTimeoutException devuelve false, si
 todo sale bien devuelve true. así el for la usará  para retransmitir el paquete hasta que se envie con exito o hasta alcanzar el máximo de intentos.
