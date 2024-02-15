@@ -13,40 +13,40 @@ import es.um.redes.nanoFiles.udp.message.DirMessage;
 import es.um.redes.nanoFiles.udp.message.DirMessageOps;
 import es.um.redes.nanoFiles.util.FileInfo;
 
-/**
- * Cliente con métodos de consulta y actualización específicos del directorio
- */
+																		/**
+																		 * Cliente con métodos de consulta y actualización específicos del directorio
+																		 */
 public class DirectoryConnector {
-	/**
-	 * Puerto en el que atienden los servidores de directorio
-	 */
+																		/**
+																		 * Puerto en el que atienden los servidores de directorio
+																		 */
 	private static final int DIRECTORY_PORT = 6868;
-	/**
-	 * Tiempo máximo en milisegundos que se esperará a recibir una respuesta por el
-	 * socket antes de que se deba lanzar una excepción SocketTimeoutException para
-	 * recuperar el control
-	 */
+																		/**
+																		 * Tiempo máximo en milisegundos que se esperará a recibir una respuesta por el
+																		 * socket antes de que se deba lanzar una excepción SocketTimeoutException para
+																		 * recuperar el control
+																		 */
 	private static final int TIMEOUT = 1000;
-	/**
-	 * Número de intentos máximos para obtener del directorio una respuesta a una
-	 * solicitud enviada. Cada vez que expira el timeout sin recibir respuesta se
-	 * cuenta como un intento.
-	 */
+																		/**
+																		 * Número de intentos máximos para obtener del directorio una respuesta a una
+																		 * solicitud enviada. Cada vez que expira el timeout sin recibir respuesta se
+																		 * cuenta como un intento.
+																		 */
 	private static final int MAX_NUMBER_OF_ATTEMPTS = 5;
 
-	/**
-	 * Valor inválido de la clave de sesión, antes de ser obtenida del directorio al
-	 * loguearse
-	 */
+																		/**
+																		 * Valor inválido de la clave de sesión, antes de ser obtenida del directorio al
+																		 * loguearse
+																		 */
 	public static final int INVALID_SESSION_KEY = -1;
 
-	/**
-	 * Socket UDP usado para la comunicación con el directorio
-	 */
+																		/**
+																		 * Socket UDP usado para la comunicación con el directorio
+																		 */
 	private DatagramSocket socket;
-	/**
-	 * Dirección de socket del directorio (IP:puertoUDP)
-	 */
+																		/**
+																		 * Dirección de socket del directorio (IP:puertoUDP)
+																		 */
 	private InetSocketAddress directoryAddress;
 
 	private int sessionKey = INVALID_SESSION_KEY;
@@ -54,28 +54,28 @@ public class DirectoryConnector {
 	private String errorDescription;
 
 	public DirectoryConnector(String address) throws IOException {
-		/*
-		 * Convertir el nombre de host 'address' a InetAddress y guardar la
-		 * dirección de socket (address:DIRECTORY_PORT) del directorio en el atributo
-		 * directoryAddress, para poder enviar datagramas a dicho destino.
-		 */
+																										/*
+																										 * Convertir el nombre de host 'address' a InetAddress y guardar la
+																										 * dirección de socket (address:DIRECTORY_PORT) del directorio en el atributo
+																										 * directoryAddress, para poder enviar datagramas a dicho destino.
+																										 */
 		this.directoryAddress = new InetSocketAddress(InetAddress.getByName(address),DirectoryConnector.DIRECTORY_PORT);
-		/*
-		 * Crea el socket UDP en cualquier puerto para enviar datagramas al
-		 * directorio
-		 */
+																										/*
+																										 * Crea el socket UDP en cualquier puerto para enviar datagramas al
+																										 * directorio
+																										 */
 		this.socket = new DatagramSocket();
 
 
 
 	}
 
-	/**
-	 * Método para enviar y recibir datagramas al/del directorio
-	 * 
-	 * @param requestData los datos a enviar al directorio (mensaje de solicitud)
-	 * @return los datos recibidos del directorio (mensaje de respuesta)
-	 */
+																										/**
+																										 * Método para enviar y recibir datagramas al/del directorio
+																										 * 
+																										 * @param requestData los datos a enviar al directorio (mensaje de solicitud)
+																										 * @return los datos recibidos del directorio (mensaje de respuesta)
+																										 */
 	private byte[] sendAndReceiveDatagrams(byte[] requestData) {
 		byte responseData[] = new byte[DirMessage.PACKET_MAX_SIZE];
 		byte response[] = null;
@@ -92,12 +92,12 @@ public class DirectoryConnector {
 					"DirectoryConnector.sendAndReceiveDatagrams: make sure constructor initializes field \"socket\"");
 			System.exit(-1);
 		}
-		/*
-		 * Enviar datos en un datagrama al directorio y recibir una respuesta. El
-		 * array devuelto debe contener únicamente los datos recibidos, *NO* el búfer de
-		 * recepción al completo.
-		 */
-			
+																										/*
+																										 * Enviar datos en un datagrama al directorio y recibir una respuesta. El
+																										 * array devuelto debe contener únicamente los datos recibidos, *NO* el búfer de
+																										 * recepción al completo.
+																										 */
+											
 		DatagramPacket pakToServ = new DatagramPacket(requestData, requestData.length,this.directoryAddress);
 		DatagramPacket pakFromServ = new DatagramPacket(responseData, responseData.length);
 		try {
@@ -105,13 +105,11 @@ public class DirectoryConnector {
 			this.socket.setSoTimeout(TIMEOUT);
 			this.socket.receive(pakFromServ);
 		} catch(SocketTimeoutException e){
-			for(int i = 0; i<DirectoryConnector.MAX_NUMBER_OF_ATTEMPTS;i++) {
-				try {
-					this.socket.receive(pakFromServ);
-				} catch (IOException e1) {
-					System.err.println("I/O exception at retry send pakage"+e1);
-				}
+			boolean recived = false;
+			for(int i = 0; i<DirectoryConnector.MAX_NUMBER_OF_ATTEMPTS && recived == false; i++) {
+					recived = this.resend(pakFromServ); // pedir que revise esto
 			}
+			
 		} catch (IOException e1) {
 			System.err.println("I/O error : "+ e1);
 			System.exit(1);
@@ -121,42 +119,55 @@ public class DirectoryConnector {
 		response = messageFromServer.getBytes();
 		this.socket.close();
 		/*
-		 * Una vez el envío y recepción asumiendo un canal confiable (sin
-		 * pérdidas) esté terminado y probado, debe implementarse un mecanismo de
-		 * retransmisión usando temporizador, en caso de que no se reciba respuesta en
-		 * el plazo de TIMEOUT. En caso de salte el timeout, se debe reintentar como
-		 * máximo en MAX_NUMBER_OF_ATTEMPTS ocasiones.
-		 */
-		/*
-		 *  Las excepciones que puedan lanzarse al leer/escribir en el socket deben
-		 * ser capturadas y tratadas en este método. Si se produce una excepción de
-		 * entrada/salida (error del que no es posible recuperarse), se debe informar y
-		 * terminar el programa.
-		 */
-		/*
-		 * NOTA: Las excepciones deben tratarse de la más concreta a la más genérica.
-		 * SocketTimeoutException es más concreta que IOException.
-		 */
+																							 * Una vez el envío y recepción asumiendo un canal confiable (sin
+																							 * pérdidas) esté terminado y probado, debe implementarse un mecanismo de
+																							 * retransmisión usando temporizador, en caso de que no se reciba respuesta en
+																							 * el plazo de TIMEOUT. En caso de salte el timeout, se debe reintentar como
+																							 * máximo en MAX_NUMBER_OF_ATTEMPTS ocasiones.
+																							 */
+																							/*
+																							 *  Las excepciones que puedan lanzarse al leer/escribir en el socket deben
+																							 * ser capturadas y tratadas en este método. Si se produce una excepción de
+																							 * entrada/salida (error del que no es posible recuperarse), se debe informar y
+																							 * terminar el programa.
+																							 */
+																							/*
+																							 * NOTA: Las excepciones deben tratarse de la más concreta a la más genérica.
+																							 * SocketTimeoutException es más concreta que IOException.
+																							 */
 		
 		if (response != null && response.length == responseData.length) {
 			System.err.println("Your response is as large as the datagram reception buffer!!\n" + "You must extract from the buffer only the bytes that belong to the datagram!");
 		}
 		return response;
 	}
+	
+	public boolean resend(DatagramPacket pak) { //función propia, auxiliar para hacer el reenvio
+		try {
+			this.socket.setSoTimeout(TIMEOUT);
+			this.socket.receive(pak);
+		} catch (SocketTimeoutException e) {
+			return false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
 
-	/**
-	 * Método para probar la comunicación con el directorio mediante el envío y
-	 * recepción de mensajes sin formatear ("en crudo")
-	 * 
-	 * @return verdadero si se ha enviado un datagrama y recibido una respuesta
-	 */
+																							/**
+																							 * Método para probar la comunicación con el directorio mediante el envío y
+																							 * recepción de mensajes sin formatear ("en crudo")
+																							 * 
+																							 * @return verdadero si se ha enviado un datagrama y recibido una respuesta
+																							 */
 	public boolean testSendAndReceive() {
-		/*
-		 * Probar el correcto funcionamiento de sendAndReceiveDatagrams. Se debe
-		 * enviar un datagrama con la cadena "login" y comprobar que la respuesta
-		 * recibida es "loginok". En tal caso, devuelve verdadero, falso si la respuesta
-		 * no contiene los datos esperados.
-		 */
+																							/*
+																							 * Probar el correcto funcionamiento de sendAndReceiveDatagrams. Se debe
+																							 * enviar un datagrama con la cadena "login" y comprobar que la respuesta
+																							 * recibida es "loginok". En tal caso, devuelve verdadero, falso si la respuesta
+																							 * no contiene los datos esperados.
+																							 */
 		boolean success = false;
 		byte[] data = "login".getBytes();
 		byte[] response = this.sendAndReceiveDatagrams(data);

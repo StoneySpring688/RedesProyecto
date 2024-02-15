@@ -15,60 +15,60 @@ import es.um.redes.nanoFiles.udp.message.DirMessageOps;
 import es.um.redes.nanoFiles.util.FileInfo;
 
 public class NFDirectoryServer {
-	/**
-	 * Número de puerto UDP en el que escucha el directorio
-	 */
+																		/**
+																		 * Número de puerto UDP en el que escucha el directorio
+																		 */
 	public static final int DIRECTORY_PORT = 6868;
 
-	/**
-	 * Socket de comunicación UDP con el cliente UDP (DirectoryConnector)
-	 */
+																		/**
+																		 * Socket de comunicación UDP con el cliente UDP (DirectoryConnector)
+																		 */
 	private DatagramSocket socket = null;
-	/**
-	 * Estructura para guardar los nicks de usuarios registrados, y clave de sesión
-	 * 
-	 */
+																		/**
+																		 * Estructura para guardar los nicks de usuarios registrados, y clave de sesión
+																		 * 
+																		 */
 	private HashMap<String, Integer> nicks;
-	/**
-	 * Estructura para guardar las claves de sesión y sus nicks de usuario asociados
-	 * 
-	 */
+																		/**
+																		 * Estructura para guardar las claves de sesión y sus nicks de usuario asociados
+																		 * 
+																		 */
 	private HashMap<Integer, String> sessionKeys;
-	/*
-	 * TODO: Añadir aquí como atributos las estructuras de datos que sean necesarias
-	 * para mantener en el directorio cualquier información necesaria para la
-	 * funcionalidad del sistema nanoFilesP2P: ficheros publicados, servidores
-	 * registrados, etc.
-	 */
+																		/*
+																		 * TODO: Añadir aquí como atributos las estructuras de datos que sean necesarias
+																		 * para mantener en el directorio cualquier información necesaria para la
+																		 * funcionalidad del sistema nanoFilesP2P: ficheros publicados, servidores
+																		 * registrados, etc.
+																		 */
 
 	
 	
-	/**
-	 * Generador de claves de sesión aleatorias (sessionKeys)
-	 */
+																		/**
+																		 * Generador de claves de sesión aleatorias (sessionKeys)
+																		 */
 	Random random = new Random();
-	/**
-	 * Probabilidad de descartar un mensaje recibido en el directorio (para simular
-	 * enlace no confiable y testear el código de retransmisión)
-	 */
+																		/**
+																		 * Probabilidad de descartar un mensaje recibido en el directorio (para simular
+																		 * enlace no confiable y testear el código de retransmisión)
+																		 */
 	private double messageDiscardProbability;
 
 	public NFDirectoryServer(double corruptionProbability) throws SocketException {
-		/*
-		 * Guardar la probabilidad de pérdida de datagramas (simular enlace no
-		 * confiable)
-		 */
+																					/*
+																					 * Guardar la probabilidad de pérdida de datagramas (simular enlace no
+																					 * confiable)
+																					 */
 		messageDiscardProbability = corruptionProbability;
-		/*
-		 * (Boletín UDP) Inicializar el atributo socket: Crear un socket UDP
-		 * ligado al puerto especificado por el argumento directoryPort en la máquina
-		 * local,
-		 */
+																					/*
+																					 * (Boletín UDP) Inicializar el atributo socket: Crear un socket UDP
+																					 * ligado al puerto especificado por el argumento directoryPort en la máquina
+																					 * local,
+																					 */
 		 this.socket = new DatagramSocket(DIRECTORY_PORT);
-		/*
-		 * (Boletín UDP) Inicializar el resto de atributos de esta clase
-		 * (estructuras de datos que mantiene el servidor: nicks, sessionKeys, etc.)
-		 */
+																					/*
+																					 * (Boletín UDP) Inicializar el resto de atributos de esta clase
+																					 * (estructuras de datos que mantiene el servidor: nicks, sessionKeys, etc.)
+																					 */
 		this.nicks = new  HashMap<String, Integer>();
 		this.sessionKeys = new HashMap<Integer, String>();
 
@@ -82,13 +82,13 @@ public class NFDirectoryServer {
 	}
 
 	public void run() throws IOException {
-		/*
-		 * (Boletín UDP) Crear un búfer para recibir datagramas y un datagrama
-		 * asociado al búfer
-		 */
+																					/*
+																					 * (Boletín UDP) Crear un búfer para recibir datagramas y un datagrama
+																					 * asociado al búfer
+																					 */
 		//byte[] receptionBuffer = null;
 		byte[] receptionBuffer = new byte[DirMessage.PACKET_MAX_SIZE];
-		InetSocketAddress clientAddr = null;
+		InetSocketAddress clientAddr = null; // estos 2 valores se sobreecriben luego con el valor correcto
 		int dataLength = -1;
 		DatagramPacket pakFromClient = new DatagramPacket(receptionBuffer,receptionBuffer.length);
 		
@@ -104,14 +104,14 @@ public class NFDirectoryServer {
 			dataLength = pakFromClient.getLength();
 			clientAddr = (InetSocketAddress) pakFromClient.getSocketAddress();
 			
-			//  (Boletín UDP) Recibimos a través del socket un datagrama
-
-			//  (Boletín UDP) Establecemos dataLength con longitud del datagrama
-			// recibido
-
-			//  (Boletín UDP) Establecemos 'clientAddr' con la dirección del cliente,
-			// obtenida del
-			// datagrama recibido
+																												//  (Boletín UDP) Recibimos a través del socket un datagrama
+																									
+																												//  (Boletín UDP) Establecemos dataLength con longitud del datagrama
+																												// recibido
+																									
+																												//  (Boletín UDP) Establecemos 'clientAddr' con la dirección del cliente,
+																												// obtenida del
+																												// datagrama recibido
 
 			if (NanoFiles.testMode) {
 				if (receptionBuffer == null || clientAddr == null || dataLength < 0) {
@@ -125,22 +125,22 @@ public class NFDirectoryServer {
 			// Analizamos la solicitud y la procesamos
 			if (dataLength > 0) {
 				String messageFromClient = null;
-				/*
-				 * (Boletín UDP) Construir una cadena a partir de los datos recibidos en
-				 * el buffer de recepción
-				 * //string creado con el datagrama, desde 0 a la longitud del datagrama -1
-				 */
+																												/*
+																												 * (Boletín UDP) Construir una cadena a partir de los datos recibidos en
+																												 * el buffer de recepción
+																												 * //string creado con el datagrama, desde 0 a la longitud del datagrama -1
+																												 */
 				messageFromClient =  new String(receptionBuffer, 0, pakFromClient.getLength());
 
 				if (NanoFiles.testMode) { // En modo de prueba (mensajes en "crudo", boletín UDP)
 					System.out.println("[testMode] Contents interpreted as " + dataLength + "-byte String: \""
 							+ messageFromClient + "\"");
-					/*
-					 * (Boletín UDP) Comprobar que se ha recibido un datagrama con la cadena
-					 * "login" y en ese caso enviar como respuesta un mensaje al cliente con la
-					 * cadena "loginok". Si el mensaje recibido no es "login", se informa del error
-					 * y no se envía ninguna respuesta.
-					 */
+																												/*
+																												 * (Boletín UDP) Comprobar que se ha recibido un datagrama con la cadena
+																												 * "login" y en ese caso enviar como respuesta un mensaje al cliente con la
+																												 * cadena "loginok". Si el mensaje recibido no es "login", se informa del error
+																												 * y no se envía ninguna respuesta.
+																												 */
 					String messageToClient = new String("loginok");
 					byte[] dataToClient = messageToClient.getBytes();
 					DatagramPacket pakToClient = new DatagramPacket(dataToClient, dataToClient.length, clientAddr);
@@ -161,28 +161,28 @@ public class NFDirectoryServer {
 						System.err.println("Directory DISCARDED datagram from " + clientAddr);
 						continue;
 					}
-					/*
-					 * Construir String partir de los datos recibidos en el datagrama. A
-					 * continuación, imprimir por pantalla dicha cadena a modo de depuración.
-					 * Después, usar la cadena para construir un objeto DirMessage que contenga en
-					 * sus atributos los valores del mensaje (fromString).
-					 */
+																												/*
+																												 * Construir String partir de los datos recibidos en el datagrama. A
+																												 * continuación, imprimir por pantalla dicha cadena a modo de depuración.
+																												 * Después, usar la cadena para construir un objeto DirMessage que contenga en
+																												 * sus atributos los valores del mensaje (fromString).
+																												 */
 					String clientResponse = new String(pakFromClient.getData().toString());
 					System.out.println("La cadena contenida en el datagrama pakFromClient es : "+clientResponse);
 					DirMessage msg  = new DirMessage(clientResponse);
-					/*
-					 * Llamar a buildResponseFromRequest para construir, a partir del objeto
-					 * DirMessage con los valores del mensaje de petición recibido, un nuevo objeto
-					 * DirMessage con el mensaje de respuesta a enviar. Los atributos del objeto
-					 * DirMessage de respuesta deben haber sido establecidos con los valores
-					 * adecuados para los diferentes campos del mensaje (operation, etc.)
-					 */
+																												/*
+																												 * Llamar a buildResponseFromRequest para construir, a partir del objeto
+																												 * DirMessage con los valores del mensaje de petición recibido, un nuevo objeto
+																												 * DirMessage con el mensaje de respuesta a enviar. Los atributos del objeto
+																												 * DirMessage de respuesta deben haber sido establecidos con los valores
+																												 * adecuados para los diferentes campos del mensaje (operation, etc.)
+																												 */
 					DirMessage msgResponse = buildResponseFromRequest(msg, clientAddr);
-					/*
-					 * Convertir en string el objeto DirMessage con el mensaje de respuesta a
-					 * enviar, extraer los bytes en que se codifica el string (getBytes), y
-					 * finalmente enviarlos en un datagrama
-					 */
+																												/*
+																												 * Convertir en string el objeto DirMessage con el mensaje de respuesta a
+																												 * enviar, extraer los bytes en que se codifica el string (getBytes), y
+																												 * finalmente enviarlos en un datagrama
+																												 */
 					String messageToClient2 = new String(msgResponse.toString());
 					byte[] datatoClient2 = messageToClient2.getBytes();
 					DatagramPacket pakToClient2 = new DatagramPacket(datatoClient2, datatoClient2.length, clientAddr);
