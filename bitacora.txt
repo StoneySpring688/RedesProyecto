@@ -28,3 +28,8 @@ Se adaptó el método buildResponseFromRequest para que sea de tipo String en lu
 - los valores con los que se ha igualador response, arreglarlos con DirMessage.fromString() para que una vez cambiado el tipo de response, no hayan errores
 
 Esas son las cosas que hay que arrgelar.
+
+-----17-2-2024 10:30 (StoneySpring):
+Se solucionaron los siguientes problemas :
+- ahora el valor succes de logIntoDirectory se actualiza correctamente
+- ahora cuando el usuario ya ha hecho login en el servidor delvuelve "login_failed:-1" en lugar de devolver un string "loginok&sessionKey"
