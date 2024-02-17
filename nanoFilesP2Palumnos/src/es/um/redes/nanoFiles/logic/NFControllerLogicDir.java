@@ -72,7 +72,7 @@ public class NFControllerLogicDir {
 		if(!result) {
 			System.err.println("Could not log into the directory");
 		}else if(result) {
-			System.out.println("[Logged] SessionKey : ");
+			System.out.println("[Logged] SessionKey : " + directoryConnector.getSessionKey() );
 		}
 
 

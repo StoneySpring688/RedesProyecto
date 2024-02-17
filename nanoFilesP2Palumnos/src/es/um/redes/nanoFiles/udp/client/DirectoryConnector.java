@@ -52,7 +52,7 @@ public class DirectoryConnector {
 	private int sessionKey = INVALID_SESSION_KEY;
 	private boolean successfulResponseStatus;
 	private String errorDescription;
-
+	
 	public DirectoryConnector(String address) throws IOException {
 																										/*
 																										 * Convertir el nombre de host 'address' a InetAddress y guardar la
@@ -206,10 +206,10 @@ public class DirectoryConnector {
 																// TODO: 2.Convertir el objeto DirMessage a enviar a un string (método toString)
 		String dirmsgString = new String("login"+"&"+nickname); //cadena forma "login&nickname"
 		//System.out.println(dirmsgString);
-																// TODO: 3.Crear un datagrama con los bytes en que se codifica la cadena
+																// 3.Crear un datagrama con los bytes en que se codifica la cadena
 		byte[] byteBuff = dirmsgString.getBytes();
 			//DatagramPacket dirmsgDatagram = new DatagramPacket(byteBuff, byteBuff.length, DirectoryConnector.DIRECTORY_PORT);
-																// TODO: 4.Enviar datagrama y recibir una respuesta (sendAndReceiveDatagrams).
+																// 4.Enviar datagrama y recibir una respuesta (sendAndReceiveDatagrams).
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 																// TODO: 5.Convertir respuesta recibida en un objeto DirMessage (método
 																// DirMessage.fromString)
@@ -222,11 +222,8 @@ public class DirectoryConnector {
 			this.sessionKey = Integer.parseInt(key);
 			//System.out.println(this.sessionKey);
 		}
-		if(confirmacion.matches("loginok")) {
-			System.out.println("[Succesfull login] "+ nickname +" SessionKey : "+this.sessionKey);
-		}else {
-			System.err.println("[login error] confirmation does not match [loginok]");
-		}
+		if(confirmacion.matches("loginok")) success =  true;
+		
 		
 		
 																// TODO: 6.Extraer datos del objeto DirMessage y procesarlos (p.ej., sessionKey)
