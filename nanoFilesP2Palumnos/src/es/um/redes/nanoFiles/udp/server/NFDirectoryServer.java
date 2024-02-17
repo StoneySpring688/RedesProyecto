@@ -233,14 +233,14 @@ public class NFDirectoryServer {
 			String username = nick;
 			
 			if(this.nicks.containsKey(nick)) {
-				response = "loginok"+"&"+this.nicks.get(nick);
+				response = "login_failed:-1";
 			}
 			else {
 				int sesionKey = random.nextInt(10000);
 				this.nicks.put(username, sesionKey);
 				this.sessionKeys.put(sesionKey, nick);
 				response ="loginok"+"&"+sesionKey;
-				System.out.println(response);
+				//System.out.println(response);
 			}
 			
 			/*
