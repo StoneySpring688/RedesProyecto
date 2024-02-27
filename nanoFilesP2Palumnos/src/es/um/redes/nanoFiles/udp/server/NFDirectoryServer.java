@@ -177,7 +177,7 @@ public class NFDirectoryServer {
 					
 					String clientResponse = new String(pakFromClient.getData(),0,pakFromClient.getData().length);
 					System.out.println("La cadena contenida en el datagrama pakFromClient es : "+clientResponse);
-					DirMessage msg  = new DirMessage(clientResponse);
+					DirMessage msg  = DirMessage.fromString(clientResponse);
 																												/*
 																												 * Llamar a buildResponseFromRequest para construir, a partir del objeto
 																												 * DirMessage con los valores del mensaje de petición recibido, un nuevo objeto
@@ -185,8 +185,8 @@ public class NFDirectoryServer {
 																												 * DirMessage de respuesta deben haber sido establecidos con los valores
 																												 * adecuados para los diferentes campos del mensaje (operation, etc.)
 																												 */
-					//DirMessage msgResponse = buildResponseFromRequest(msg, clientAddr);
-					String msgResponse = buildResponseFromRequest(msg, clientAddr);
+					DirMessage msgResponse = buildResponseFromRequest(msg, clientAddr);
+					//String msgResponse = buildResponseFromRequest(msg, clientAddr);
 																												/*
 																												 * Convertir en string el objeto DirMessage con el mensaje de respuesta a
 																												 * enviar, extraer los bytes en que se codifica el string (getBytes), y
@@ -205,57 +205,45 @@ public class NFDirectoryServer {
 		}
 	}
 
-	//private DirMessage buildResponseFromRequest(DirMessage msg, InetSocketAddress clientAddr) {
-	private String buildResponseFromRequest(DirMessage msg, InetSocketAddress clientAddr) {
-		/*
-		 * TODO: Construir un DirMessage con la respuesta en función del tipo de mensaje
-		 * recibido, leyendo/modificando según sea necesario los atributos de esta clase
-		 * (el "estado" guardado en el directorio: nicks, sessionKeys, servers,
-		 * files...)
-		 */
+	private DirMessage buildResponseFromRequest(DirMessage msg, InetSocketAddress clientAddr) {
+																												/*
+																												 * Construir un DirMessage con la respuesta en función del tipo de mensaje
+																												 * recibido, leyendo/modificando según sea necesario los atributos de esta clase
+																												 * (el "estado" guardado en el directorio: nicks, sessionKeys, servers,
+																												 * files...)
+																												 */
 	
-		String[] sep1 = msg.toString().split(":");
-		String cadena = sep1[1];
-		String[] sep2 = cadena.split("&");
-		String op = sep2[0];
-		String nick = sep2[1];
-		
-		String operation = op;
 
-		//DirMessage response = null; esta hay que usarla al implementar DirMessage
-		String response = null;
+		DirMessage response = null;
 
-
-
-
-		switch (operation) {
+		switch (msg.getOperation()) {
 		case DirMessageOps.OPERATION_LOGIN: {
-			String username = nick;
+			String username = msg.getNickname();
 			
-			if(this.nicks.containsKey(nick)) {
-				response = "login_failed:-1";
+			if(this.nicks.containsKey(username)) {
+				response = DirMessage.errorMessage(DirMessageOps.OPERATION_LOGINFAILED);
 			}
 			else {
 				int sesionKey = random.nextInt(10000);
 				this.nicks.put(username, sesionKey);
-				this.sessionKeys.put(sesionKey, nick);
-				response ="loginok"+"&"+sesionKey;
-				//System.out.println(response);
+				this.sessionKeys.put(sesionKey, username);
+				response = DirMessage.confirmationMessageLoginOk(sesionKey);
+				//System.out.println(response.toString());
 			}
 			
+																												/*
+																												 * Comprobamos si tenemos dicho usuario registrado (atributo "nicks"). Si
+																												 * no está, generamos su sessionKey (número aleatorio entre 0 y 1000) y añadimos
+																												 * el nick y su sessionKey asociada. NOTA: Puedes usar random.nextInt(10000)
+																												 * para generar la session key
+																												 */
 			/*
-			 * TODO: Comprobamos si tenemos dicho usuario registrado (atributo "nicks"). Si
-			 * no está, generamos su sessionKey (número aleatorio entre 0 y 1000) y añadimos
-			 * el nick y su sessionKey asociada. NOTA: Puedes usar random.nextInt(10000)
-			 * para generar la session key
-			 */
-			/*
-			 * TODO: Construimos un mensaje de respuesta que indique el éxito/fracaso del
+			 * Construimos un mensaje de respuesta que indique el éxito/fracaso del
 			 * login y contenga la sessionKey en caso de éxito, y lo devolvemos como
 			 * resultado del método.
 			 */
 			/*
-			 * TODO: Imprimimos por pantalla el resultado de procesar la petición recibida
+			 * Imprimimos por pantalla el resultado de procesar la petición recibida
 			 * (éxito o fracaso) con los datos relevantes, a modo de depuración en el
 			 * servidor
 			 */
@@ -268,7 +256,7 @@ public class NFDirectoryServer {
 
 
 		default:
-			System.out.println("Unexpected message operation: \"" + operation + "\"");
+			System.out.println("Unexpected message operation: \"" + msg.getOperation() + "\"");
 		}
 		return response;
 

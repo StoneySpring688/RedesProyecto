@@ -26,7 +26,7 @@ public class DirectoryConnector {
 																		 * socket antes de que se deba lanzar una excepción SocketTimeoutException para
 																		 * recuperar el control
 																		 */
-	private static final int TIMEOUT = 1000;
+	private static final int TIMEOUT = 999999999; //1000
 																		/**
 																		 * Número de intentos máximos para obtener del directorio una respuesta a una
 																		 * solicitud enviada. Cada vez que expira el timeout sin recibir respuesta se
@@ -188,51 +188,41 @@ public class DirectoryConnector {
 		return sessionKey;
 	}
 
-																/**
-																 * Método para "iniciar sesión" en el directorio, comprobar que está operativo y
-																 * obtener la clave de sesión asociada a este usuario.
-																 * 
-																 * @param nickname El nickname del usuario a registrar
-																 * @return La clave de sesión asignada al usuario que acaba de loguearse, o -1
-																 *         en caso de error
-																 */
+																										/**
+																										 * Método para "iniciar sesión" en el directorio, comprobar que está operativo y
+																										 * obtener la clave de sesión asociada a este usuario.
+																										 * 
+																										 * @param nickname El nickname del usuario a registrar
+																										 * @return La clave de sesión asignada al usuario que acaba de loguearse, o -1
+																										 *         en caso de error
+																										 */
 	public boolean logIntoDirectory(String nickname) {
 		assert (sessionKey == INVALID_SESSION_KEY);
 		boolean success = false;
-																// TODO: 1.Crear el mensaje a enviar (objeto DirMessage) con atributos adecuados
-																// (operation, etc.) NOTA: Usar como operaciones las constantes definidas en la clase
-																// DirMessageOps
-		
-																// TODO: 2.Convertir el objeto DirMessage a enviar a un string (método toString)
-		String dirmsgString = new String("login"+"&"+nickname); //cadena forma "login&nickname"
-		//System.out.println(dirmsgString);
-																// 3.Crear un datagrama con los bytes en que se codifica la cadena
-		byte[] byteBuff = dirmsgString.getBytes();
-			//DatagramPacket dirmsgDatagram = new DatagramPacket(byteBuff, byteBuff.length, DirectoryConnector.DIRECTORY_PORT);
-																// 4.Enviar datagrama y recibir una respuesta (sendAndReceiveDatagrams).
+																										// 1.Crear el mensaje a enviar (objeto DirMessage) con atributos adecuados
+																										// (operation, etc.) NOTA: Usar como operaciones las constantes definidas en la clase
+																										// DirMessageOps
+		DirMessage msgToServ = DirMessage.loginMessage(nickname);
+																										// 2.Convertir el objeto DirMessage a enviar a un string (método toString)
+		String strToServ = msgToServ.toString();
+		//System.out.println(strToServ);																		
+																										// 3.Crear un datagrama con los bytes en que se codifica la cadena
+		byte[] byteBuff = strToServ.getBytes();
+																										// 4.Enviar datagrama y recibir una respuesta (sendAndReceiveDatagrams).
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
-																// TODO: 5.Convertir respuesta recibida en un objeto DirMessage (método
-																// DirMessage.fromString)
+																										// 5.Convertir respuesta recibida en un objeto DirMessage (método DirMessage.fromString)
+																										// 6.Extraer datos del objeto DirMessage y procesarlos (p.ej., sessionKey)
 		String recived =  new String(byteDataRecived, 0, byteDataRecived.length);
-		String[] part1 = recived.split("&");
-		String confirmacion = part1[0];
-		String key = part1[1];
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		//System.out.println("Respuesta : " +recivedDir);
+		String confirmation = recivedDir.getCode();
+		int key = recivedDir.getKey();
 		
-		if(confirmacion.matches("loginok")&& key.matches("\\d+")) {//usamos una expresion regular para ver si key contiene uno o más digitos numéricos
-			this.sessionKey = Integer.parseInt(key);
-			//System.out.println(this.sessionKey);
-		}
-		if(confirmacion.matches("loginok")) success =  true;
-		
-		
-		
-																// TODO: 6.Extraer datos del objeto DirMessage y procesarlos (p.ej., sessionKey)
-		
-		
-		// TODO: 7.Devolver éxito/fracaso de la operación
-
-
-
+		if(confirmation.matches("loginok")) {//la key es un entero, por lo tanto será una clave valida
+			this.sessionKey = key;
+			success =  true;
+		}							
+																										// 7.Devolver éxito/fracaso de la operación
 		return success;
 	}
 
