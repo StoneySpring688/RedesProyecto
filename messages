@@ -5,6 +5,20 @@ nick : ("String")
 
 
 
+#userlist
+
+operation : userlist
+key : ("Integer")
+
+
+
+#logout
+
+operation : logout
+key : ("Integer")
+
+
+
 #error
 
 operation : error
@@ -17,8 +31,24 @@ code : ("String")
 operation :confirmation
 code : ("String")
 
+
 ##confirmation-loginok
 
 operation : confirmation
 code : "loginok"
 key : ("Integer")
+
+
+##confirmation-listok
+
+operation : confirmation
+code : "listok"
+user : ("String")
+isServer : ("Boolean")
+...
+
+
+##confirmation-logoutok
+
+operation : confirmation
+code : "logoutok"
