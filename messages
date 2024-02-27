@@ -1,0 +1,24 @@
+#login
+
+operation : login
+nick : ("String")
+
+
+
+#error
+
+operation : error
+code : ("String")
+
+
+
+#confirmation
+
+operation :confirmation
+code : ("String")
+
+##confirmation-loginok
+
+operation : confirmation
+code : "loginok"
+key : ("Integer")
