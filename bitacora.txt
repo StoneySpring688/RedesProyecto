@@ -1,22 +1,24 @@
 -----10-2-2024 03:15 (StoneySpring688):
 No hubo demasidos problemas en la implementación, ya que sobretodo fue seguir el boletín, hubo dos errores principalmente:
 
-*Usé el método close del socket UDP dentro del bucle while, lo cual hacía que una vez se recibía el primer paquete, no se pudiera volver a abrir el socket,
+- Usé el método close del socket UDP dentro del bucle while, lo cual hacía que una vez se recibía el primer paquete, no se pudiera volver a abrir el socket,
 la solución fué no  cerrarlo. Por ahora la lección es cerrar el socke solo en el cliente
 
-*Tras hacer el debug comprobando NFDirectoryServer y Directoryconnector seguía sin encontrar el  error, aunque lo acoté a los métodos sendAndReciveDatagram
+- Tras hacer el debug comprobando NFDirectoryServer y Directoryconnector seguía sin encontrar el  error, aunque lo acoté a los métodos sendAndReciveDatagram
 y testSendAndRecive, ya que haciendo uso de println comprobe que enviaba "loginok" pero no extraía  correctamente el String, logré arreglar la extracción del
 String del Datagrama recibido, pero continuaba fallando, volvía a hacer uso de println para comprobar y para mi sorpresa se enviaba, y recibía "loginok", 
 por lo que la solucción fué crear un String con la información recibida de sendAndRecive pero usando el constructor en lugar de hacer toString a response(byte[]),
 seguía sin pasar el test, así usando el contructor de estring hice un objeto que usando la cadena "loginok" y la comprobaba usando el método equals.
 
 
+
 -----15-2-2024 13:30 (StoneySpring688):
 La unica complicación fue :
-*rehacer el algoritmo de retransmision para la función sendAndReciveDatagrams de DirectoryConnector, antes trataba de reenviar por
+- rehacer el algoritmo de retransmision para la función sendAndReciveDatagrams de DirectoryConnector, antes trataba de reenviar por
 todas las veces que el máximo numero de intentos le permitía, por lo que hice una función de tipo booleano (resend) en el mismo archivo, que simplemente vuelve
 a enviar con un try catch, la función recive como parametros el paquete que se solicita al servidor, y en caso de un SocketTimeoutException devuelve false, si
 todo sale bien devuelve true. así el for la usará  para retransmitir el paquete hasta que se envie con exito o hasta alcanzar el máximo de intentos.
+
 
 
 -----15-2-2024 19:10 (StoneySpring688):
@@ -29,7 +31,22 @@ Se adaptó el método buildResponseFromRequest para que sea de tipo String en lu
 
 Esas son las cosas que hay que arrgelar.
 
+
+
 -----17-2-2024 10:30 (StoneySpring):
 Se solucionaron los siguientes problemas :
 - ahora el valor succes de logIntoDirectory se actualiza correctamente
 - ahora cuando el usuario ya ha hecho login en el servidor delvuelve "login_failed:-1" en lugar de devolver un string "loginok&sessionKey"
+
+
+
+-----27-2-2024 22:24 (StoneySpring688):
+Se arregló un bug por el cual el método fromString de DirMessage no funcionaba correctamente 
+
+-causa : se procesaba el caracter que marcaba el fin del mensaje, lo cual era  incorrecto y producia una excepción que finalizaba la ejecución
+-solución : se cambió el caracter fin de linea por una cadena END_MESSAGE y  se añadió una  condición que evita que esta cadena se procese
+
+cambios pendientes :
+
+-restaurar el timeout una vez se termine el proceso de debug
+-implementar nuevas clases de mensajes
