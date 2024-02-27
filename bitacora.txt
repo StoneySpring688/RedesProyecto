@@ -33,6 +33,13 @@ Esas son las cosas que hay que arrgelar.
 
 
 
+-----17-2-2024 10:30 (StoneySpring):
+Se solucionaron los siguientes problemas :
+- ahora el valor succes de logIntoDirectory se actualiza correctamente
+- ahora cuando el usuario ya ha hecho login en el servidor delvuelve "login_failed:-1" en lugar de devolver un string "loginok&sessionKey"
+
+
+
 -----27-2-2024 22:24 (StoneySpring688):
 Se arregló un bug por el cual el método fromString de DirMessage no funcionaba correctamente 
 
@@ -43,5 +50,3 @@ cambios pendientes :
 
 -restaurar el timeout una vez se termine el proceso de debug
 -implementar nuevas clases de mensajes
-
-
