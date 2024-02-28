@@ -230,31 +230,36 @@ public class NFDirectoryServer {
 				response = DirMessage.confirmationMessageLoginOk(sesionKey);
 				//System.out.println(response.toString());
 			}
-			
 																												/*
 																												 * Comprobamos si tenemos dicho usuario registrado (atributo "nicks"). Si
 																												 * no está, generamos su sessionKey (número aleatorio entre 0 y 1000) y añadimos
 																												 * el nick y su sessionKey asociada. NOTA: Puedes usar random.nextInt(10000)
 																												 * para generar la session key
 																												 */
-			/*
-			 * Construimos un mensaje de respuesta que indique el éxito/fracaso del
-			 * login y contenga la sessionKey en caso de éxito, y lo devolvemos como
-			 * resultado del método.
-			 */
-			/*
-			 * Imprimimos por pantalla el resultado de procesar la petición recibida
-			 * (éxito o fracaso) con los datos relevantes, a modo de depuración en el
-			 * servidor
-			 */
-
-
-
+																												/*
+																												 * Construimos un mensaje de respuesta que indique el éxito/fracaso del
+																												 * login y contenga la sessionKey en caso de éxito, y lo devolvemos como
+																												 * resultado del método.
+																												 */
+																												/*
+																												 * Imprimimos por pantalla el resultado de procesar la petición recibida
+																												 * (éxito o fracaso) con los datos relevantes, a modo de depuración en el
+																												 * servidor
+																												 */
 			break;
 		}
-
-
-
+		case DirMessageOps.OPERATION_LOGOUT: {
+			int key = msg.getKey();
+				if(this.sessionKeys.containsKey(key)) {
+					this.sessionKeys.remove(key);
+					this.nicks.remove(this.sessionKeys.get(key));
+					response = DirMessage.confirmationMessageLogoutOk();
+				}
+				else {
+					response = DirMessage.errorMessage(DirMessageOps.OPERATION_LOGOUTFAILED);
+				}
+			break;
+		}
 		default:
 			System.out.println("Unexpected message operation: \"" + msg.getOperation() + "\"");
 		}

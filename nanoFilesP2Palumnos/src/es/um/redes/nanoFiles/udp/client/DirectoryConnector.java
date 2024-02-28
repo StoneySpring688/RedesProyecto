@@ -26,7 +26,7 @@ public class DirectoryConnector {
 																		 * socket antes de que se deba lanzar una excepción SocketTimeoutException para
 																		 * recuperar el control
 																		 */
-	private static final int TIMEOUT = 999999999; //1000
+	private static final int TIMEOUT = 1000; //999999999;
 																		/**
 																		 * Número de intentos máximos para obtener del directorio una respuesta a una
 																		 * solicitud enviada. Cada vez que expira el timeout sin recibir respuesta se
@@ -117,7 +117,7 @@ public class DirectoryConnector {
 		String messageFromServer = new String(responseData, 0, pakFromServ.getLength());
 		//System.out.println("se ha recivido : "+messageFromServer);
 		response = messageFromServer.getBytes();
-		this.socket.close();
+		// this.socket.close(); no cerrar en este método solo se puede hacer login, los métodos de despues no funcionan pporque el socket se cierra y solo se hace en el constructor
 		/*
 																							 * Una vez el envío y recepción asumiendo un canal confiable (sin
 																							 * pérdidas) esté terminado y probado, debe implementarse un mecanismo de
@@ -149,7 +149,6 @@ public class DirectoryConnector {
 		} catch (SocketTimeoutException e) {
 			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return true;
@@ -197,7 +196,7 @@ public class DirectoryConnector {
 																										 *         en caso de error
 																										 */
 	public boolean logIntoDirectory(String nickname) {
-		assert (sessionKey == INVALID_SESSION_KEY);
+		assert (sessionKey == INVALID_SESSION_KEY);//los assert no funcionan si no tiene el parametro -ea al ejecutar el programa, esto no es el error que buscas
 		boolean success = false;
 																										// 1.Crear el mensaje a enviar (objeto DirMessage) con atributos adecuados
 																										// (operation, etc.) NOTA: Usar como operaciones las constantes definidas en la clase
@@ -225,7 +224,6 @@ public class DirectoryConnector {
 																										// 7.Devolver éxito/fracaso de la operación
 		return success;
 	}
-
 	/**
 	 * Método para obtener la lista de "nicknames" registrados en el directorio.
 	 * Opcionalmente, la respuesta puede indicar para cada nickname si dicho peer
@@ -243,17 +241,31 @@ public class DirectoryConnector {
 		return userlist;
 	}
 
-	/**
-	 * Método para "cerrar sesión" en el directorio
-	 * 
-	 * @return Verdadero si el directorio eliminó a este usuario exitosamente
-	 */
+																										/**
+																										 * Método para "cerrar sesión" en el directorio
+																										 * 
+																										 * @return Verdadero si el directorio eliminó a este usuario exitosamente
+																										 */
 	public boolean logoutFromDirectory() {
-		// TODO: Ver TODOs en logIntoDirectory y seguir esquema similar
-
-
-
-		return false;
+																										// Ver TODOs en logIntoDirectory y seguir esquema similar
+		try {
+			assert (this.sessionKey != INVALID_SESSION_KEY);
+		} catch (AssertionError e) {
+			System.err.println("invalid session key \ncould not logout"); //los assert no funcionan si no tiene el parametro -ea al ejecutar el programa, esto no es el error que buscas
+		}
+		
+		boolean success = false;
+		DirMessage msg = DirMessage.logoutMessage(this.getSessionKey());
+		String msgToServe = msg.toString();
+		//System.out.println(msgToServe);
+		byte[] byteBuff = msgToServe.getBytes();
+		System.out.println("llega 1");
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String Recived = new String(byteDataRecived, 0, byteDataRecived.length);
+		DirMessage recivedDir = DirMessage.fromString(Recived);
+		String confirmation = recivedDir.getCode();
+		if(confirmation.matches(DirMessageOps.OPERATION_LOGOUTOK)) success = true;
+		return success;
 	}
 
 	/**
