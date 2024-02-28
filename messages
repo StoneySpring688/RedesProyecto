@@ -8,6 +8,7 @@ nick : ("String")
 #userlist
 
 operation : userlist
+key : ("Integer")
 
 
 
