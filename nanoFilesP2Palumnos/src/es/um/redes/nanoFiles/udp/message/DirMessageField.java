@@ -9,4 +9,6 @@ public class DirMessageField {
 	public static final String FIELDNAME_NICK = "nick";
 	public static final String FIELDNAME_CODE = "code";
 	public static final String FIELDNAME_KEY = "key";
+	public static final String FIELDNAME_USER = "user";
+	public static final String FIELDNAME_ISSERVER = "isServer";
 }

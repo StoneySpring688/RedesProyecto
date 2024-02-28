@@ -50,3 +50,14 @@ cambios pendientes :
 
 -restaurar el timeout una vez se termine el proceso de debug
 -implementar nuevas clases de mensajes
+
+
+
+-----28-2-2024 21:46 (StoneySpring688):
+Se implementó la operación de logout con el mensaje correspondiente de tipo logout
+
+Complicaciónes en la implementación :
+- error del tipo I/O ya que se cerraba el socket de la clase directory connector al hacer una sola operación con el método sendAndReciveDatagrams
+- hubo que hacer un nuevo código de error, no planeado, para la operación logout
+
+Queda pendiente de implementar una operación para solicitar la lista de usuarios registrados, y sus correspondientes mensajes

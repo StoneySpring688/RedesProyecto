@@ -41,26 +41,26 @@ public class NFControllerLogicDir {
 		}
 	}
 
-	/**
-	 * Método para conectar con el directorio y obtener la "sessionKey" que se
-	 * deberá utilizar en lo sucesivo para identificar a este cliente ante el
-	 * directorio
-	 * 
-	 * @param directoryHostname el nombre de host/IP en el que se está ejecutando el
-	 *                          directorio
-	 * @return true si se ha conseguido contactar con el directorio.
-	 * @throws IOException
-	 */
+																												/**
+																												 * Método para conectar con el directorio y obtener la "sessionKey" que se
+																												 * deberá utilizar en lo sucesivo para identificar a este cliente ante el
+																												 * directorio
+																												 * 
+																												 * @param directoryHostname el nombre de host/IP en el que se está ejecutando el
+																												 *                          directorio
+																												 * @return true si se ha conseguido contactar con el directorio.
+																												 * @throws IOException
+																												 */
 	protected boolean doLogin(String directoryHostname, String nickname) {
 
-		/*
-		 * TODO: Debe crear un objeto DirectoryConnector a partir del parámetro
-		 * directoryHostname y guardarlo en el atributo correspondiente para que pueda
-		 * ser utilizado por el resto de métodos de esta clase. A continuación,
-		 * utilizarlo para comunicarse con el directorio y tratar de realizar el
-		 * "login", informar por pantalla del éxito/fracaso e imprimir la clave de
-		 * sesión asignada por el directorio. Devolver éxito/fracaso de la operación.
-		 */
+																												/*
+																												 * Debe crear un objeto DirectoryConnector a partir del parámetro
+																												 * directoryHostname y guardarlo en el atributo correspondiente para que pueda
+																												 * ser utilizado por el resto de métodos de esta clase. A continuación,
+																												 * utilizarlo para comunicarse con el directorio y tratar de realizar el
+																												 * "login", informar por pantalla del éxito/fracaso e imprimir la clave de
+																												 * sesión asignada por el directorio. Devolver éxito/fracaso de la operación.
+																												 */
 		boolean result = false;
 		try {
 			this.directoryConnector = new DirectoryConnector(directoryHostname);
@@ -79,10 +79,10 @@ public class NFControllerLogicDir {
 		return result;
 	}
 
-	/**
-	 * Método para desconectarse del directorio: cerrar sesión y dar de baja el
-	 * nombre de usuario registrado
-	 */
+																												/**
+																												 * Método para desconectarse del directorio: cerrar sesión y dar de baja el
+																												 * nombre de usuario registrado
+																												 */
 	public boolean doLogout() {
 		/*
 		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
@@ -90,8 +90,12 @@ public class NFControllerLogicDir {
 		 * identificarse. Devolver éxito/fracaso de la operación.
 		 */
 		boolean result = false;
-
-
+		result = this.directoryConnector.logoutFromDirectory();
+		if(!result) {
+			System.err.println("Could not logout the directory");
+		}else if(result) {
+			System.out.println("[logout success]");
+		}
 
 		return result;
 	}

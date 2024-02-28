@@ -53,6 +53,11 @@ public class DirMessage {
 		m.setNickname(nick);
 		return m;
 	}
+	public static DirMessage logoutMessage(int key) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOGOUT);
+		m.setKey(key);
+		return m;
+	}
 	public static DirMessage errorMessage(String code) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_ERROR);
 		m.setCode(code);
@@ -66,6 +71,10 @@ public class DirMessage {
 	public static DirMessage confirmationMessageLoginOk(int key) {
 		DirMessage m = DirMessage.confirmationMessage(DirMessageOps.OPERATION_LOGINOK);
 		m.setKey(key);
+		return m;
+	}
+	public static DirMessage confirmationMessageLogoutOk() {
+		DirMessage m = DirMessage.confirmationMessage(DirMessageOps.OPERATION_LOGOUTOK);
 		return m;
 	}
 
@@ -128,8 +137,8 @@ public class DirMessage {
 		DirMessage m = null;
 		
 		for (String line : lines) {
-			if(!line.contains(END_MESSAGE)) {  //HAY QUE HACER QUE NMO SE PROCESE LA LINEA FIN DEL MENSAJE
-				//System.out.println("linea procesada  : "+ line);
+			if(!line.contains(END_MESSAGE)) {  //HAY QUE HACER QUE NO SE PROCESE LA LINEA FIN DEL MENSAJE
+				System.out.println("linea procesada  : "+ line);
 				
 				int ind = line.indexOf(DELIMITER); // Posición del delimitador
 				String fieldName = line.substring(0, ind).toLowerCase(); // minúsculas
@@ -191,6 +200,10 @@ public class DirMessage {
 			sb.append(DirMessageField.FIELDNAME_NICK + DELIMITER + nickname + END_LINE); //mensaje de tipo login
 			break;
 			}
+		case DirMessageOps.OPERATION_LOGOUT: {
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE); //mensaje de tipo logout
+			break;
+		}
 		case DirMessageOps.OPERATION_ERROR: {
 			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de error
 			break;
@@ -199,8 +212,11 @@ public class DirMessage {
 			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de confirmacion
 			switch (code) {
 			case DirMessageOps.OPERATION_LOGINOK: {
-				sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
+				sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE); //confirmación de tipo loginok
 				break;
+			}
+			case DirMessageOps.OPERATION_LOGOUTOK: {
+				break;																	//confirmacionb de tipo logoutok
 			}
 			default:
 				System.err.println("Unrecognised confirmation code, toString method error");
