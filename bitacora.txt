@@ -61,3 +61,10 @@ Complicaciónes en la implementación :
 - hubo que hacer un nuevo código de error, no planeado, para la operación logout
 
 Queda pendiente de implementar una operación para solicitar la lista de usuarios registrados, y sus correspondientes mensajes
+
+
+
+-----29-2-2024 00:08 (StoneySpring):
+Se corrigió un error por el cual logout no funcionaba correctamente :
+- se actualizó el switch del método updateCurrentState de la clase NFController
+- se cambió el  orden de eliminación de la estructura de nicks y sessionKeys para evitar almacenar el nombre de usuario a elminar de la estructura

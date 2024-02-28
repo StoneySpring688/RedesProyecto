@@ -228,6 +228,14 @@ public class NFDirectoryServer {
 				this.nicks.put(username, sesionKey);
 				this.sessionKeys.put(sesionKey, username);
 				response = DirMessage.confirmationMessageLoginOk(sesionKey);
+				/*System.out.println("despues del login");
+				for(int k : sessionKeys.keySet()) {
+					System.out.println(k);
+				}
+				for(String n : nicks.keySet()) {
+					System.out.println(n);
+				}*/
+				
 				//System.out.println(response.toString());
 			}
 																												/*
@@ -251,8 +259,15 @@ public class NFDirectoryServer {
 		case DirMessageOps.OPERATION_LOGOUT: {
 			int key = msg.getKey();
 				if(this.sessionKeys.containsKey(key)) {
-					this.sessionKeys.remove(key);
 					this.nicks.remove(this.sessionKeys.get(key));
+					this.sessionKeys.remove(key);
+					/*System.out.println("despues del logout");
+					for(int k : sessionKeys.keySet()) {
+						System.out.println(k);
+					}
+					for(String n : nicks.keySet()) {
+						System.out.println(n);
+					}*/
 					response = DirMessage.confirmationMessageLogoutOk();
 				}
 				else {

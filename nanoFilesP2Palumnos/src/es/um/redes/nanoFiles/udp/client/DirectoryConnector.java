@@ -259,7 +259,6 @@ public class DirectoryConnector {
 		String msgToServe = msg.toString();
 		//System.out.println(msgToServe);
 		byte[] byteBuff = msgToServe.getBytes();
-		System.out.println("llega 1");
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String Recived = new String(byteDataRecived, 0, byteDataRecived.length);
 		DirMessage recivedDir = DirMessage.fromString(Recived);
