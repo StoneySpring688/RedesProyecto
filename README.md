@@ -10,6 +10,7 @@ ficheros
 - login
 - help
 - logout
+- userlist
 
 ## Documentation
 
@@ -23,6 +24,8 @@ en la terminal introducir uno de los comandos:
 - muestra una guia de los distintos comandos
 ### logout
 - cierra la sesion activa en el servidor
+### userlist
+- imprime una lista con los usuarios loggeados en el servidor
 
 ## Autores
 
