@@ -26,7 +26,7 @@ public class DirectoryConnector {
 																		 * socket antes de que se deba lanzar una excepción SocketTimeoutException para
 																		 * recuperar el control
 																		 */
-	private static final int TIMEOUT = 1000; //999999999;
+	private static final int TIMEOUT = 999999999;//1000; 
 																		/**
 																		 * Número de intentos máximos para obtener del directorio una respuesta a una
 																		 * solicitud enviada. Cada vez que expira el timeout sin recibir respuesta se
@@ -233,10 +233,20 @@ public class DirectoryConnector {
 	 *         no pudo satisfacer nuestra solicitud
 	 */
 	public String[] getUserList() {
+		
 		String[] userlist = null;
-		// TODO: Ver TODOs en logIntoDirectory y seguir esquema similar
-
-
+		DirMessage msgToServe = DirMessage.userListMessage(this.getSessionKey());
+		String strToServe = msgToServe.toString();
+		//System.out.println("mensaje enviado :" + strToServe);
+		
+		byte[] byteBuff = strToServe.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		
+		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
+		//System.out.println("msg recivido " +recived);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		userlist = recivedDir.getPeers();
+		//for(String s : userlist) System.out.println("Peer : "+ s);
 
 		return userlist;
 	}

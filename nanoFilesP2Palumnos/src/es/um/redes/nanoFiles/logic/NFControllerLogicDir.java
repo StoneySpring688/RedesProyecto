@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 import es.um.redes.nanoFiles.application.NanoFiles;
 import es.um.redes.nanoFiles.udp.client.DirectoryConnector;
+import es.um.redes.nanoFiles.udp.message.DirMessageField;
 import es.um.redes.nanoFiles.util.FileInfo;
 
 public class NFControllerLogicDir {
@@ -84,11 +85,11 @@ public class NFControllerLogicDir {
 																												 * nombre de usuario registrado
 																												 */
 	public boolean doLogout() {
-		/*
-		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
-		 * dar de baja a este usuario. Se debe enviar la clave de sesión para
-		 * identificarse. Devolver éxito/fracaso de la operación.
-		 */
+																												/*
+																												 * Comunicarse con el directorio (a través del directoryConnector) para
+																												 * dar de baja a este usuario. Se debe enviar la clave de sesión para
+																												 * identificarse. Devolver éxito/fracaso de la operación.
+																												 */
 		boolean result = false;
 		result = this.directoryConnector.logoutFromDirectory();
 		if(!result) {
@@ -104,15 +105,16 @@ public class NFControllerLogicDir {
 	 * Método para obtener y mostrar la lista de nicks registrados en el directorio
 	 */
 	protected boolean getAndPrintUserList() {
-		/*
-		 * TODO: Obtener la lista de usuarios registrados. Comunicarse con el directorio
-		 * (a través del directoryConnector) para obtener la lista de nicks registrados
-		 * e imprimirla por pantalla. Devolver éxito/fracaso de la operación.
-		 */
+																												/*
+																												 * TODO: Obtener la lista de usuarios registrados. Comunicarse con el directorio
+																												 * (a través del directoryConnector) para obtener la lista de nicks registrados
+																												 * e imprimirla por pantalla. Devolver éxito/fracaso de la operación.
+																												 */
 		boolean result = false;
-
-
-
+		String[] list = this.directoryConnector.getUserList();
+		if(list.length != 0) result = true;
+		for(String u : list) System.out.println(DirMessageField.FIELDNAME_USER + " : "+ u);
+		
 		return result;
 	}
 

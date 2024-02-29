@@ -40,7 +40,7 @@ public class NFDirectoryServer {
 																		 * funcionalidad del sistema nanoFilesP2P: ficheros publicados, servidores
 																		 * registrados, etc.
 																		 */
-
+	private static volatile LinkedList<String> peerServers = new LinkedList<String>(); //luego será una variable compartida a varios hilos de servidor
 	
 	
 																		/**
@@ -273,6 +273,16 @@ public class NFDirectoryServer {
 				else {
 					response = DirMessage.errorMessage(DirMessageOps.OPERATION_LOGOUTFAILED);
 				}
+			break;
+		}
+		case DirMessageOps.OPERATION_USERLIST: {
+			if(this.sessionKeys.containsKey(msg.getKey())) {
+				response = DirMessage.confirmationMessageListOk();
+				for(String s : nicks.keySet()) {
+					response.setPeers(s, NFDirectoryServer.peerServers.contains(s));
+				}
+				//System.out.println("msg enviado : "+response.toString());
+			}
 			break;
 		}
 		default:
