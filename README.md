@@ -19,7 +19,7 @@ en la terminal introducir uno de los comandos:
 - contacta con el servidor udp para enviar el nombre de usuario introducido con el comando 
 - si el nickname es valido, el directorio lo registra en la lista de usuarios y devuelve un identificador(sessionKey)
 - el identificador actuará como una contraseña en el servidor que el cliente deberá incluir en los mensajes sucesivos que se envien al directorio
--el directorio comprobará que el identificador es valido en cada mensaje que reciba(excepto en las solicitudes de login)
+- el directorio comprobará que el identificador es valido en cada mensaje que reciba(excepto en las solicitudes de login)
 ### help
 - muestra una guia de los distintos comandos
 ### logout
