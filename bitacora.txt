@@ -68,3 +68,11 @@ Queda pendiente de implementar una operación para solicitar la lista de usuario
 Se corrigió un error por el cual logout no funcionaba correctamente :
 - se actualizó el switch del método updateCurrentState de la clase NFController
 - se cambió el  orden de eliminación de la estructura de nicks y sessionKeys para evitar almacenar el nombre de usuario a elminar de la estructura
+
+
+
+-----29-2-2024 18:59 (StoneySpring688):
+Se implementó la operación de consulta de los usuarios registrados
+complicaciones :
+- la estructura de datos que contenía los nicks de los usuarios en el mensaje no se inicializaba con el método de fromString, esto se solucionó con un bloque try catch
+- no se guardaban los usuarios en la estructura desde el método fromString de la clase DirMessage
