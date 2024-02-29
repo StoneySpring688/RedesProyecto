@@ -1,9 +1,12 @@
 package es.um.redes.nanoFiles.udp.message;
 
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import es.um.redes.nanoFiles.util.FileInfo;
 
@@ -43,6 +46,8 @@ public class DirMessage {
 	private String nickname;
 	private String code;
 	private int key;
+	private HashMap<String, Boolean> peers;
+	
 	
 	//"constructores"
 	public DirMessage(String op) {
@@ -55,6 +60,11 @@ public class DirMessage {
 	}
 	public static DirMessage logoutMessage(int key) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOGOUT);
+		m.setKey(key);
+		return m;
+	}
+	public static DirMessage userListMessage(int key){
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_USERLIST);
 		m.setKey(key);
 		return m;
 	}
@@ -77,6 +87,11 @@ public class DirMessage {
 		DirMessage m = DirMessage.confirmationMessage(DirMessageOps.OPERATION_LOGOUTOK);
 		return m;
 	}
+	public static DirMessage confirmationMessageListOk() {
+		DirMessage m = DirMessage.confirmationMessage(DirMessageOps.OPERATION_LISTOK);
+		m.peers = new HashMap<String, Boolean>(); //la estructura se cargará con la información en otra clase, donde se recorran las estructuras correspondientes
+		return m;
+	}
 
 
 																					/*
@@ -96,6 +111,9 @@ public class DirMessage {
 	public void setKey(int key) {
 		this.key = key;
 	}
+	public void setPeers(String peer, Boolean isServer) {
+		this.peers.put(peer, isServer);
+	}
 	
 	//get
 	public String getOperation() {
@@ -109,6 +127,9 @@ public class DirMessage {
 	}
 	public int getKey() {
 		return this.key;
+	}
+	public String[] getPeers(){
+		return  this.peers.keySet().toArray(new String[this.peers.keySet().size()]);
 	}
 
 
@@ -135,10 +156,11 @@ public class DirMessage {
 		String[] lines = message.split(END_LINE + "");
 		// Local variables to save data during parsing
 		DirMessage m = null;
+		String auxNick = null;
 		
 		for (String line : lines) {
 			if(!line.contains(END_MESSAGE)) {  //HAY QUE HACER QUE NO SE PROCESE LA LINEA FIN DEL MENSAJE
-				System.out.println("linea procesada  : "+ line);
+				//System.out.println("linea procesada  : "+ line);
 				
 				int ind = line.indexOf(DELIMITER); // Posición del delimitador
 				String fieldName = line.substring(0, ind).toLowerCase(); // minúsculas
@@ -160,6 +182,19 @@ public class DirMessage {
 				}
 				case DirMessageField.FIELDNAME_KEY:{
 					m.setKey(Integer.parseInt(val));
+					break;
+				}
+				case DirMessageField.FIELDNAME_USER:{
+					auxNick = val; // almacena el nick en una variable auxiliar, y lo va machacando cada vez que llega a este campo
+					break;
+				}
+				case DirMessageField.FIELDNAME_ISSERVER:{
+					try {
+						m.setPeers(auxNick, Boolean.parseBoolean(val)); // una vez llega al fin del par user-isServer usa esa información para almacenarla en la estructura
+					} catch (NullPointerException e) {
+						m.peers = new HashMap<String, Boolean>();
+						m.setPeers(auxNick, Boolean.parseBoolean(val));
+						}
 					break;
 				}
 				//TODO ir ampliando para el resto de mensajes
@@ -204,6 +239,10 @@ public class DirMessage {
 			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE); //mensaje de tipo logout
 			break;
 		}
+		case DirMessageOps.OPERATION_USERLIST: {
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE); //mensaje del tipo userList
+			break;
+		}
 		case DirMessageOps.OPERATION_ERROR: {
 			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de error
 			break;
@@ -217,6 +256,13 @@ public class DirMessage {
 			}
 			case DirMessageOps.OPERATION_LOGOUTOK: {
 				break;																	//confirmacionb de tipo logoutok
+			}
+			case DirMessageOps.OPERATION_LISTOK: {
+					for(String n : this.peers.keySet()) {
+						sb.append(DirMessageField.FIELDNAME_USER + DELIMITER + n + END_LINE);
+						sb.append(DirMessageField.FIELDNAME_ISSERVER + DELIMITER + this.peers.get(n) + END_LINE);
+					}
+				break;
 			}
 			default:
 				System.err.println("Unrecognised confirmation code, toString method error");
