@@ -1,1 +1,13 @@
+# DownloadFrom
 
+opCode : downl
+hash : ("long")
+
+
+
+# Download
+
+opCode : downl
+hash : ("long")
+init: ("long")
+tam : ("long")
