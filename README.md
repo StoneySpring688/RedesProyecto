@@ -27,6 +27,10 @@ en la terminal introducir uno de los comandos:
 ### userlist
 - imprime una lista con los usuarios loggeados en el servidor
 
+## Software empleado
+
+- [JFLAP](https://www.jflap.org). 
+
 ## Autores
 
 - [@StoneySpring688](https://github.com/StoneySpring688)
