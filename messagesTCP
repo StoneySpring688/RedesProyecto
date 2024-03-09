@@ -1,13 +1,38 @@
-# DownloadFrom
+# Orden de codigos
 
-opCode : downl
-hash : ("long")
+- 1. operacion(0x0 a 0x9)
+- 2. error(0xA a 0x13)
+- 3. confirmación(0x13 en adelante)
+
+confirmación < error < confirmación
 
 
 
 # Download
 
-opCode : downl
+opCode : downl(0x1)
+from : ("InetAddresss")
 hash : ("long")
 init: ("long")
 tam : ("long")
+
+
+
+# ErrorFileNotFound
+
+opCode : FNF(0x5)
+
+
+
+# ErrorMultipleOptions
+
+opCode : MO(0x6)
+options : ("long[]")
+
+
+
+# DownlResponse
+
+opCode : downlRes(0x14)
+hash : ("long")
+data : ("byte[]")
