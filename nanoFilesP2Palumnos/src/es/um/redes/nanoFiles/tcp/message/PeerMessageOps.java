@@ -6,12 +6,12 @@ import java.util.TreeMap;
 public class PeerMessageOps {
 
 	public static final byte OPCODE_INVALID_CODE = 0;
-	public static final byte OPCODE_DOWNL = 0x1;
+	public static final byte OPCODE_DOWNL = 1;
 	//Los codigos de error van del 10 en adelante
-	public static final byte OPCODE_FNF = 0xA; //FileNotFound
-	public static final byte OPCODE_MO = 0xB; //MultipleOptions
+	public static final byte OPCODE_FNF = 10; //FileNotFound
+	public static final byte OPCODE_MO = 11; //MultipleOptions
 	//los codigos de confirmacion van del 20 en adelante
-	public static final byte OPCODE_DOWNLRES = 0x14;
+	public static final byte OPCODE_DOWNLRES = 20;
 
 
 
