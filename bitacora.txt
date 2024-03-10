@@ -76,3 +76,10 @@ Se implementó la operación de consulta de los usuarios registrados
 complicaciones :
 - la estructura de datos que contenía los nicks de los usuarios en el mensaje no se inicializaba con el método de fromString, esto se solucionó con un bloque try catch
 - no se guardaban los usuarios en la estructura desde el método fromString de la clase DirMessage
+
+
+
+-----10-3-2024 01:29 (StoneySpring688):
+Se implementaron los constructores para los mensajes de la clase PeerMessage, junto con sus métodos get y set
+
+
