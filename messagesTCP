@@ -26,6 +26,7 @@ opCode : FNF(0x5)
 # ErrorMultipleOptions
 
 opCode : MO(0x6)
+nOps : ("int")
 options : ("long[]")
 
 
