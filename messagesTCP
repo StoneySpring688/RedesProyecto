@@ -19,13 +19,13 @@ tam : ("long")
 
 # ErrorFileNotFound
 
-opCode : FNF(0x5)
+opCode : FNF(0xA)
 
 
 
 # ErrorMultipleOptions
 
-opCode : MO(0x6)
+opCode : MO(0xB)
 nOps : ("int")
 options : ("long[]")
 
