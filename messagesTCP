@@ -1,0 +1,39 @@
+# Orden de codigos
+
+- 1. operacion(0x0 a 0x9)
+- 2. error(0xA a 0x13)
+- 3. confirmación(0x13 en adelante)
+
+confirmación < error < confirmación
+
+
+
+# Download
+
+opCode : downl(0x1)
+hash : ("long")
+init: ("long")
+tam : ("long")
+
+
+
+# ErrorFileNotFound
+
+opCode : FNF(0xA)
+
+
+
+# ErrorMultipleOptions
+
+opCode : MO(0xB)
+nOps : ("int")
+options : ("long[]")
+
+
+
+# DownlResponse
+
+opCode : downlRes(0x14)
+hash : ("long")
+FLenght : ("long")
+data : ("byte[]")
