@@ -11,7 +11,6 @@ confirmación < error < confirmación
 # Download
 
 opCode : downl(0x1)
-from : ("InetAddresss")
 hash : ("long")
 init: ("long")
 tam : ("long")
