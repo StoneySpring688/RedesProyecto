@@ -112,7 +112,13 @@ public class NFControllerLogicDir {
 																												 */
 		boolean result = false;
 		String[] list = this.directoryConnector.getUserList();
-		if(list.length != 0) result = true;
+		try {
+			if(list.length != 0) result = true;
+		} catch (NullPointerException e) {
+			System.err.println("[Failed Execution]");
+			System.exit(-1);
+		}
+		
 		for(String u : list) System.out.println(DirMessageField.FIELDNAME_USER + " : "+ u);
 		
 		return result;

@@ -282,6 +282,8 @@ public class NFDirectoryServer {
 					response.setPeers(s, NFDirectoryServer.peerServers.contains(s));
 				}
 				//System.out.println("msg enviado : "+response.toString());
+			}else {
+				response = DirMessage.errorMessage(DirMessageOps.OPERATION_LISTFAILED);
 			}
 			break;
 		}

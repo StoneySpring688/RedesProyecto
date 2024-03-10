@@ -245,8 +245,12 @@ public class DirectoryConnector {
 		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
 		//System.out.println("msg recivido " +recived);
 		DirMessage recivedDir = DirMessage.fromString(recived);
-		userlist = recivedDir.getPeers();
-		//for(String s : userlist) System.out.println("Peer : "+ s);
+		if(recivedDir.getCode().equals(DirMessageOps.OPERATION_LISTFAILED)) {
+			System.err.println("Failed getting userlist");
+		}else {
+			userlist = recivedDir.getPeers();
+			//for(String s : userlist) System.out.println("Peer : "+ s);
+		}
 
 		return userlist;
 	}
