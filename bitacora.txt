@@ -96,3 +96,8 @@ cambios requeridos :
 - se requiere implementar nuevos mensajes y campos tcp y udp
 
 
+-----14-3-2024 19:21 (StoneySpring688):
+se implementó parte de la funcionalidad tcp del servidor de ficheros :
+- se implementó la funcionalidad para responder a un mensaje de tipo download
+- el mensaje de error MO está implementado usando arraydatainput/output, para poder escribir en ellos la secuencia de bytes de los diferentes hash validos, separados por una secuencia FINARRAY
+- revisar como se hace el hash al fragmento del archivo, ya se ha dejado como el hash del fichero completo
