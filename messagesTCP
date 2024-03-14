@@ -11,7 +11,9 @@ confirmación < error < confirmación
 # Download
 
 opCode : downl(0x1)
-hash : ("long")
+hash : ("String")
+host : ("String")
+port : ("int")
 nick : ("String--->byte")
 init: ("long")
 tam : ("long")
