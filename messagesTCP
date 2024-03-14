@@ -12,6 +12,7 @@ confirmación < error < confirmación
 
 opCode : downl(0x1)
 hash : ("long")
+nick : ("String--->byte")
 init: ("long")
 tam : ("long")
 
