@@ -83,9 +83,16 @@ complicaciones :
 Se implementaron los constructores para los mensajes de la clase PeerMessage, junto con sus métodos get y set
 
 
------10-3-2024 21:35 (StoneySSpring688):
+-----10-3-2024 21:35 (StoneySpring688):
 Se implementó la clase PeerMessage
 complicaciones :
 - a la hora de la lectura no se estaba accediendo correctamente al campo opCode (fixed)
+
+
+-----14-3-2024 03:17 (StoneySpring688):
+Se implementaron los automatas
+cambios requeridos :
+- se añadió el campo nick al mensaje download (tcp)
+- se requiere implementar nuevos mensajes y campos tcp y udp
 
 
