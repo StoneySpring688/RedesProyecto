@@ -14,7 +14,7 @@ opCode : downl(0x1)
 hash : ("String")
 host : ("String")
 port : ("int")
-nick : ("String--->byte")
+nick : ("String")
 init: ("long")
 tam : ("long")
 
