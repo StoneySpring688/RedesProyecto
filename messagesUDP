@@ -19,6 +19,37 @@ key : ("Integer")
 
 
 
+#publish
+
+operation : publish
+key : ("Integer")
+fichHash : ("String")
+...
+
+
+
+#filelist
+
+operation : filelist
+key : ("integer")
+
+
+
+#search
+
+operation : search
+key : ("Integer")
+hash : ("String")
+
+
+#updateinfo
+
+operation  : updateinfo
+key : ("Integer")
+hash : ("String")
+
+
+
 #error
 
 operation : error
@@ -52,3 +83,33 @@ isServer : ("Boolean")
 
 operation : confirmation
 code : "logoutok"
+
+
+##confirmation-publishok
+
+operation : confirmation
+code : "publishok"
+
+
+##confirmation-filelistok
+
+operation : confirmation
+code : "filelistok"
+name : ("String")
+tamaño : ("Integer")
+hash : ("String")
+nicks : ("String") " , " ("String") ...
+...
+
+
+##confirmation-searchok
+
+operation : confirmation
+code : "searchok"
+nick : ("String")
+
+
+##confirmation-updateinfook
+
+operation : confirmation
+code : "updateinfook"
