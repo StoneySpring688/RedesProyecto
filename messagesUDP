@@ -106,7 +106,7 @@ nicks : ("String") " , " ("String") ...
 
 operation : confirmation
 code : "searchok"
-nick : ("String")
+nick : ("String") "," ("String") ...
 
 
 ##confirmation-updateinfook
