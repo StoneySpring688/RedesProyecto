@@ -53,6 +53,16 @@
 			<read>success</read>&#13;
 		</transition>&#13;
 		<transition>&#13;
+			<from>1</from>&#13;
+			<to>2</to>&#13;
+			<read>snd(stopserverok)</read>&#13;
+		</transition>&#13;
+		<transition>&#13;
+			<from>4</from>&#13;
+			<to>5</to>&#13;
+			<read>snd(FNF)</read>&#13;
+		</transition>&#13;
+		<transition>&#13;
 			<from>5</from>&#13;
 			<to>1</to>&#13;
 			<controlx>452</controlx>&#13;
@@ -68,11 +78,6 @@
 			<from>4</from>&#13;
 			<to>5</to>&#13;
 			<read>snd(nickerror)</read>&#13;
-		</transition>&#13;
-		<transition>&#13;
-			<from>1</from>&#13;
-			<to>2</to>&#13;
-			<read>snd(stopserverok)</read>&#13;
 		</transition>&#13;
 		<transition>&#13;
 			<from>3</from>&#13;
