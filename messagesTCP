@@ -40,5 +40,5 @@ opCode : NNF(0xC)
 
 opCode : downlRes(0x14)
 hash : ("long")
-FLenght : ("long")
+FLength : ("long")
 data : ("byte[]")
