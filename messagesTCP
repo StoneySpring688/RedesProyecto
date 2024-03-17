@@ -12,8 +12,6 @@ confirmación < error < confirmación
 
 opCode : downl(0x1)
 hash : ("String")
-host : ("String")
-port : ("int")
 nick : ("String")
 init: ("long")
 tam : ("long")
@@ -32,6 +30,10 @@ opCode : MO(0xB)
 nOps : ("int")
 options : ("byte[]")
 
+
+
+# ErrorNickNotFound
+opCode : NNF(0xC)
 
 
 # DownlResponse
