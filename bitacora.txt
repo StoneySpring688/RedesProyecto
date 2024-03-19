@@ -111,3 +111,17 @@ Se implementó parte de la funcionalidad tcp del servidor de ficheros :
 Cambios :
 - se separó de la funcionalidad de los automatas a una distribución más conveniente
 - se plantearon los mensajes faltantes en sus correspondienntes ficheros
+
+
+
+-----19-3-2024 00:51 (StoneySpring688):
+Se ha solucionado un error en el controlador, concretamente en el caso downloadfrom del switch de processCommand, por el cual se trataba de acceder a un 
+atributo que se inicializaba en otro método de la clase, pero que se correspondía a la operación de login en lugar de la  operación de descarga, la solución 
+fue restaurar el cambio  hecho anteriormente con un backup de las primeras fases del proyecto donde aun no se había hecho ese cambio (solo se cambiaron las 
+lineas afectadas por el error)
+
+implementado :
+- se establece la conexión entre peer que descarga y peer servidor(no se envía ningun mensaje, el método no avanza por el switch)
+
+pendiente :
+- implementar el envio del mensaje de descarga (método downloadFile)
