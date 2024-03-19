@@ -12,6 +12,11 @@ public class PeerMessageOps {
 	public static final byte OPCODE_MO = 11; //MultipleOptions
 	//los codigos de confirmacion van del 20 en adelante
 	public static final byte OPCODE_DOWNLRES = 20;
+	
+	
+	
+	//FIN SECUENCIA PARA EL ARRAY DE OPCIONES
+	public static final byte[] FINARRAY ="FIN_ARRAY".getBytes() ;
 
 
 

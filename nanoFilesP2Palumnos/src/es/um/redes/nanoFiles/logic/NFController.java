@@ -171,19 +171,18 @@ public class NFController {
 			commandSucceeded = controllerDir.unregisterFileServer();
 			break;
 		case NFCommands.COM_DOWNLOADFROM:
-			/*
-			 * Pedir al controllerDir que obtenga del directorio la dirección de socket (IP
-			 * y puerto) del servidor cuyo nickname indica el atributo downloadTargetServer
-			 * (1er argumento pasado al comando en el shell). Si se ha obtenido del
-			 * directorio la dirección del servidor de ficheros asociada al nick
-			 * exitosamente, pedir al controllerPeer que descargue del servidor en dicha
-			 * dirección el fichero indicado en downloadTargetFileHash (2º argumento pasado
-			 * al comando) y lo guarde con el nombre indicado en downloadLocalFileName (3er
-			 * argumento)
-			 */
+																																/*
+																																 * Pedir al controllerDir que obtenga del directorio la dirección de socket (IP
+																																 * y puerto) del servidor cuyo nickname indica el atributo downloadTargetServer
+																																 * (1er argumento pasado al comando en el shell). Si se ha obtenido del
+																																 * directorio la dirección del servidor de ficheros asociada al nick
+																																 * exitosamente, pedir al controllerPeer que descargue del servidor en dicha
+																																 * dirección el fichero indicado en downloadTargetFileHash (2º argumento pasado
+																																 * al comando) y lo guarde con el nombre indicado en downloadLocalFileName (3er
+																																 * argumento)
+																																 */
 			InetSocketAddress serverAddr = controllerDir.getServerAddress(downloadTargetServer);
-			commandSucceeded = controllerPeer.downloadFileFromSingleServer(serverAddr, downloadTargetFileHash,
-					downloadLocalFileName);
+			commandSucceeded = controllerPeer.downloadFileFromSingleServer(serverAddr, downloadTargetFileHash, downloadLocalFileName);
 			break;
 		case NFCommands.COM_SEARCH:
 			/*

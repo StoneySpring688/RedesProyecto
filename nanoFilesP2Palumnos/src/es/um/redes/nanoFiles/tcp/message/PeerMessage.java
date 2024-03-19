@@ -13,10 +13,12 @@ import es.um.redes.nanoFiles.util.FileInfo;
 public class PeerMessage {
 
 	private byte opcode;
-	private long hash;
+	private String hash;
 	private long init;
 	private long tam;
 	private int nOps;
+	private String host;
+	private int port;
 	private long FLength;
 	private byte[] options;
 	private byte[] data;
@@ -35,10 +37,12 @@ public class PeerMessage {
 		opcode = op;
 	}
 
-	public static PeerMessage peerMessageDownload(long h, long i, long t) {
+	public static PeerMessage peerMessageDownload(String h,String ho,int port, long i, long t) {
 		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_DOWNL);
 		try {
 			p.setHash(h);
+			p.setHost(ho);
+			p.setPort(port);
 			p.setInit(i);
 			p.setTam(t);
 		} catch (NoSuchFieldException e) {
@@ -62,7 +66,7 @@ public class PeerMessage {
 		return p;
 	}
 
-	public static PeerMessage peerMessageDownlResponse(long h, long f, byte[] d) {
+	public static PeerMessage peerMessageDownlResponse(String h, long f, byte[] d) {
 		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_DOWNLRES);
 		try {
 			p.setHash(h);
@@ -85,7 +89,7 @@ public class PeerMessage {
 		return opcode;
 	}
 
-	public long getHash() {
+	public String getHash() {
 		return this.hash;
 	}
 
@@ -99,6 +103,14 @@ public class PeerMessage {
 
 	public int getNOps() {
 		return this.nOps;
+	}
+	
+	public String getHost() {
+		return this.host;
+	}
+	
+	public int getPort() {
+		return this.port;
 	}
 
 	public long getFLength() {
@@ -114,7 +126,7 @@ public class PeerMessage {
 	}
 
 	// set
-	public void setHash(long h) throws NoSuchFieldException {
+	public void setHash(String h) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
 			this.hash = h;
 		} else
@@ -138,6 +150,20 @@ public class PeerMessage {
 	public void setNOps(int n) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_MO) {
 			this.nOps = n;
+		} else
+			throw new NoSuchFieldException("OpCode does not match with this field");
+	}
+	
+	public void setHost(String h) throws NoSuchFieldException {
+		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
+			this.hash = h;
+		} else
+			throw new NoSuchFieldException("OpCode does not match with this field");
+	}
+	
+	public void setPort(int p) throws NoSuchFieldException {
+		if (this.opcode == PeerMessageOps.OPCODE_MO) {
+			this.port = p;
 		} else
 			throw new NoSuchFieldException("OpCode does not match with this field");
 	}
@@ -188,7 +214,9 @@ public class PeerMessage {
 			switch (message.opcode) {
 			case PeerMessageOps.OPCODE_DOWNL: {
 				try {
-					message.setHash(dis.readLong());
+					message.setHash(dis.readUTF());
+					message.setHost(dis.readUTF());
+					message.setPort(dis.readInt());
 					message.setInit(dis.readLong());
 					message.setTam(dis.readLong());
 				} catch (NoSuchFieldException e) {
@@ -197,7 +225,7 @@ public class PeerMessage {
 				break;
 			}
 			case PeerMessageOps.OPCODE_FNF: {
-				break; // este mensaje solo tiene el código de operación
+				break; //este mensaje solo tiene el código de operación
 			}
 			case PeerMessageOps.OPCODE_MO: {
 				try {
@@ -211,7 +239,7 @@ public class PeerMessage {
 			}
 			case PeerMessageOps.OPCODE_DOWNLRES: {
 				try {
-					message.setHash(dis.readLong());
+					message.setHash(dis.readUTF());
 					message.setFLength(dis.readLong());
 					message.setData(new byte[(int) message.getFLength()]);
 					dis.readFully(message.data);
@@ -247,7 +275,9 @@ public class PeerMessage {
 			dos.writeByte(this.opcode);
 			switch (this.opcode) {
 			case PeerMessageOps.OPCODE_DOWNL: {
-				dos.writeLong(this.getHash());
+				dos.writeUTF(this.getHash());
+				dos.writeUTF(this.getHost());
+				dos.writeInt(this.getPort());
 				dos.writeLong(this.getInit());
 				dos.writeLong(this.getTam());
 				break;
@@ -261,7 +291,7 @@ public class PeerMessage {
 				break;
 			}
 			case PeerMessageOps.OPCODE_DOWNLRES: {
-				dos.writeLong(this.getHash());
+				dos.writeUTF(this.getHash());
 				dos.writeLong(this.data.length);
 				dos.write(data);
 				break;

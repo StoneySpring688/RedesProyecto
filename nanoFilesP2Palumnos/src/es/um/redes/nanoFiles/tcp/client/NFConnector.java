@@ -16,25 +16,30 @@ import es.um.redes.nanoFiles.util.FileDigest;
 
 //Esta clase proporciona la funcionalidad necesaria para intercambiar mensajes entre el cliente y el servidor
 public class NFConnector {
+	
 	private Socket socket;
 	private InetSocketAddress serverAddr;
-
+	private DataInputStream dis;
+	private DataOutputStream dos;
 
 
 
 	public NFConnector(InetSocketAddress fserverAddr) throws UnknownHostException, IOException {
 		serverAddr = fserverAddr;
-		/*
-		 * TODO Se crea el socket a partir de la dirección del servidor (IP, puerto). La
-		 * creación exitosa del socket significa que la conexión TCP ha sido
-		 * establecida.
-		 */
-		/*
-		 * TODO Se crean los DataInputStream/DataOutputStream a partir de los streams de
-		 * entrada/salida del socket creado. Se usarán para enviar (dos) y recibir (dis)
-		 * datos del servidor.
-		 */
-
+																											/*
+																											 *Se crea el socket a partir de la dirección del servidor (IP, puerto). La
+																											 * creación exitosa del socket significa que la conexión TCP ha sido
+																											 * establecida.
+																											 */
+		this.socket = new Socket(fserverAddr.getAddress(),fserverAddr.getPort());
+		
+																											/*
+																											 * Se crean los DataInputStream/DataOutputStream a partir de los streams de
+																											 * entrada/salida del socket creado. Se usarán para enviar (dos) y recibir (dis)
+																											 * datos del servidor.
+																											 */
+		this.dis = new DataInputStream(this.socket.getInputStream());
+		this.dos = new DataOutputStream(this.socket.getOutputStream());
 
 
 	}
