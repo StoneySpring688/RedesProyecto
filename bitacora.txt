@@ -1,4 +1,4 @@
------10-2-2024 03:15 (StoneySpring688):
+-----10-02-2024 03:15 (StoneySpring688):
 No hubo demasidos problemas en la implementación, ya que sobretodo fue seguir el boletín, hubo dos errores principalmente:
 
 - Usé el método close del socket UDP dentro del bucle while, lo cual hacía que una vez se recibía el primer paquete, no se pudiera volver a abrir el socket,
@@ -12,7 +12,7 @@ seguía sin pasar el test, así usando el contructor de estring hice un objeto q
 
 
 
------15-2-2024 13:30 (StoneySpring688):
+-----15-02-2024 13:30 (StoneySpring688):
 La unica complicación fue :
 - rehacer el algoritmo de retransmision para la función sendAndReciveDatagrams de DirectoryConnector, antes trataba de reenviar por
 todas las veces que el máximo numero de intentos le permitía, por lo que hice una función de tipo booleano (resend) en el mismo archivo, que simplemente vuelve
@@ -21,7 +21,7 @@ todo sale bien devuelve true. así el for la usará  para retransmitir el paquet
 
 
 
------15-2-2024 19:10 (StoneySpring688):
+-----15-02-2024 19:10 (StoneySpring688):
 Se adaptó el método buildResponseFromRequest para que sea de tipo String en lugar de DirMessage, ya que DirMessage aun no se ha terminado de implementar, habrá que hacer :
 
 - msgResponse volver a hacerlo DirMessage
@@ -33,14 +33,14 @@ Esas son las cosas que hay que arrgelar.
 
 
 
------17-2-2024 10:30 (StoneySpring):
+-----17-02-2024 10:30 (StoneySpring):
 Se solucionaron los siguientes problemas :
 - ahora el valor succes de logIntoDirectory se actualiza correctamente
 - ahora cuando el usuario ya ha hecho login en el servidor delvuelve "login_failed:-1" en lugar de devolver un string "loginok&sessionKey"
 
 
 
------27-2-2024 22:24 (StoneySpring688):
+-----27-02-2024 22:24 (StoneySpring688):
 Se arregló un bug por el cual el método fromString de DirMessage no funcionaba correctamente 
 
 -causa : se procesaba el caracter que marcaba el fin del mensaje, lo cual era  incorrecto y producia una excepción que finalizaba la ejecución
@@ -53,7 +53,7 @@ cambios pendientes :
 
 
 
------28-2-2024 21:46 (StoneySpring688):
+-----28-02-2024 21:46 (StoneySpring688):
 Se implementó la operación de logout con el mensaje correspondiente de tipo logout
 
 Complicaciónes en la implementación :
@@ -64,14 +64,14 @@ Queda pendiente de implementar una operación para solicitar la lista de usuario
 
 
 
------29-2-2024 00:08 (StoneySpring):
+-----29-02-2024 00:08 (StoneySpring):
 Se corrigió un error por el cual logout no funcionaba correctamente :
 - se actualizó el switch del método updateCurrentState de la clase NFController
 - se cambió el  orden de eliminación de la estructura de nicks y sessionKeys para evitar almacenar el nombre de usuario a elminar de la estructura
 
 
 
------29-2-2024 18:59 (StoneySpring688):
+-----29-02-2024 18:59 (StoneySpring688):
 Se implementó la operación de consulta de los usuarios registrados
 complicaciones :
 - la estructura de datos que contenía los nicks de los usuarios en el mensaje no se inicializaba con el método de fromString, esto se solucionó con un bloque try catch
@@ -79,19 +79,19 @@ complicaciones :
 
 
 
------10-3-2024 01:29 (StoneySpring688):
+-----10-03-2024 01:29 (StoneySpring688):
 Se implementaron los constructores para los mensajes de la clase PeerMessage, junto con sus métodos get y set
 
 
 
------10-3-2024 21:35 (StoneySpring688):
+-----10-03-2024 21:35 (StoneySpring688):
 Se implementó la clase PeerMessage
 complicaciones :
 - a la hora de la lectura no se estaba accediendo correctamente al campo opCode (fixed)
 
 
 
------14-3-2024 03:17 (StoneySpring688):
+-----14-03-2024 03:17 (StoneySpring688):
 Se implementaron los automatas
 cambios requeridos :
 - se añadió el campo nick al mensaje download (tcp)
@@ -99,7 +99,7 @@ cambios requeridos :
 
 
 
------14-3-2024 19:21 (StoneySpring688):
+-----14-03-2024 19:21 (StoneySpring688):
 Se implementó parte de la funcionalidad tcp del servidor de ficheros :
 - se implementó la funcionalidad para responder a un mensaje de tipo download
 - el mensaje de error MO está implementado usando arraydatainput/output, para poder escribir en ellos la secuencia de bytes de los diferentes hash validos, separados por una secuencia FINARRAY
@@ -107,14 +107,14 @@ Se implementó parte de la funcionalidad tcp del servidor de ficheros :
 
 
 
------17-3-2024 17:39 (StoneySpring688):
+-----17-03-2024 17:39 (StoneySpring688):
 Cambios :
 - se separó de la funcionalidad de los automatas a una distribución más conveniente
 - se plantearon los mensajes faltantes en sus correspondienntes ficheros
 
 
 
------19-3-2024 00:51 (StoneySpring688):
+-----19-03-2024 00:51 (StoneySpring688):
 Se ha solucionado un error en el controlador, concretamente en el caso downloadfrom del switch de processCommand, por el cual se trataba de acceder a un 
 atributo que se inicializaba en otro método de la clase, pero que se correspondía a la operación de login en lugar de la  operación de descarga, la solución 
 fue restaurar el cambio  hecho anteriormente con un backup de las primeras fases del proyecto donde aun no se había hecho ese cambio (solo se cambiaron las 
@@ -125,3 +125,13 @@ implementado :
 
 pendiente :
 - implementar el envio del mensaje de descarga (método downloadFile)
+
+
+
+-----03-04-2024 14:30 (StoneySpring):
+Se implementó la funcionalidad para enviar un mensaje de prueba en tcp para comprobar su correcto funcionamiento, esta prueba consiste en un mensaje (test)
+el cual contiene un entero que se envia al servidor de ficheros, y este lo devuelve para que se puede comprobar que el que se envia y el que se recive son
+el mismo.
+
+pendiente :
+- implementar la descarga de ficheros en el método downloadFile, haciendo uso de los mensajes y métodos ya creados
