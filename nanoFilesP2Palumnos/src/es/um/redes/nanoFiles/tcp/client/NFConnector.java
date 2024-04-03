@@ -9,6 +9,7 @@ import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 import es.um.redes.nanoFiles.tcp.message.PeerMessage;
 import es.um.redes.nanoFiles.tcp.message.PeerMessageOps;
@@ -58,6 +59,20 @@ public class NFConnector {
 	 */
 	public boolean downloadFile(String targetFileHashSubstr, File file) throws IOException {
 		boolean downloaded = false;
+		/*
+		Random random = new Random();
+		int n = random.nextInt(10000);
+		PeerMessage p = PeerMessage.peerMessageTest(n);
+		p.writeMessageToOutputStream(dos);
+		System.out.println("entero enviado : "+n);
+		PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
+		System.out.println("entero recivido : " + msgFromServ.getTest());
+		if(n==msgFromServ.getTest()) {
+			System.out.println("[comms] ok");
+			downloaded = true;
+		}
+		*/
+		
 		/*
 		 * TODO: Construir objetos PeerMessage que modelen mensajes con los valores
 		 * adecuados en sus campos (atributos), según el protocolo diseñado, y enviarlos

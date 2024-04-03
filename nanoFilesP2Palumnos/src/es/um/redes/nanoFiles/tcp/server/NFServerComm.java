@@ -70,10 +70,12 @@ public class NFServerComm {
 				/*utiliza la clase byteArrayOutputStream para "concatenar" los distitos arrays de byte(hash)*/
 				
 				ByteArrayOutputStream os = new ByteArrayOutputStream();
+				int nops = 0; //PERD*****
 				for(FileInfo f : fichs) {
 					byte[] a = f.fileHash.getBytes();
 					try {
 						os.write(a);
+						nops++;
 						os.write(PeerMessageOps.FINARRAY);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -81,7 +83,7 @@ public class NFServerComm {
 					
 				}
 				o =os.toByteArray();
-				response = PeerMessage.peerMessageErrorMultipleOptions(o);
+				response = PeerMessage.peerMessageErrorMultipleOptions(o,nops);
 				return response;
 			}else if(fichs.length == 0) {
 				response = PeerMessage.peerMessageErrorFileNotFound();
@@ -98,6 +100,15 @@ public class NFServerComm {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
+			break;
+		}
+		case PeerMessageOps.TEST: {
+			try {
+				System.out.println("entero recibido : "+msg.getTest());
+				response = PeerMessage.peerMessageTest(msg.getTest());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			break;
 		}

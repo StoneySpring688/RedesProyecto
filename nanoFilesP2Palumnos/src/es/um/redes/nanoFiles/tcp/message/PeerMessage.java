@@ -22,6 +22,8 @@ public class PeerMessage {
 	private long FLength;
 	private byte[] options;
 	private byte[] data;
+	
+	private int test;
 
 																													/*
 																													 * TODO: Añadir atributos y crear otros constructores específicos para crear
@@ -35,6 +37,15 @@ public class PeerMessage {
 
 	public PeerMessage(byte op) {
 		opcode = op;
+	}
+	public static PeerMessage peerMessageTest(int n) {
+		PeerMessage p = new PeerMessage(PeerMessageOps.TEST);
+		try {
+			p.setTest(n);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		return p;
 	}
 
 	public static PeerMessage peerMessageDownload(String h,String ho,int port, long i, long t) {
@@ -56,9 +67,10 @@ public class PeerMessage {
 		return p;
 	}
 
-	public static PeerMessage peerMessageErrorMultipleOptions(byte[] o) {
+	public static PeerMessage peerMessageErrorMultipleOptions(byte[] o, int nops) {
 		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_MO);
 		try {
+			p.setNOps(nops);
 			p.setOptions(o);
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
@@ -88,7 +100,11 @@ public class PeerMessage {
 	public byte getOpcode() {
 		return opcode;
 	}
-
+	
+	public int getTest() {
+		return this.test;
+	}
+	
 	public String getHash() {
 		return this.hash;
 	}
@@ -130,63 +146,71 @@ public class PeerMessage {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
 			this.hash = h;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x1");
 	}
 
+	public void setTest(int t) throws NoSuchFieldException {
+		if(this.opcode == PeerMessageOps.TEST) {
+			this.test = t;
+		}else {
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x2");
+		}
+	}
+	
 	public void setInit(long i) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNL) {
 			this.init = i;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x3");
 	}
 
 	public void setTam(long t) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNL) {
 			this.tam = t;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x4");
 	}
 
 	public void setNOps(int n) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_MO) {
 			this.nOps = n;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x5");
 	}
 	
 	public void setHost(String h) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
 			this.hash = h;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x6");
 	}
 	
 	public void setPort(int p) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_MO) {
 			this.port = p;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x7");
 	}
 
 	public void setFLength(long f) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
 			this.FLength = f;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x8");
 	}
 
 	public void setOptions(byte[] o) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_MO) {
 			this.options = o;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x9");
 	}
 
 	public void setData(byte[] d) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
 			this.data = d;
 		} else
-			throw new NoSuchFieldException("OpCode does not match with this field");
+			throw new NoSuchFieldException("OpCode does not match with this field code 0xA");
 	}
 
 	/**
@@ -248,6 +272,14 @@ public class PeerMessage {
 				}
 				break;
 			}
+			case PeerMessageOps.TEST: {
+				try {
+					message.setTest(dis.readInt());
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+				break;
+			}
 
 			default:
 				System.err.println(
@@ -294,6 +326,10 @@ public class PeerMessage {
 				dos.writeUTF(this.getHash());
 				dos.writeLong(this.data.length);
 				dos.write(data);
+				break;
+			}
+			case PeerMessageOps.TEST: {
+				dos.writeInt(this.getTest());
 				break;
 			}
 

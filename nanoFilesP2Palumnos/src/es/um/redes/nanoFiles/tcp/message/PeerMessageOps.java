@@ -14,6 +14,10 @@ public class PeerMessageOps {
 	public static final byte OPCODE_DOWNLRES = 20;
 	
 	
+	//Codigo para probar el correcto envio y recepcion de información
+	public static final byte TEST = 30;
+	
+	
 	
 	//FIN SECUENCIA PARA EL ARRAY DE OPCIONES
 	public static final byte[] FINARRAY ="FIN_ARRAY".getBytes() ;
