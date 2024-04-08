@@ -205,7 +205,6 @@ public class NFControllerLogicDir {
 		InetSocketAddress serverAddr = null;
 
 
-
 		return serverAddr;
 	}
 
@@ -230,14 +229,20 @@ public class NFControllerLogicDir {
 		 * operación fracasa.
 		 */
 		if (serverNicknameOrSocketAddr.contains(":")) { // Then it has to be a socket address (IP:port)
-			/*
-			 * TODO: Extraer la dirección IP y el puerto de la cadena y devolver un
-			 * InetSocketAddress. Para convertir un string con la IP a un objeto InetAddress
-			 * se debe usar InetAddress.getByName()
-			 */
-
-
-
+			String[] partes = serverNicknameOrSocketAddr.split(":");
+			String ip = partes[0];
+			int port = Integer.parseInt(partes[1]);
+			try {
+				fserverAddr = new InetSocketAddress(InetAddress.getByName(ip),port);
+			} catch (UnknownHostException e) {
+				System.err.println(e.getMessage());
+				e.printStackTrace();
+			}
+																											/*
+																											 * Extraer la dirección IP y el puerto de la cadena y devolver un
+																											 * InetSocketAddress. Para convertir un string con la IP a un objeto InetAddress
+																											 * se debe usar InetAddress.getByName()
+																											 */
 		} else {
 			/*
 			 * TODO: Si es un nickname, preguntar al directorio la IP:puerto asociada a

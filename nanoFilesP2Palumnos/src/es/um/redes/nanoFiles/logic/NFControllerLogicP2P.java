@@ -5,8 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Random;
+
+import es.um.redes.nanoFiles.tcp.client.NFConnector;
+import es.um.redes.nanoFiles.tcp.server.NFServerSimple;
 
 
 
@@ -29,14 +33,22 @@ public class NFControllerLogicP2P {
 	 * 
 	 */
 	protected void foregroundServeFiles() {
-		/*
-		 * TODO: Crear objeto servidor NFServerSimple y ejecutarlo en primer plano.
-		 */
-		/*
-		 * TODO: Las excepciones que puedan lanzarse deben ser capturadas y tratadas en
-		 * este método. Si se produce una excepción de entrada/salida (error del que no
-		 * es posible recuperarse), se debe informar sin abortar el programa
-		 */
+																												/*
+																												 * Crear objeto servidor NFServerSimple y ejecutarlo en primer plano.
+																												 */
+		try {
+			NFServerSimple fgserver = new NFServerSimple();
+			fgserver.run();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("[fgserver] An error occurred, failed to communicate with directory");
+			System.exit(-1);
+		}
+																												/*
+																												 * Las excepciones que puedan lanzarse deben ser capturadas y tratadas en
+																												 * este método. Si se produce una excepción de entrada/salida (error del que no
+																												 * es posible recuperarse), se debe informar sin abortar el programa
+																												 */
 
 
 
@@ -76,26 +88,45 @@ public class NFControllerLogicP2P {
 	 * @param targetFileHash El hash del fichero a descargar
 	 * @param localFileName  El nombre con el que se guardará el fichero descargado
 	 */
-	protected boolean downloadFileFromSingleServer(InetSocketAddress fserverAddr, String targetFileHash,
-			String localFileName) {
+	protected boolean downloadFileFromSingleServer(InetSocketAddress fserverAddr, String targetFileHash,String localFileName) {
 		boolean result = false;
 		if (fserverAddr == null) {
 			System.err.println("* Cannot start download - No server address provided");
 			return false;
 		}
-		/*
-		 * TODO: Crear un objeto NFConnector para establecer la conexión con el peer
-		 * servidor de ficheros, y usarlo para descargar el fichero mediante su método
-		 * "downloadFile". Se debe comprobar previamente si ya existe un fichero con el
-		 * mismo nombre en esta máquina, en cuyo caso se informa y no se realiza la
-		 * descarga. Si todo va bien, imprimir mensaje informando de que se ha
-		 * completado la descarga.
-		 */
-		/*
-		 * TODO: Las excepciones que puedan lanzarse deben ser capturadas y tratadas en
-		 * este método. Si se produce una excepción de entrada/salida (error del que no
-		 * es posible recuperarse), se debe informar sin abortar el programa
-		 */
+																													/*
+																													 * Crear un objeto NFConnector para establecer la conexión con el peer
+																													 * servidor de ficheros, y usarlo para descargar el fichero mediante su método
+																													 * "downloadFile". Se debe comprobar previamente si ya existe un fichero con el
+																													 * mismo nombre en esta máquina, en cuyo caso se informa y no se realiza la
+																													 * descarga. Si todo va bien, imprimir mensaje informando de que se ha
+																													 * completado la descarga.
+																													 */
+		try {
+			NFConnector connector = new NFConnector(fserverAddr);
+			File f = new File(localFileName);
+			if(!f.exists()) {
+				f.createNewFile();
+				result =connector.downloadFile(targetFileHash, f);
+			}else {
+				System.err.println("[downl]the file already exist\ndownload cancelled");
+			}
+			if(result) {
+				System.out.println("[downl] download succeed");
+			}
+		} catch (UnknownHostException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			System.exit(-1);
+		}
+																														/*
+																														 * Las excepciones que puedan lanzarse deben ser capturadas y tratadas en
+																														 * este método. Si se produce una excepción de entrada/salida (error del que no
+																														 * es posible recuperarse), se debe informar sin abortar el programa
+																														 */
 
 
 

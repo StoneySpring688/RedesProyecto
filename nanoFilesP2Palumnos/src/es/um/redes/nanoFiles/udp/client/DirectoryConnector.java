@@ -26,7 +26,7 @@ public class DirectoryConnector {
 																		 * socket antes de que se deba lanzar una excepción SocketTimeoutException para
 																		 * recuperar el control
 																		 */
-	private static final int TIMEOUT = 999999999;//1000; 
+	private static final int TIMEOUT = 1000; //999999999;
 																		/**
 																		 * Número de intentos máximos para obtener del directorio una respuesta a una
 																		 * solicitud enviada. Cada vez que expira el timeout sin recibir respuesta se

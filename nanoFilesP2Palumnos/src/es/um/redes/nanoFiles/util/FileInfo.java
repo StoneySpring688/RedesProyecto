@@ -122,4 +122,7 @@ public class FileInfo {
 		matchingFiles.toArray(result);
 		return result;
 	}
+	public long getFileSize() { //añadido
+		return this.fileSize;
+	}
 }
