@@ -3,6 +3,7 @@ package es.um.redes.nanoFiles.tcp.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,9 +12,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import es.um.redes.nanoFiles.application.NanoFiles;
 import es.um.redes.nanoFiles.tcp.message.PeerMessage;
 import es.um.redes.nanoFiles.tcp.message.PeerMessageOps;
 import es.um.redes.nanoFiles.util.FileDigest;
+import es.um.redes.nanoFiles.util.FileInfo;
 
 //Esta clase proporciona la funcionalidad necesaria para intercambiar mensajes entre el cliente y el servidor
 public class NFConnector {
@@ -72,7 +75,46 @@ public class NFConnector {
 			downloaded = true;
 		}
 		*/
+		FileInfo[] fichs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), targetFileHashSubstr);
+		long tam = -1;
+		if(fichs.length >= 1) { // si hay más de uno se toma el primero y salta multiple options, no tiene impacto
+			tam = fichs[0].getFileSize(); 
+		}else {
+			System.err.println("no hash coincidence in database");
+			System.exit(1);
+		}
+		//System.out.println("[debug] fich tam "+ tam);
 		
+		PeerMessage p = PeerMessage.peerMessageDownload(targetFileHashSubstr, 0, tam);
+		p.writeMessageToOutputStream(dos);
+		PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
+		
+		if (msgFromServ.getOpcode() == PeerMessageOps.OPCODE_FNF) {
+			System.err.println("FileNotFound");
+		}
+		else if(msgFromServ.getOpcode() == PeerMessageOps.OPCODE_MO) {
+			System.err.println("MultipleOptions found : "+msgFromServ.getNOps()+ " options available");
+		}
+		else {
+			byte[] data = msgFromServ.getData();
+			try (FileOutputStream fos = new FileOutputStream(file)) {
+				fos.write(data);
+				downloaded = true;
+				fos.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			String hash1 = FileDigest.computeFileChecksumString(file.getName());
+			String hash2 = msgFromServ.getHash();
+			if(hash1.equals(hash2)) {
+				System.out.println("files are identical");
+			}else {
+				System.err.println("files are not identical");
+				System.out.println(hash1);
+				System.out.println(hash2);
+			}
+		}
 		/*
 		 * TODO: Construir objetos PeerMessage que modelen mensajes con los valores
 		 * adecuados en sus campos (atributos), según el protocolo diseñado, y enviarlos

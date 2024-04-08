@@ -48,12 +48,12 @@ public class PeerMessage {
 		return p;
 	}
 
-	public static PeerMessage peerMessageDownload(String h,String ho,int port, long i, long t) {
+	public static PeerMessage peerMessageDownload(String h, long i, long t) { //String ho,int port,
 		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_DOWNL);
 		try {
 			p.setHash(h);
-			p.setHost(ho);
-			p.setPort(port);
+			//p.setHost(ho);
+			//p.setPort(port);
 			p.setInit(i);
 			p.setTam(t);
 		} catch (NoSuchFieldException e) {
@@ -239,8 +239,8 @@ public class PeerMessage {
 			case PeerMessageOps.OPCODE_DOWNL: {
 				try {
 					message.setHash(dis.readUTF());
-					message.setHost(dis.readUTF());
-					message.setPort(dis.readInt());
+					//message.setHost(dis.readUTF());
+					//message.setPort(dis.readInt());
 					message.setInit(dis.readLong());
 					message.setTam(dis.readLong());
 				} catch (NoSuchFieldException e) {
@@ -308,8 +308,8 @@ public class PeerMessage {
 			switch (this.opcode) {
 			case PeerMessageOps.OPCODE_DOWNL: {
 				dos.writeUTF(this.getHash());
-				dos.writeUTF(this.getHost());
-				dos.writeInt(this.getPort());
+				//dos.writeUTF(this.getHost());
+				//dos.writeInt(this.getPort());
 				dos.writeLong(this.getInit());
 				dos.writeLong(this.getTam());
 				break;
