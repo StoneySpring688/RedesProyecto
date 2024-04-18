@@ -61,6 +61,20 @@ port : ("Integer")
 operation : registerFileok
 
 
+#lookupServAdr
+
+operation : lookupServAdr
+key : ("Integer")
+nick : ("String")
+
+
+#lookupSerAdrok
+
+operation : lookupServAdrok
+port : ("Integer")
+ip : ("String")
+
+
 #error
 
 operation : error
