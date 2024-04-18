@@ -56,6 +56,10 @@ key : ("Integer")
 port : ("Integer")
 
 
+#regsiterFileok
+
+operation : registerFileok
+
 
 #error
 
