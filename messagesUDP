@@ -68,7 +68,7 @@ key : ("Integer")
 nick : ("String")
 
 
-#lookupSerAdrok
+#lookupServAdrok
 
 operation : lookupServAdrok
 port : ("Integer")
