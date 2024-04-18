@@ -48,6 +48,12 @@ operation  : updateinfo
 key : ("Integer")
 hash : ("String")
 
+#registerFileServer
+
+operation : registerfileserver
+key : ("Integer")
+port : ("Integer")
+
 
 
 #error
