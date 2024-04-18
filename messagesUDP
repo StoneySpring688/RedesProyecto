@@ -53,7 +53,7 @@ hash : ("String")
 
 operation : registerfileserver
 key : ("Integer")
-port : ("Integer")
+port : ("Integer") // este campo utiliza también un campo key, ya que también es un entero, aunque luego sea otra variable
 
 
 
