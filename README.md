@@ -39,7 +39,7 @@ en la terminal introducir uno de los comandos:
 - uso : downloadfrom DIRECCION:PUERTO HASH FILENAME
 
 ### fgserve & bgserve
-- hay dos comandos paara establecer un servidor de ficheros :
+- hay dos comandos para establecer un servidor de ficheros :
 #### fgserve
 - establece un servidor de ficheros en primer plano, tras eso no podrá utilizarse la consola de comandos
 #### bgserve
