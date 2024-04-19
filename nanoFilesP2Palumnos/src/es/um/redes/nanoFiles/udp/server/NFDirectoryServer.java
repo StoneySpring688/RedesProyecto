@@ -40,8 +40,8 @@ public class NFDirectoryServer {
 																		 * funcionalidad del sistema nanoFilesP2P: ficheros publicados, servidores
 																		 * registrados, etc.
 																		 */
-	private static volatile LinkedList<String> peerServers = new LinkedList<String>(); //luego será una variable compartida a varios hilos de servidor
-	
+	private HashMap<String, Integer> peerServerPort = new HashMap<String, Integer>();
+	private HashMap<String,InetSocketAddress> peerServeDir  = new HashMap<String,InetSocketAddress>();
 	
 																		/**
 																		 * Generador de claves de sesión aleatorias (sessionKeys)
@@ -279,13 +279,27 @@ public class NFDirectoryServer {
 			if(this.sessionKeys.containsKey(msg.getKey())) {
 				response = DirMessage.confirmationMessageListOk();
 				for(String s : nicks.keySet()) {
-					response.setPeers(s, NFDirectoryServer.peerServers.contains(s));
+					response.setPeers(s, this.peerServerPort.keySet().contains(s));
 				}
 				//System.out.println("msg enviado : "+response.toString());
 			}else {
 				response = DirMessage.errorMessage(DirMessageOps.OPERATION_LISTFAILED);
 			}
 			break;
+		}
+		case DirMessageOps.OPERATION_REGISTER_FILESERVER: {
+			int key = msg.getKey();
+			int port = msg.getPort();
+			String nick = this.sessionKeys.get(key);
+			//System.out.println("el nick que añade es : " + nick);
+			this.peerServerPort.put(nick,port);
+			this.peerServeDir.put(nick, clientAddr);
+			response = DirMessage.registerFileServeOk();
+			break;
+		}
+		case DirMessageOps.OPERATION_LOOKUP_SERVADR : {
+			String nick = msg.getNickname();
+			InetSocketAddress ip = this.peerServeDir.get(msg.getNickname()).getAddress().get;
 		}
 		default:
 			System.out.println("Unexpected message operation: \"" + msg.getOperation() + "\"");

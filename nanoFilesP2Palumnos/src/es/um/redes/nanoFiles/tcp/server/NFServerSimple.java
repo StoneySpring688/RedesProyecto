@@ -46,7 +46,7 @@ public class NFServerSimple {
 			System.out.println("[socket] ok");
 		}
 																																		/*
-																																		 * TODO: Usar el socket servidor para esperar conexiones de otros peers que
+																																		 * Usar el socket servidor para esperar conexiones de otros peers que
 																																		 * soliciten descargar ficheros
 																																		 */
 		while(true){

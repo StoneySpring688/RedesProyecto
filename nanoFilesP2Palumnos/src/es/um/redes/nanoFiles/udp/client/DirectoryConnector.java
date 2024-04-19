@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import es.um.redes.nanoFiles.udp.message.DirMessage;
@@ -290,11 +291,17 @@ public class DirectoryConnector {
 	 *         servidor.
 	 */
 	public boolean registerServerPort(int serverPort) {
-		// TODO: Ver TODOs en logIntoDirectory y seguir esquema similar
+																														// Ver TODOs en logIntoDirectory y seguir esquema similar
 		boolean success = false;
-
-
-
+		DirMessage msg = DirMessage.registerFileServer(this.sessionKey, serverPort);
+		String msgToServe = msg.toString();
+		//System.out.println(msgToServe);
+		byte[] byteBuff = msgToServe.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String recived = new String(byteDataRecived,0,byteDataRecived.length);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		String confirmation = recivedDir.getOperation();
+		if(confirmation.matches(DirMessageOps.OPERATION_REGISTERFILESERVEROK)) success = true;
 		return success;
 	}
 
@@ -309,8 +316,23 @@ public class DirectoryConnector {
 	 */
 	public InetSocketAddress lookupServerAddrByUsername(String nick) {
 		InetSocketAddress serverAddr = null;
-		// TODO: Ver TODOs en logIntoDirectory y seguir esquema similar
-
+																														// Ver TODOs en logIntoDirectory y seguir esquema similar
+		DirMessage msg = DirMessage.lookupServAdr(this.sessionKey, nick);
+		String msgToServe = msg.toString();
+		System.out.println(msgToServe);
+		byte[] byteBuff = msgToServe.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String recived = new String(byteDataRecived,0,byteDataRecived.length);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		int port = recivedDir.getPort();
+		String ip = recivedDir.getIp();
+		System.out.println("ip : "+ ip + "port : "+ port);
+		try {
+			serverAddr = new InetSocketAddress(InetAddress.getByName(ip),port);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
 
 
 		return serverAddr;

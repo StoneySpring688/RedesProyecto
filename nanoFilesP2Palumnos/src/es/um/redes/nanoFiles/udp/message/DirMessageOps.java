@@ -14,6 +14,8 @@ public class DirMessageOps {
 	public static final String OPERATION_CONFIRMATION = "confirmation";
 	public static final String OPERATION_LOGOUT = "logout";
 	public static final String OPERATION_USERLIST = "user_list";
+	public static final String OPERATION_REGISTER_FILESERVER = "registerfileserver";
+	public static final String OPERATION_LOOKUP_SERVADR = "lookupservadr";
 	
 	//codes
 	public static final String OPERATION_LOGINFAILED = "login_failed";
@@ -22,6 +24,8 @@ public class DirMessageOps {
 	public static final String OPERATION_LOGINOK = "loginok";
 	public static final String OPERATION_LOGOUTOK = "logoutok";
 	public static final String OPERATION_LISTOK = "listok";
+	public static final String OPERATION_REGISTERFILESERVEROK = "registerfileserverok";
+	public static final String OPERATION_LOOKUPSERVADROK = "lookupservadrok";
 
 
 
