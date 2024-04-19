@@ -49,6 +49,31 @@ key : ("Integer")
 hash : ("String")
 
 
+#registerFileServer
+
+operation : registerfileserver
+key : ("Integer")
+port : ("Integer")
+
+
+#regsiterFileok
+
+operation : registerFileok
+
+
+#lookupServAdr
+
+operation : lookupServAdr
+key : ("Integer")
+nick : ("String")
+
+
+#lookupServAdrok
+
+operation : lookupServAdrok
+port : ("Integer")
+ip : ("String")
+
 
 #error
 
