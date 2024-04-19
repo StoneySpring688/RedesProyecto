@@ -12,6 +12,7 @@ ficheros
 - logout
 - userlist
 - downloadfrom
+- fgserve & bgserve
 
 ## Documentation
 
@@ -36,6 +37,13 @@ en la terminal introducir uno de los comandos:
 - primera forma de uso : DIRECCION:PUERTO
   si se conoce la dirección y el puerto de el servidor de ficheros se puede efectuar la descarga con ellos
 - uso : downloadfrom DIRECCION:PUERTO HASH FILENAME
+
+### fgserve & bgserve
+- hay dos comandos paara establecer un servidor de ficheros :
+#### fgserve
+- establece un servidor de ficheros en primer plano, tras eso no podrá utilizarse la consola de comandos
+#### bgserve
+- establece un servidor de ficheros en segundo plano, lo que permite seguir utilizando la consola de comandos
 
 
 ## Software empleado
