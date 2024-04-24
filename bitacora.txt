@@ -167,4 +167,4 @@ complicaciones :
   excepciones y tratarlas, el tratamiento se ha  realizado  mediante un nuevo método protected en ControllerlogicDir y usando el estado de login actual en NFController
 
 pendiente :
-- implementar el comando stopserver para poder terminar la ejecucion del servidor de fuicheros, este también deberá dar de baja el servidor de ficheros de el servidor de directorios
+- implementar el comando stopserver para poder terminar la ejecucion del servidor de ficheros, este también deberá dar de baja el servidor de ficheros de el servidor de directorios
