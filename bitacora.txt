@@ -150,3 +150,21 @@ pendiente :
   de esta forma se  pueden almacenar distintos hash en un mismo array de bytes y diferenciarlo, ya que las probabilidades de que un hash  coincida justo con la codificación de la cadena FINARRAY deberían ser
   cercanas a cero.
   La funcionalidad pendiente de implementar consiste en dado ese arrya, separar un hash del resto de la cadena, imprimirlo y así sucesivamente mientras quede algún hash sin imprimir por pantalla.
+
+
+
+-----24-04-2024 17:08 (StoneySpring):
+cambios :
+- se añadieron algunas restricciones, hacer login antes de realizar algunas operaciones
+- se implemento la descarga de ficheros por nick para un servidor en primer plano
+- se mejoró el comando userlist, para listar que pares son servidores y cuales no
+- se mejoró el comando fgserve para elegir un  puerto libre, al azar, si el puerto por defecto está en uso
+
+complicaciones :
+- para la descraga por nick al usar fgserve fue necesario hacer un hilo que s encargue de dar de alta el servidor de ficheros, ya que el hilo principal se queda "parado" con el servidor en primer plano
+- para la mejora del comando userlist fue necesario combinar tanto un array de nicks como un array de estados
+- las restricciones presentaron pocas complicaciones, su principal uso es evitar que el programa termine por una excepción que se pueda tratar, aun falta encontrar más de estas
+  excepciones y tratarlas, el tratamiento se ha  realizado  mediante un nuevo método protected en ControllerlogicDir y usando el estado de login actual en NFController
+
+pendiente :
+- implementar el comando stopserver para poder terminar la ejecucion del servidor de ficheros, este también deberá dar de baja el servidor de ficheros de el servidor de directorios
