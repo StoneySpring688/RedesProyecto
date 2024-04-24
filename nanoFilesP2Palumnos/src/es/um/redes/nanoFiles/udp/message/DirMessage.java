@@ -165,7 +165,11 @@ public class DirMessage {
 		return this.port;
 	}
 	public String[] getPeers(){
-		return  this.peers.keySet().toArray(new String[this.peers.keySet().size()]);
+		return this.peers.keySet().toArray(new String[this.peers.keySet().size()]);
+		
+	}
+	public Boolean[] getIsServer() {
+		return this.peers.values().toArray(new Boolean[this.peers.values().size()]);
 	}
 
 

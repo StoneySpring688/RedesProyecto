@@ -21,6 +21,7 @@ public class DirMessageOps {
 	public static final String OPERATION_LOGINFAILED = "login_failed";
 	public static final String OPERATION_LOGOUTFAILED = "logout_failed";
 	public static final String OPERATION_LISTFAILED = "list_failed";
+	public static final String OPERATION_LOOKUPSERVADRFAILED = "lookupservadr_failed"; 
 	public static final String OPERATION_LOGINOK = "loginok";
 	public static final String OPERATION_LOGOUTOK = "logoutok";
 	public static final String OPERATION_LISTOK = "listok";

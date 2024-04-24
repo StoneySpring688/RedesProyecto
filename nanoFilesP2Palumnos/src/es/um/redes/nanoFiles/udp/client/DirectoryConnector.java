@@ -249,7 +249,14 @@ public class DirectoryConnector {
 		if(recivedDir.getCode().equals(DirMessageOps.OPERATION_LISTFAILED)) {
 			System.err.println("Failed getting userlist");
 		}else {
-			userlist = recivedDir.getPeers();
+			//userlist = recivedDir.getPeers();
+			String[] peers = recivedDir.getPeers();
+			Boolean[] isServer = recivedDir.getIsServer();
+			userlist = new String[peers.length * 2];
+			for(int i = 0; i < peers.length; i++) {
+				userlist[i*2] = peers[i];
+				userlist[i*2+1] = isServer[i].toString();
+			}
 			//for(String s : userlist) System.out.println("Peer : "+ s);
 		}
 
@@ -319,22 +326,24 @@ public class DirectoryConnector {
 																														// Ver TODOs en logIntoDirectory y seguir esquema similar
 		DirMessage msg = DirMessage.lookupServAdr(this.sessionKey, nick);
 		String msgToServe = msg.toString();
-		System.out.println(msgToServe);
+		//System.out.println(msgToServe);
 		byte[] byteBuff = msgToServe.getBytes();
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String recived = new String(byteDataRecived,0,byteDataRecived.length);
 		DirMessage recivedDir = DirMessage.fromString(recived);
-		int port = recivedDir.getPort();
-		String ip = recivedDir.getIp();
-		System.out.println("ip : "+ ip + "port : "+ port);
-		try {
-			serverAddr = new InetSocketAddress(InetAddress.getByName(ip),port);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+		//System.out.println(recivedDir.getOperation());
+		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_LOOKUPSERVADROK)) {
+			int port = recivedDir.getPort();
+			String ip = recivedDir.getIp();
+			//System.out.println("ip : "+ ip + "port : "+ port);
+			try {
+				serverAddr = new InetSocketAddress(InetAddress.getByName(ip),port);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+		}else if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_ERROR)) {
+			System.err.println("[warning] user not found");
 		}
-		
-
-
 		return serverAddr;
 	}
 
@@ -391,7 +400,10 @@ public class DirectoryConnector {
 
 		return nicklist;
 	}
-
+	//@return devuelve un booleano como true, esto  sirve para ver si directory connector está  iniciado
+	public boolean test () {
+		return true;
+	}
 
 
 

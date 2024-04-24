@@ -279,6 +279,8 @@ public class NFDirectoryServer {
 			if(this.sessionKeys.containsKey(msg.getKey())) {
 				response = DirMessage.confirmationMessageListOk();
 				for(String s : nicks.keySet()) {
+					System.out.println(s);
+					System.out.println(this.peerServerPort.keySet().contains(s));
 					response.setPeers(s, this.peerServerPort.keySet().contains(s));
 				}
 				//System.out.println("msg enviado : "+response.toString());
@@ -299,7 +301,15 @@ public class NFDirectoryServer {
 		}
 		case DirMessageOps.OPERATION_LOOKUP_SERVADR : {
 			String nick = msg.getNickname();
-			InetSocketAddress ip = this.peerServeDir.get(msg.getNickname()).getAddress().get;
+			if(this.peerServeDir.containsKey(nick) && this.peerServerPort.containsKey(nick) ) {
+				InetSocketAddress ipInetSocket = this.peerServeDir.get(nick);
+				String ip = ipInetSocket.getHostString();
+				int port = this.peerServerPort.get(nick);
+				response = DirMessage.lookupServAdrOk(port, ip);
+			}else {
+				response = DirMessage.errorMessage(DirMessageOps.OPERATION_LOOKUPSERVADRFAILED);
+			}	
+			break;
 		}
 		default:
 			System.out.println("Unexpected message operation: \"" + msg.getOperation() + "\"");

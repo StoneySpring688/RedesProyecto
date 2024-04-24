@@ -23,7 +23,9 @@ public class NFControllerLogicP2P {
 																										 * servidor de ficheros en segundo plano de este peer
 																										 */
 	NFServer server = null;
-
+	NFServerSimple fgserv = null;
+	boolean fgstatus = false;																			// para poder dar de alta el servidor de ficheros fg
+																										// hace falta saber si está funcionando correctamente
 
 
 
@@ -34,13 +36,27 @@ public class NFControllerLogicP2P {
 	 * Método para arrancar un servidor de ficheros en primer plano.
 	 * 
 	 */
-	protected void foregroundServeFiles() {
+	protected void foregroundServeFiles(NFControllerLogicDir nfld, NFControllerLogicP2P  nflp) {
 																												/*
 																												 * Crear objeto servidor NFServerSimple y ejecutarlo en primer plano.
+		
 																												 */
+		if(this.server != null) {
+			System.err.println("[fgserve] An error ocurred, a server is already running");
+		}
 		try {
-			NFServerSimple fgserver = new NFServerSimple();
-			fgserver.run();
+			this.fgserv = new NFServerSimple();
+			int port =this.fgserv.getListeningPort();
+			if(port<=0) {
+				System.err.println("[fgserve] An error ocurred, invalid port");
+				System.exit(-1);
+			}else {
+				System.out.println("[fgserve] ok " + port);
+				this.fgstatus = true;
+			}
+			ControllerThread ct = new ControllerThread(nfld, nflp);
+			ct.start();
+			this.fgserv.run();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("[fgserve] An error occurred, failed to communicate with directory");
@@ -208,6 +224,16 @@ public class NFControllerLogicP2P {
 
 		return port;
 	}
+	
+	//metodo para obtener el  puerto de escucha del fgserver
+	
+	public int getFgServerPort() {
+		int port = 0;
+		if(this.fgserv != null) {
+			port = this.fgserv.getListeningPort();
+		}
+		return port;
+	}
 
 	/**
 	 * Método para detener nuestro servidor de ficheros en segundo plano
@@ -224,6 +250,10 @@ public class NFControllerLogicP2P {
 
 
 
+	}
+	
+	protected boolean getFgStatus() {
+		return this.fgstatus;
 	}
 
 }
