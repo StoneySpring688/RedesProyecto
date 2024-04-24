@@ -44,8 +44,10 @@ public class DirMessage {
 																												 * diferentes mensajes de este protocolo.
 																												 */
 	private String nickname;
+	private String ip;
 	private String code;
 	private int key;
+	private int port;
 	private HashMap<String, Boolean> peers;
 	
 	
@@ -66,6 +68,28 @@ public class DirMessage {
 	public static DirMessage userListMessage(int key){
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_USERLIST);
 		m.setKey(key);
+		return m;
+	}
+	public static DirMessage registerFileServer(int key,int port) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_REGISTER_FILESERVER);
+		m.setKey(key);
+		m.setPort(port);
+		return m;
+	}
+	public static DirMessage lookupServAdr(int key,String nick) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOOKUP_SERVADR);
+		m.setKey(key);
+		m.setNickname(nick);
+		return m;
+	}
+	public static DirMessage lookupServAdrOk(int port,String ip) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOOKUPSERVADROK);
+		m.setPort(port);
+		m.setIp(ip);
+		return m;
+	}
+	public static DirMessage registerFileServeOk() {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_REGISTERFILESERVEROK);
 		return m;
 	}
 	public static DirMessage errorMessage(String code) {
@@ -108,8 +132,14 @@ public class DirMessage {
 	public void setNickname(String nick) {
 		nickname = nick;
 	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
 	public void setKey(int key) {
 		this.key = key;
+	}
+	public void setPort(int port) {
+		this.port = port;
 	}
 	public void setPeers(String peer, Boolean isServer) {
 		this.peers.put(peer, isServer);
@@ -122,14 +152,24 @@ public class DirMessage {
 	public String getNickname() {
 		return nickname;
 	}
+	public String getIp() {
+		return this.ip;
+	}
 	public String getCode() {
 		return this.code;
 	}
 	public int getKey() {
 		return this.key;
 	}
+	public int getPort() {
+		return this.port;
+	}
 	public String[] getPeers(){
-		return  this.peers.keySet().toArray(new String[this.peers.keySet().size()]);
+		return this.peers.keySet().toArray(new String[this.peers.keySet().size()]);
+		
+	}
+	public Boolean[] getIsServer() {
+		return this.peers.values().toArray(new Boolean[this.peers.values().size()]);
 	}
 
 
@@ -176,12 +216,20 @@ public class DirMessage {
 					m.setNickname(val);
 					break;
 				}
+				case DirMessageField.FIELDNAME_IP:{
+					m.setIp(val);
+					break;
+				}
 				case DirMessageField.FIELDNAME_CODE:{
 					m.setCode(val);
 					break;
 				}
-				case DirMessageField.FIELDNAME_KEY:{
+				case DirMessageField.FIELDNAME_KEY:{ 
 					m.setKey(Integer.parseInt(val));
+					break;
+				}
+				case DirMessageField.FIELDNAME_PORT:{
+					m.setPort(Integer.parseInt(val));
 					break;
 				}
 				case DirMessageField.FIELDNAME_USER:{
@@ -226,7 +274,6 @@ public class DirMessage {
 																												 * concatenar el resto de campos necesarios usando los valores de los atributos
 																												 * del objeto.
 																												 */
-//PROBAR A QUITAR LOS BREAK
 		StringBuffer sb = new StringBuffer();
 		sb.append(DirMessageField.FIELDNAME_OPERATION + DELIMITER + operation + END_LINE); // Construimos el campo
 		
@@ -243,8 +290,23 @@ public class DirMessage {
 			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE); //mensaje del tipo userList
 			break;
 		}
+		case DirMessageOps.OPERATION_REGISTER_FILESERVER :{
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE + DirMessageField.FIELDNAME_PORT + DELIMITER + port +END_LINE );
+			break;
+		}
 		case DirMessageOps.OPERATION_ERROR: {
 			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de error
+			break;
+		}
+		case DirMessageOps.OPERATION_LOOKUP_SERVADR : {
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE + DirMessageField.FIELDNAME_NICK + DELIMITER + nickname + END_LINE);
+			break;
+		}
+		case DirMessageOps.OPERATION_REGISTERFILESERVEROK :{
+			break; //no tiene más informacion a parte del codigo
+		}
+		case DirMessageOps.OPERATION_LOOKUPSERVADROK :{
+			sb.append(DirMessageField.FIELDNAME_PORT + DELIMITER + port + END_LINE + DirMessageField.FIELDNAME_IP + DELIMITER + ip + END_LINE);
 			break;
 		}
 		case DirMessageOps.OPERATION_CONFIRMATION: {

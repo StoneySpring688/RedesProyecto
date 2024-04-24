@@ -122,7 +122,13 @@ public class NFController {
 			 * Pedir al controllerDir que obtenga del directorio la lista de nicknames
 			 * registrados, y la muestre por pantalla (método getAndPrintUserList)
 			 */
-			commandSucceeded = controllerDir.getAndPrintUserList();
+			boolean logged2 = false;
+			logged2 = this.controllerDir.test();
+			if(logged2 && this.currentState == LOGGED_IN) {
+				commandSucceeded = controllerDir.getAndPrintUserList();
+			}else {
+				System.err.println("[warning] you must login first");
+			}
 			break;
 		case NFCommands.COM_FILELIST:
 			/*
@@ -137,7 +143,17 @@ public class NFController {
 			 * Pedir al controllerPeer que lance un servidor de ficheros en primer plano
 			 * (método foregroundServeFiles). Este método no retorna...
 			 */
-			controllerPeer.foregroundServeFiles();
+			boolean logged4 = false;
+			logged4 = this.controllerDir.test();
+			if(logged4 && this.currentState == LOGGED_IN) {
+				controllerPeer.foregroundServeFiles(this.controllerDir,this.controllerPeer);
+				/*if (this.controllerPeer.getFgStatus()) {
+					commandSucceeded = controllerDir.registerFileServer(controllerPeer.getFgServerPort());
+				} esto lo hace un hilo de la clase ControllerThread, ya que el  programa se queda "bloqueado" con fgserve*/
+			}else {
+				System.err.println("[warning] you must login first");
+			}
+			
 			break;
 		case NFCommands.COM_PUBLISH:
 			/*
@@ -155,10 +171,18 @@ public class NFController {
 			 * ficheros en el directorio, indicando el puerto en el que nuestro servidor
 			 * escucha conexiones de otros peers (método registerFileServer).
 			 */
-			boolean serverRunning = controllerPeer.backgroundServeFiles();
-			if (serverRunning) {
-				commandSucceeded = controllerDir.registerFileServer(controllerPeer.getServerPort());
+			
+			boolean logged1 = false;
+			logged1 = this.controllerDir.test();
+			if(logged1 && this.currentState == LOGGED_IN) {
+				boolean serverRunning = controllerPeer.backgroundServeFiles();
+				if (serverRunning) {
+					commandSucceeded = controllerDir.registerFileServer(controllerPeer.getServerPort());
+				}
+			}else {
+				System.err.println("[warning] you must login first");
 			}
+			
 			break;
 		case NFCommands.COM_STOP_SERVER:
 			/*
@@ -181,8 +205,14 @@ public class NFController {
 																																 * al comando) y lo guarde con el nombre indicado en downloadLocalFileName (3er
 																																 * argumento)
 																																 */
-			InetSocketAddress serverAddr = controllerDir.getServerAddress(downloadTargetServer);
-			commandSucceeded = controllerPeer.downloadFileFromSingleServer(serverAddr, downloadTargetFileHash, downloadLocalFileName);
+			boolean logged3 = false;
+			logged3 = this.controllerDir.test();
+			if(logged3 && this.currentState == LOGGED_IN) {
+				InetSocketAddress serverAddr = controllerDir.getServerAddress(downloadTargetServer);
+				commandSucceeded = controllerPeer.downloadFileFromSingleServer(serverAddr, downloadTargetFileHash, downloadLocalFileName);
+			}else {
+				System.err.println("[warning] you must login first");
+			}
 			break;
 		case NFCommands.COM_SEARCH:
 			/*

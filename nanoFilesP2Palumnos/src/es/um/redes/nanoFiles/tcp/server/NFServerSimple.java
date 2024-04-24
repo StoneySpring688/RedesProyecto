@@ -17,8 +17,13 @@ public class NFServerSimple {
 
 	public NFServerSimple() throws IOException {
 		
-		InetSocketAddress servAd = new InetSocketAddress(NFServerSimple.PORT);
+		
 		try {
+			InetSocketAddress servAd = new InetSocketAddress(NFServerSimple.PORT);
+			this.serverSocket = new ServerSocket();
+			this.serverSocket.bind(servAd);
+		}catch(java.net.BindException e){
+			InetSocketAddress servAd = new InetSocketAddress(0);
 			this.serverSocket = new ServerSocket();
 			this.serverSocket.bind(servAd);
 		} catch (Exception e) {
@@ -46,7 +51,7 @@ public class NFServerSimple {
 			System.out.println("[socket] ok");
 		}
 																																		/*
-																																		 * TODO: Usar el socket servidor para esperar conexiones de otros peers que
+																																		 * Usar el socket servidor para esperar conexiones de otros peers que
 																																		 * soliciten descargar ficheros
 																																		 */
 		while(true){
@@ -71,4 +76,11 @@ public class NFServerSimple {
 
 		//TODO System.out.println("NFServerSimple stopped. Returning to the nanoFiles shell...");
 	}
+	
+	public int getListeningPort() {
+		int puerto = this.serverSocket.getLocalPort();
+	    //System.out.println("Servidor escuchando en el puerto " + puerto);
+	    return puerto;
+	}
+	
 }

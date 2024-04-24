@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import es.um.redes.nanoFiles.tcp.client.NFConnector;
+import es.um.redes.nanoFiles.tcp.server.NFServer;
 import es.um.redes.nanoFiles.tcp.server.NFServerSimple;
 
 
@@ -17,11 +18,14 @@ import es.um.redes.nanoFiles.tcp.server.NFServerSimple;
 
 
 public class NFControllerLogicP2P {
-	/*
-	 * TODO: Para bgserve, se necesita un atributo NFServer que actuará como
-	 * servidor de ficheros en segundo plano de este peer
-	 */
-
+																										/*
+																										 * Para bgserve, se necesita un atributo NFServer que actuará como
+																										 * servidor de ficheros en segundo plano de este peer
+																										 */
+	NFServer server = null;
+	NFServerSimple fgserv = null;
+	boolean fgstatus = false;																			// para poder dar de alta el servidor de ficheros fg
+																										// hace falta saber si está funcionando correctamente
 
 
 
@@ -32,16 +36,30 @@ public class NFControllerLogicP2P {
 	 * Método para arrancar un servidor de ficheros en primer plano.
 	 * 
 	 */
-	protected void foregroundServeFiles() {
+	protected void foregroundServeFiles(NFControllerLogicDir nfld, NFControllerLogicP2P  nflp) {
 																												/*
 																												 * Crear objeto servidor NFServerSimple y ejecutarlo en primer plano.
+		
 																												 */
+		if(this.server != null) {
+			System.err.println("[fgserve] An error ocurred, a server is already running");
+		}
 		try {
-			NFServerSimple fgserver = new NFServerSimple();
-			fgserver.run();
+			this.fgserv = new NFServerSimple();
+			int port =this.fgserv.getListeningPort();
+			if(port<=0) {
+				System.err.println("[fgserve] An error ocurred, invalid port");
+				System.exit(-1);
+			}else {
+				System.out.println("[fgserve] ok " + port);
+				this.fgstatus = true;
+			}
+			ControllerThread ct = new ControllerThread(nfld, nflp);
+			ct.start();
+			this.fgserv.run();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("[fgserver] An error occurred, failed to communicate with directory");
+			System.err.println("[fgserve] An error occurred, failed to communicate with directory");
 			System.exit(-1);
 		}
 																												/*
@@ -64,14 +82,32 @@ public class NFControllerLogicP2P {
 	 */
 	protected boolean backgroundServeFiles() {
 		/*
-		 * TODO: Comprobar que no existe ya un objeto NFServer previamente creado, en
+		 * Comprobar que no existe ya un objeto NFServer previamente creado, en
 		 * cuyo caso el servidor ya está en marcha. Si no lo está, crear objeto servidor
 		 * NFServer y arrancarlo en segundo plano creando un nuevo hilo. Finalmente,
 		 * comprobar que el servidor está escuchando en un puerto válido (>0) e imprimir
 		 * mensaje informando sobre el puerto, y devolver verdadero.
 		 */
+		if(this.server != null) {
+			System.err.println("[bgserve] An error ocurred, a server is already running");
+		}else {
+			try {
+				this.server = new NFServer();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			this.server.runServer();
+			int port =this.server.getListeningPort();
+			if(port<=0) {
+				System.err.println("[bgserve] An error ocurred, invalid port");
+				System.exit(-1);
+			}else {
+				System.out.println("[bgserve] ok " + port);
+				return true;
+			}
+		}
 		/*
-		 * TODO: Las excepciones que puedan lanzarse deben ser capturadas y tratadas en
+		 * Las excepciones que puedan lanzarse deben ser capturadas y tratadas en
 		 * este método. Si se produce una excepción de entrada/salida (error del que no
 		 * es posible recuperarse), se debe informar sin abortar el programa
 		 */
@@ -176,13 +212,26 @@ public class NFControllerLogicP2P {
 	 */
 	public int getServerPort() {
 		int port = 0;
+		if(this.server!=null) {
+			port=this.server.getListeningPort();
+		}
 		/*
-		 * TODO: Devolver el puerto de escucha de nuestro servidor de ficheros en
+		 * Devolver el puerto de escucha de nuestro servidor de ficheros en
 		 * segundo plano
 		 */
 
 
 
+		return port;
+	}
+	
+	//metodo para obtener el  puerto de escucha del fgserver
+	
+	public int getFgServerPort() {
+		int port = 0;
+		if(this.fgserv != null) {
+			port = this.fgserv.getListeningPort();
+		}
 		return port;
 	}
 
@@ -191,12 +240,20 @@ public class NFControllerLogicP2P {
 	 * 
 	 */
 	public void stopBackgroundFileServer() {
+		if(this.server!=null) {
+			this.server.stopServer();
+		}
+		
 		/*
-		 * TODO: Enviar señal para detener nuestro servidor de ficheros en segundo plano
+		 * Enviar señal para detener nuestro servidor de ficheros en segundo plano
 		 */
 
 
 
+	}
+	
+	protected boolean getFgStatus() {
+		return this.fgstatus;
 	}
 
 }
