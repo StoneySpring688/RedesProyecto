@@ -149,9 +149,9 @@ pendiente :
   hash1 + FIN_ARRAY + hash2 + FIN_ARRAY ...
   de esta forma se  pueden almacenar distintos hash en un mismo array de bytes y diferenciarlo, ya que las probabilidades de que un hash  coincida justo con la codificación de la cadena FINARRAY deberían ser
   cercanas a cero.
-  La funcionalidad pendiente de implementar consiste en dado ese arrya, separar un hash del resto de la cadena, imprimirlo y así sucesivamente mientras quede algún hash sin imprimir por pantalla.
+  La funcionalidad pendiente de implementar consiste en dado ese array, separar un hash del resto de la cadena, imprimirlo y así sucesivamente mientras quede algún hash sin imprimir por pantalla.
 
-
+ 
 
 -----24-04-2024 17:08 (StoneySpring):
 cambios :
