@@ -74,9 +74,8 @@ public class NFServerComm {
 				for(FileInfo f : fichs) {
 					byte[] a = f.fileHash.getBytes();
 					try {
-						os.write(a);
+						os.write(a); // nos aprovechamos de que el hash tiene un tamaño de 40 caracteres (suposición en base a ver que la longitud de los hash era constante)
 						nops++;
-						os.write(PeerMessageOps.FINARRAY);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

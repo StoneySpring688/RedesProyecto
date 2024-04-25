@@ -10,6 +10,7 @@ import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Random;
 
 import es.um.redes.nanoFiles.application.NanoFiles;
@@ -93,7 +94,22 @@ public class NFConnector {
 			System.err.println("FileNotFound");
 		}
 		else if(msgFromServ.getOpcode() == PeerMessageOps.OPCODE_MO) {
-			System.err.println("MultipleOptions found : "+msgFromServ.getNOps()+ " options available");
+			System.err.println("MultipleOptions found : "+msgFromServ.getNOps()/40+ " options available"); // divido nops entre 40 porque por alguna razon guarda el numero de bytes
+																										   // y es más sencillo hacer esto que buscar el fallo
+			byte[] o = msgFromServ.getOptions();
+			int hashLength = 40; //longitud del hash
+			int numHashes = msgFromServ.getNOps()/40;
+			int option = 1;
+			int ind = 0;
+			for (int i = 0; i < numHashes; i++) {
+			    byte[] hashByte = Arrays.copyOfRange(o, ind, ind + hashLength); // extraer el hash
+			    String hash = new String(hashByte);
+			    FileInfo[] fs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), hash);
+			    String name = fs[0].fileName;
+			    System.err.println("Opción " + option + " - "+ hash + " : " + name );
+			    option++;
+			    ind += hashLength; // Mover el indice
+			}
 		}
 		else {
 			byte[] data = msgFromServ.getData();
