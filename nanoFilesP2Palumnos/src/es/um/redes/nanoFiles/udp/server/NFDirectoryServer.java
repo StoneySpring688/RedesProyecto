@@ -40,8 +40,12 @@ public class NFDirectoryServer {
 																		 * funcionalidad del sistema nanoFilesP2P: ficheros publicados, servidores
 																		 * registrados, etc.
 																		 */
+	// estructuras para la descarga por nick
+	
 	private HashMap<String, Integer> peerServerPort = new HashMap<String, Integer>();
 	private HashMap<String,InetSocketAddress> peerServeDir  = new HashMap<String,InetSocketAddress>();
+	
+	// estructuras para almacenar la información de los ficheros que comparten los peers
 	
 																		/**
 																		 * Generador de claves de sesión aleatorias (sessionKeys)

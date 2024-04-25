@@ -141,7 +141,7 @@ public class NFControllerLogicP2P {
 		try {
 			NFConnector connector = new NFConnector(fserverAddr);
 			File f = new File(localFileName);
-			if(!f.exists()) {
+			if(!f.exists() || f.length()<=0) {
 				f.createNewFile();
 				result =connector.downloadFile(targetFileHash, f);
 			}else {

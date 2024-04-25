@@ -39,6 +39,24 @@ public class NFServer implements Runnable {
 	 */
 	public void run() {
 		//comprobamos que el servidor esté listo
+		/*
+		 * Usar el socket servidor para esperar conexiones de otros peers que
+		 * soliciten descargar ficheros
+		 */
+
+		/*
+		 * Al establecerse la conexión con un peer, la comunicación con dicho
+		 * cliente se hace en el método NFServerComm.serveFilesToClient(socket), al cual
+		 * hay que pasarle el socket devuelto por accept
+		 */
+		/*
+		 * (Opcional) Crear un hilo nuevo de la clase NFServerThread, que llevará
+		 * a cabo la comunicación con el cliente que se acaba de conectar, mientras este
+		 * hilo vuelve a quedar a la escucha de conexiones de nuevos clientes (para
+		 * soportar múltiples clientes). Si este hilo es el que se encarga de atender al
+		 * cliente conectado, no podremos tener más de un cliente conectado a este
+		 * servidor.
+		 */
 		if(this.serverSocket==null || this.serverSocket.isClosed()) {
 			System.err.println("null or closed socket");
 			System.exit(-1);
@@ -46,16 +64,7 @@ public class NFServer implements Runnable {
 			System.out.println("[socket] ok");
 		}
 		
-																																	/*
-																																	 * Usar el socket servidor para esperar conexiones de otros peers que
-																																	 * soliciten descargar ficheros
-																																	 */
-		
-																																	/*
-																																	 * Al establecerse la conexión con un peer, la comunicación con dicho
-																																	 * cliente se hace en el método NFServerComm.serveFilesToClient(socket), al cual
-																																	 * hay que pasarle el socket devuelto por accept
-																																	 */
+																																	
 		
 		while(!this.stopServer){
 			try {
@@ -70,14 +79,7 @@ public class NFServer implements Runnable {
 			}
 		}
 		System.out.println("[Server] stopped");
-																																	/*
-																																	 * (Opcional) Crear un hilo nuevo de la clase NFServerThread, que llevará
-																																	 * a cabo la comunicación con el cliente que se acaba de conectar, mientras este
-																																	 * hilo vuelve a quedar a la escucha de conexiones de nuevos clientes (para
-																																	 * soportar múltiples clientes). Si este hilo es el que se encarga de atender al
-																																	 * cliente conectado, no podremos tener más de un cliente conectado a este
-																																	 * servidor.
-																																	 */
+																																	
 	}
 	
 	public void runServer() {
