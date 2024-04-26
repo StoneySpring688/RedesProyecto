@@ -141,9 +141,11 @@ public class NFServerComm {
 					}
 					o =os.toByteArray();
 					response = PeerMessage.peerMessageErrorMultipleOptions(o,nops,n);
+					this.finish = true;
 					return response;
 				}else if(fichs.length == 0) {
 					response = PeerMessage.peerMessageErrorFileNotFound();
+					this.finish = true;
 					return response;
 				}else {
 					Long t = fichs[0].getFileSize();

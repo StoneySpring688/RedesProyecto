@@ -156,13 +156,13 @@ public class NFControllerLogicDir {
 	 */
 
 	public boolean registerFileServer(int serverPort) {
-		/*
-		 * Darse de alta en el directorio como servidor. Comunicarse con el
-		 * directorio (a través del directoryConnector) para enviar el número de puerto
-		 * TCP en el que escucha el servidor de ficheros que habremos arrancado
-		 * previamente. Se debe enviar la clave de sesión para identificarse. Devolver
-		 * éxito/fracaso de la operación.
-		 */
+																								/*
+																								 * Darse de alta en el directorio como servidor. Comunicarse con el
+																								 * directorio (a través del directoryConnector) para enviar el número de puerto
+																								 * TCP en el que escucha el servidor de ficheros que habremos arrancado
+																								 * previamente. Se debe enviar la clave de sesión para identificarse. Devolver
+																								 * éxito/fracaso de la operación.
+																								 */
 		boolean result = false;
 		result = this.directoryConnector.registerServerPort(serverPort);
 
