@@ -169,3 +169,14 @@ complicaciones :
 pendiente :
 - implementar el comando stopserver para poder terminar la ejecucion del servidor de ficheros, este también deberá dar de baja el servidor de ficheros de el servidor de directorios
 - implementar el comando publish para que cualquier peer pueda consultar los ficheros que comparte otro peer
+
+
+
+-----26-04-2024 15:51 (StoneySpring):
+cambios :
+- se solucionó un error por el cual si el servidor estaba en el mismo dispositivo que un cliente, la dirección que se almacenaba en el servidor era la de
+  localhost
+
+pendiente :
+- implementar el comando publish
+- implementar el comando download para descargar un fichero de todos los peers que lo compartan
