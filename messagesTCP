@@ -7,6 +7,18 @@
 confirmación < error < confirmación
 
 
+# AskTam
+
+opCode : asktam(0x2)
+hash : ("String")
+
+
+
+# AskTamRes
+
+opCode : asktamres(0x15)
+tam : ("Long")
+
 
 # Download
 
@@ -28,6 +40,11 @@ opCode : FNF(0xA)
 
 opCode : MO(0xB)
 nOps : ("int")
+name-1 : ("String")
+separador : 12
+...
+name-n :("String")
+separador : 12
 options : ("byte[]")
 
 

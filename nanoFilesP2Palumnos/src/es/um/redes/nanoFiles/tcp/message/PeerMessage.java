@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import es.um.redes.nanoFiles.util.FileInfo;
 
@@ -18,6 +19,7 @@ public class PeerMessage {
 	private long tam;
 	private int nOps;
 	private String host;
+	private String[] names;
 	private int port;
 	private long FLength;
 	private byte[] options;
@@ -61,16 +63,27 @@ public class PeerMessage {
 		}
 		return p;
 	}
+	
+	public static PeerMessage peerMessageAskTam(String h) {
+		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_ASKTAM);
+		try {
+			p.setHash(h);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		return p;
+	}
 
 	public static PeerMessage peerMessageErrorFileNotFound() {
 		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_FNF);
 		return p;
 	}
 
-	public static PeerMessage peerMessageErrorMultipleOptions(byte[] o, int nops) {
+	public static PeerMessage peerMessageErrorMultipleOptions(byte[] o, int nops, String[] n) {
 		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_MO);
 		try {
 			p.setNOps(nops);
+			p.setNames(n);
 			p.setOptions(o);
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
@@ -84,6 +97,16 @@ public class PeerMessage {
 			p.setHash(h);
 			p.setFLength(f);
 			p.setData(d);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		return p;
+	}
+	
+	public static PeerMessage peerMessageAskTamRes(Long t) {
+		PeerMessage p = new PeerMessage(PeerMessageOps.OPCODE_ASKTAMRES);
+		try {
+			p.setTam(t);
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		}
@@ -125,6 +148,10 @@ public class PeerMessage {
 		return this.host;
 	}
 	
+	public String[] getNames() {
+		return Arrays.copyOf(this.names, this.names.length);
+	}
+	
 	public int getPort() {
 		return this.port;
 	}
@@ -143,7 +170,7 @@ public class PeerMessage {
 
 	// set
 	public void setHash(String h) throws NoSuchFieldException {
-		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
+		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_DOWNLRES || this.opcode == PeerMessageOps.OPCODE_ASKTAM) {
 			this.hash = h;
 		} else
 			throw new NoSuchFieldException("OpCode does not match with this field code 0x1");
@@ -165,7 +192,7 @@ public class PeerMessage {
 	}
 
 	public void setTam(long t) throws NoSuchFieldException {
-		if (this.opcode == PeerMessageOps.OPCODE_DOWNL) {
+		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_ASKTAMRES) {
 			this.tam = t;
 		} else
 			throw new NoSuchFieldException("OpCode does not match with this field code 0x4");
@@ -181,6 +208,13 @@ public class PeerMessage {
 	public void setHost(String h) throws NoSuchFieldException {
 		if (this.opcode == PeerMessageOps.OPCODE_DOWNL || this.opcode == PeerMessageOps.OPCODE_DOWNLRES) {
 			this.hash = h;
+		} else
+			throw new NoSuchFieldException("OpCode does not match with this field code 0x6");
+	}
+	
+	public void setNames(String[] n) throws NoSuchFieldException {
+		if (this.opcode == PeerMessageOps.OPCODE_MO) {
+			this.names = n;
 		} else
 			throw new NoSuchFieldException("OpCode does not match with this field code 0x6");
 	}
@@ -248,13 +282,29 @@ public class PeerMessage {
 				}
 				break;
 			}
+			case PeerMessageOps.OPCODE_ASKTAM: {
+				try {
+					message.setHash(dis.readUTF());
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+				break;
+			}
 			case PeerMessageOps.OPCODE_FNF: {
 				break; //este mensaje solo tiene el código de operación
 			}
 			case PeerMessageOps.OPCODE_MO: {
 				try {
-					message.setNOps(dis.readInt());
+					int n = dis.readInt();
+					message.setNOps(n);
 					message.setOptions(new byte[message.getNOps()]);
+					message.setNames(new String[message.getNOps()/40]);
+					
+					for(int i = 0; i< n/40; i++) { // si falla, poner (n/40)-1
+						message.names[i] = dis.readUTF();
+						dis.readInt(); //separador entre nombres para poder leer cadenas separadas
+					}
+					
 					dis.readFully(message.options);
 				} catch (NoSuchFieldException e) {
 					e.printStackTrace();
@@ -267,6 +317,14 @@ public class PeerMessage {
 					message.setFLength(dis.readLong());
 					message.setData(new byte[(int) message.getFLength()]);
 					dis.readFully(message.data);
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+				break;
+			}
+			case PeerMessageOps.OPCODE_ASKTAMRES: {
+				try {
+					message.setTam(dis.readLong());
 				} catch (NoSuchFieldException e) {
 					e.printStackTrace();
 				}
@@ -314,11 +372,19 @@ public class PeerMessage {
 				dos.writeLong(this.getTam());
 				break;
 			}
+			case PeerMessageOps.OPCODE_ASKTAM: {
+				dos.writeUTF(this.getHash());
+				break;
+			}
 			case PeerMessageOps.OPCODE_FNF: {
 				break; // este mensaje solo tiene el código de operación
 			}
 			case PeerMessageOps.OPCODE_MO: {
 				dos.writeInt(this.options.length);
+				for(int i = 0; i < this.names.length; i++) {
+					dos.writeUTF(this.names[i]);
+					dos.writeInt(12);
+				}
 				dos.write(this.options);
 				break;
 			}
@@ -326,6 +392,10 @@ public class PeerMessage {
 				dos.writeUTF(this.getHash());
 				dos.writeLong(this.data.length);
 				dos.write(data);
+				break;
+			}
+			case PeerMessageOps.OPCODE_ASKTAMRES: {
+				dos.writeLong(this.getTam());
 				break;
 			}
 			case PeerMessageOps.TEST: {

@@ -59,7 +59,8 @@ public class NFServerSimple {
 				System.out.println("[waiting]");
 				Socket socket = this.serverSocket.accept();
 				System.out.println("New client connected: " + socket.getInetAddress().toString() + ":" + socket.getPort());
-				NFServerComm.serveFilesToClient(socket);
+				NFServerComm nfsc = new NFServerComm();
+				nfsc.serveFilesToClient(socket);
 				
 			} catch (IOException e) {
 				System.err.println(e.getMessage());

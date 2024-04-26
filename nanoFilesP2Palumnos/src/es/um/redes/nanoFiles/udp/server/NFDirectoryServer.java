@@ -3,6 +3,7 @@ package es.um.redes.nanoFiles.udp.server;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.HashMap;
@@ -107,6 +108,11 @@ public class NFDirectoryServer {
 			}
 			dataLength = pakFromClient.getLength();
 			clientAddr = (InetSocketAddress) pakFromClient.getSocketAddress();
+			if(clientAddr.getAddress().isLoopbackAddress()) {
+				InetAddress clientIp = InetAddress.getLocalHost();
+				int clientPort = pakFromClient.getPort();
+				clientAddr = new InetSocketAddress(clientIp, clientPort);
+			}
 			
 																												//  (Boletín UDP) Recibimos a través del socket un datagrama
 																									
@@ -318,6 +324,7 @@ public class NFDirectoryServer {
 		default:
 			System.out.println("Unexpected message operation: \"" + msg.getOperation() + "\"");
 		}
+		System.out.println("\n"+response.toString());
 		return response;
 
 	}
