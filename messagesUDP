@@ -31,6 +31,12 @@ fichName : ("String")
 
 
 
+#publishok
+
+operation : publishok
+
+
+
 #filelist
 
 operation : filelist
@@ -44,12 +50,6 @@ operation : search
 key : ("Integer")
 hash : ("String")
 
-
-#updateinfo
-
-operation  : updateinfo
-key : ("Integer")
-hash : ("String")
 
 
 #registerFileServer
