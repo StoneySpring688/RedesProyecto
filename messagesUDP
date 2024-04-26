@@ -23,6 +23,7 @@ key : ("Integer")
 
 operation : publish
 key : ("Integer")
+nfichs : ("Integer")
 fichHash : ("String")
 fichSize : ("Long")
 fichName : ("String")
