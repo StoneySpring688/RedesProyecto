@@ -291,7 +291,8 @@ public class DirMessage {
 			break;
 		}
 		case DirMessageOps.OPERATION_REGISTER_FILESERVER :{
-			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE + DirMessageField.FIELDNAME_PORT + DELIMITER + port +END_LINE );
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_PORT + DELIMITER + port +END_LINE);
 			break;
 		}
 		case DirMessageOps.OPERATION_ERROR: {
@@ -299,14 +300,16 @@ public class DirMessage {
 			break;
 		}
 		case DirMessageOps.OPERATION_LOOKUP_SERVADR : {
-			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE + DirMessageField.FIELDNAME_NICK + DELIMITER + nickname + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_NICK + DELIMITER + nickname + END_LINE);
 			break;
 		}
 		case DirMessageOps.OPERATION_REGISTERFILESERVEROK :{
 			break; //no tiene más informacion a parte del codigo
 		}
 		case DirMessageOps.OPERATION_LOOKUPSERVADROK :{
-			sb.append(DirMessageField.FIELDNAME_PORT + DELIMITER + port + END_LINE + DirMessageField.FIELDNAME_IP + DELIMITER + ip + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_PORT + DELIMITER + port + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_IP + DELIMITER + ip + END_LINE);
 			break;
 		}
 		case DirMessageOps.OPERATION_CONFIRMATION: {
