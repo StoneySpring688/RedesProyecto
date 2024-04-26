@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -48,7 +49,11 @@ public class DirMessage {
 	private String code;
 	private int key;
 	private int port;
+	private int nfichs;
 	private HashMap<String, Boolean> peers;
+	private String[] fichhash;
+	private String[] fichname;
+	private long[] fichsize;
 	
 	
 	//"constructores"
@@ -80,6 +85,15 @@ public class DirMessage {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOOKUP_SERVADR);
 		m.setKey(key);
 		m.setNickname(nick);
+		return m;
+	}
+	public static DirMessage publish(String[]h,long[]s,String[]n, int nf, int k) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_PUBLISH);
+		m.setKey(k);
+		m.setNFichs(nf);
+		m.setFichHash(h);
+		m.setFichSize(s);
+		m.setFichName(n);
 		return m;
 	}
 	public static DirMessage lookupServAdrOk(int port,String ip) {
@@ -141,8 +155,20 @@ public class DirMessage {
 	public void setPort(int port) {
 		this.port = port;
 	}
+	public void setNFichs(int nf) {
+		this.nfichs = nf;
+	}
 	public void setPeers(String peer, Boolean isServer) {
 		this.peers.put(peer, isServer);
+	}
+	public void setFichHash(String[] h) {
+		this.fichhash = h;
+	}
+	public void setFichSize(long[] s) {
+		this.fichsize = s;
+	}
+	public void setFichName(String[] n) {
+		this.fichname = n;
 	}
 	
 	//get
@@ -164,12 +190,24 @@ public class DirMessage {
 	public int getPort() {
 		return this.port;
 	}
+	public int getNFichs() {
+		return this.nfichs;
+	}
 	public String[] getPeers(){
 		return this.peers.keySet().toArray(new String[this.peers.keySet().size()]);
 		
 	}
 	public Boolean[] getIsServer() {
 		return this.peers.values().toArray(new Boolean[this.peers.values().size()]);
+	}
+	public String[] getFichHash() {
+		return Arrays.copyOf(this.fichhash, this.fichhash.length);
+	}
+	public long[] getFichSize() {
+		return Arrays.copyOf(this.fichsize, this.fichsize.length);
+	}
+	public String[] getFichName() {
+		return Arrays.copyOf(this.fichname, this.fichname.length);
 	}
 
 
@@ -197,6 +235,7 @@ public class DirMessage {
 		// Local variables to save data during parsing
 		DirMessage m = null;
 		String auxNick = null;
+		int aux = 0; // se utiliza para guardar en las estruturas fhash,fsize,fname
 		
 		for (String line : lines) {
 			if(!line.contains(END_MESSAGE)) {  //HAY QUE HACER QUE NO SE PROCESE LA LINEA FIN DEL MENSAJE
@@ -243,6 +282,25 @@ public class DirMessage {
 						m.peers = new HashMap<String, Boolean>();
 						m.setPeers(auxNick, Boolean.parseBoolean(val));
 						}
+					break;
+				}case DirMessageField.FIELDNAME_NFICHS : {
+					m.setNFichs(Integer.parseInt(val));
+					break;
+				}
+				case DirMessageField.FIELDNAME_FICHHASH: {
+					m.setFichHash(new String[m.getNFichs()]);
+					m.fichhash[aux] = val;
+					break;
+				}
+				case DirMessageField.FIELDNAME_FICHSIZE: {
+					m.setFichSize(new long[m.getNFichs()]);
+					m.fichsize[aux] = Long.parseLong(val);
+					break;
+				}
+				case DirMessageField.FIELDNAME_FICHNAME: {
+					m.setFichName(new String[m.getNFichs()]);
+					m.fichname[aux] = val;
+					aux++; // se itera ya que es el ultimo atributo de un fichero tal cual está la estructura de el mensaje
 					break;
 				}
 				//TODO ir ampliando para el resto de mensajes
@@ -302,6 +360,16 @@ public class DirMessage {
 		case DirMessageOps.OPERATION_LOOKUP_SERVADR : {
 			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
 			sb.append(DirMessageField.FIELDNAME_NICK + DELIMITER + nickname + END_LINE);
+			break;
+		}
+		case DirMessageOps.OPERATION_PUBLISH : {
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);
+			for(int i = 0; i< this.nfichs ; i++) {
+				sb.append(DirMessageField.FIELDNAME_FICHHASH + DELIMITER + fichhash[i] + END_LINE);
+				sb.append(DirMessageField.FIELDNAME_FICHSIZE + DELIMITER + fichsize[i] + END_LINE);
+				sb.append(DirMessageField.FIELDNAME_FICHNAME + DELIMITER + fichname[i] + END_LINE);
+			}
 			break;
 		}
 		case DirMessageOps.OPERATION_REGISTERFILESERVEROK :{
