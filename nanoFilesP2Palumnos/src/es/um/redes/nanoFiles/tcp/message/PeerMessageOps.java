@@ -7,12 +7,13 @@ public class PeerMessageOps {
 
 	public static final byte OPCODE_INVALID_CODE = 0;
 	public static final byte OPCODE_DOWNL = 1;
+	public static final byte OPCODE_ASKTAM = 2;
 	//Los codigos de error van del 10 en adelante
 	public static final byte OPCODE_FNF = 10; //FileNotFound
 	public static final byte OPCODE_MO = 11; //MultipleOptions
 	//los codigos de confirmacion van del 20 en adelante
 	public static final byte OPCODE_DOWNLRES = 20;
-	
+	public static final byte OPCODE_ASKTAMRES = 21;
 	
 	//Codigo para probar el correcto envio y recepcion de información
 	public static final byte TEST = 30;
@@ -20,7 +21,7 @@ public class PeerMessageOps {
 	
 	
 	//FIN SECUENCIA PARA EL ARRAY DE OPCIONES
-	public static final byte[] FINARRAY ="FIN_ARRAY".getBytes() ;
+	//public static final byte[] FINARRAY ="FIN_ARRAY".getBytes() ; OBSOLETO
 
 
 
@@ -31,16 +32,16 @@ public class PeerMessageOps {
 	 * representación textual a "valid_operations_str" en el mismo orden
 	 */
 	private static final Byte[] _valid_opcodes = {
-			OPCODE_INVALID_CODE,OPCODE_DOWNL,
+			OPCODE_INVALID_CODE,OPCODE_DOWNL,OPCODE_ASKTAM,
 			OPCODE_FNF,OPCODE_MO,
-			OPCODE_DOWNLRES
+			OPCODE_DOWNLRES,OPCODE_ASKTAMRES
 
 
 			};
 	private static final String[] _valid_operations_str = {
-			"INVALID_OPCODE","CODE_DOWNLOAD",
+			"INVALID_OPCODE","CODE_DOWNLOAD","CODE_ASKTAM",
 			"ERROR_FILENOTFOUND","ERROR_MULTIPLEOPTIONS",
-			"Download_Response"
+			"Download_Response","asktam_response"
 
 
 

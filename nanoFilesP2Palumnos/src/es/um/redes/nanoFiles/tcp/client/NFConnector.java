@@ -76,17 +76,91 @@ public class NFConnector {
 			downloaded = true;
 		}
 		*/
-		FileInfo[] fichs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), targetFileHashSubstr);
+		/*FileInfo[] fichs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), targetFileHashSubstr);
 		long tam = -1;
 		if(fichs.length >= 1) { // si hay más de uno se toma el primero y salta multiple options, no tiene impacto
 			tam = fichs[0].getFileSize(); 
 		}else {
 			System.err.println("no hash coincidence in database");
 			System.exit(1);
-		}
+		}*/
 		//System.out.println("[debug] fich tam "+ tam);
+		PeerMessage pt = PeerMessage.peerMessageAskTam(targetFileHashSubstr);
+		pt.writeMessageToOutputStream(dos);
+		PeerMessage msgFromServt = PeerMessage.readMessageFromInputStream(dis);
 		
-		PeerMessage p = PeerMessage.peerMessageDownload(targetFileHashSubstr, 0, tam);
+		if (msgFromServt.getOpcode() == PeerMessageOps.OPCODE_FNF) {
+			System.err.println("FileNotFound");
+		}
+		else if(msgFromServt.getOpcode() == PeerMessageOps.OPCODE_MO) {
+			System.err.println("MultipleOptions found : "+msgFromServt.getNOps()/40+ " options available"); 
+			byte[] o = msgFromServt.getOptions();
+			String[] n = msgFromServt.getNames();
+			int hashLength = 40; //longitud del hash
+			int numHashes = msgFromServt.getNOps()/40;
+			int option = 1;
+			int ind = 0;
+			for (int i = 0; i < numHashes; i++) {
+			    byte[] hashByte = Arrays.copyOfRange(o, ind, ind + hashLength); // extraer el hash
+			    String hash = new String(hashByte);
+			    String name = n[i];
+			    System.err.println("Opción " + option + " - "+ hash + " : " + name );
+			    option++;
+			    ind += hashLength; // Mover el indice
+			}
+			
+		}else {
+			Long tam = msgFromServt.getTam();
+
+			PeerMessage p = PeerMessage.peerMessageDownload(targetFileHashSubstr, 0, tam);
+			p.writeMessageToOutputStream(dos);
+			PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
+			
+			/*if (msgFromServ.getOpcode() == PeerMessageOps.OPCODE_FNF) {
+				System.err.println("FileNotFound");
+			}
+			else if(msgFromServ.getOpcode() == PeerMessageOps.OPCODE_MO) {
+				System.err.println("MultipleOptions found : "+msgFromServ.getNOps()/40+ " options available"); // divido nops entre 40 porque por alguna razon guarda el numero de bytes
+																											   // y es más sencillo hacer esto que buscar el fallo
+				byte[] o = msgFromServ.getOptions();
+				int hashLength = 40; //longitud del hash
+				int numHashes = msgFromServ.getNOps()/40;
+				int option = 1;
+				int ind = 0;
+				for (int i = 0; i < numHashes; i++) {
+				    byte[] hashByte = Arrays.copyOfRange(o, ind, ind + hashLength); // extraer el hash
+				    String hash = new String(hashByte);
+				    FileInfo[] fs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), hash);
+				    String name = fs[0].fileName;
+				    System.err.println("Opción " + option + " - "+ hash + " : " + name );
+				    option++;
+				    ind += hashLength; // Mover el indice
+				}
+			}
+			else {*/
+				byte[] data = msgFromServ.getData();
+				try (FileOutputStream fos = new FileOutputStream(file)) {
+					fos.write(data);
+					downloaded = true;
+					fos.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				String hash1 = FileDigest.computeFileChecksumString(file.getName());
+				String hash2 = msgFromServ.getHash();
+				if(hash1.equals(hash2)) {
+					System.out.println("files are identical");
+				}else {
+					System.err.println("files are not identical");
+					System.out.println(hash1);
+					System.out.println(hash2);
+				}
+			//}
+		}
+		
+		
+		/*PeerMessage p = PeerMessage.peerMessageDownload(targetFileHashSubstr, 0, tam);
 		p.writeMessageToOutputStream(dos);
 		PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
 		
@@ -130,7 +204,7 @@ public class NFConnector {
 				System.out.println(hash1);
 				System.out.println(hash2);
 			}
-		}
+		}*/
 		/*
 		 * TODO: Construir objetos PeerMessage que modelen mensajes con los valores
 		 * adecuados en sus campos (atributos), según el protocolo diseñado, y enviarlos

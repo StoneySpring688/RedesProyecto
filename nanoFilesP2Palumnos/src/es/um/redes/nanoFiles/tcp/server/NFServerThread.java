@@ -20,7 +20,8 @@ public class NFServerThread extends Thread {
 	
 	public void run() {
 		System.out.println("New client connected: " + socket.getInetAddress().toString() + ":" + socket.getPort());
-		NFServerComm.serveFilesToClient(socket);
+		NFServerComm nfsc = new NFServerComm();
+		nfsc.serveFilesToClient(socket);
 	}
 
 }
