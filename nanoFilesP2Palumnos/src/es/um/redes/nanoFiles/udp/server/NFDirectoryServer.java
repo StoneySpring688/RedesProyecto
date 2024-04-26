@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import es.um.redes.nanoFiles.application.NanoFiles;
@@ -48,6 +49,9 @@ public class NFDirectoryServer {
 	
 	// estructuras para almacenar la información de los ficheros que comparten los peers
 	
+	private HashMap <String, List<Integer> > fichPeer;
+	private HashMap <String, String> fichName;
+	private HashMap <String, Long> fichSize;
 																		/**
 																		 * Generador de claves de sesión aleatorias (sessionKeys)
 																		 */
@@ -76,6 +80,9 @@ public class NFDirectoryServer {
 																					 */
 		this.nicks = new  HashMap<String, Integer>();
 		this.sessionKeys = new HashMap<Integer, String>();
+		this.fichPeer = new HashMap<String, List<Integer>>();
+		this.fichName = new HashMap<String, String>();
+		this.fichSize = new HashMap<String, Long>();
 
 		if (NanoFiles.testMode) {
 			if (socket == null || nicks == null || sessionKeys == null) {

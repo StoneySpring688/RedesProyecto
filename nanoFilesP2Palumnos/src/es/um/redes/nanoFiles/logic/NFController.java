@@ -147,9 +147,6 @@ public class NFController {
 			logged4 = this.controllerDir.test();
 			if(logged4 && this.currentState == LOGGED_IN) {
 				controllerPeer.foregroundServeFiles(this.controllerDir,this.controllerPeer);
-				/*if (this.controllerPeer.getFgStatus()) {
-					commandSucceeded = controllerDir.registerFileServer(controllerPeer.getFgServerPort());
-				} esto lo hace un hilo de la clase ControllerThread, ya que el  programa se queda "bloqueado" con fgserve*/
 			}else {
 				System.err.println("[warning] you must login first");
 			}
@@ -161,7 +158,13 @@ public class NFController {
 			 * ficheros disponibles (NanoFiles.db) para ser descargados desde otros peers
 			 * (método publishLocalFiles)
 			 */
-			commandSucceeded = controllerDir.publishLocalFiles();
+			boolean logged5 = false;
+			logged5 = this.controllerDir.test();
+			if(logged5 && this.currentState == LOGGED_IN) {
+				commandSucceeded = controllerDir.publishLocalFiles();
+			}else {
+				System.err.println("[warning] you must login first");
+			}
 			break;
 		case NFCommands.COM_BGSERVE:
 			/*
