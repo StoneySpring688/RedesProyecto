@@ -47,9 +47,9 @@ key : ("integer")
 #confirmation-filelistok
 
 operation : "filelistok"
-fichsize : ("Integer")
+nfichs : ("Integer")
 fichname : ("String")
-separador : 12
+fichsize : ("Long")
 fichhash : ("String")
 ...
 
