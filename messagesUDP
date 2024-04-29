@@ -46,11 +46,10 @@ key : ("integer")
 
 ##confirmation-filelistok
 
-operation : confirmation
-code : "filelistok"
-name : ("String")
-tamaño : ("Integer")
-hash : ("String")
+operation : "filelistok"
+fichname : ("String")
+fichsize : ("Integer")
+fichhash : ("String")
 ...
 
 
