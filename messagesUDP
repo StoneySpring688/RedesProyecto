@@ -44,6 +44,17 @@ key : ("integer")
 
 
 
+##confirmation-filelistok
+
+operation : confirmation
+code : "filelistok"
+name : ("String")
+tamaño : ("Integer")
+hash : ("String")
+...
+
+
+
 #search
 
 operation : search
@@ -118,16 +129,6 @@ code : "logoutok"
 operation : confirmation
 code : "publishok"
 
-
-##confirmation-filelistok
-
-operation : confirmation
-code : "filelistok"
-name : ("String")
-tamaño : ("Integer")
-hash : ("String")
-nicks : ("String") " , " ("String") ...
-...
 
 
 ##confirmation-searchok
