@@ -183,8 +183,9 @@ public class NFControllerLogicDir {
 		 * la clave de sesión para identificarse. Devolver éxito/fracaso de la
 		 * operación.
 		 */
-		System.out.println(NanoFiles.db.getFiles());
+		//System.out.println(NanoFiles.db.getFiles());
 		boolean result = false;
+		result = this.directoryConnector.publishLocalFiles(NanoFiles.db.getFiles());
 
 
 
