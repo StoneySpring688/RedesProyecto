@@ -46,11 +46,12 @@ key : ("integer")
 
 #confirmation-filelistok
 
-operation : "filelistok"
+operation : publish        //filelistok utiliza el mismo mensaje de publish, ya que son iguales y al llegar al cliente es posible hacerlo
+key : ("Integer")          // key se dejará a cero al no ser necesario
 nfichs : ("Integer")
-fichname : ("String")
-fichsize : ("Long")
-fichhash : ("String")
+fichHash : ("String")
+fichSize : ("Long")
+fichName : ("String")
 ...
 
 
