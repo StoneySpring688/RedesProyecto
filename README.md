@@ -13,6 +13,7 @@ ficheros
 - userlist
 - downloadfrom
 - fgserve & bgserve
+- publish
 
 ## Documentation
 
@@ -45,6 +46,8 @@ en la terminal introducir uno de los comandos:
 #### bgserve
 - establece un servidor de ficheros en segundo plano, lo que permite seguir utilizando la consola de comandos
 
+### publish
+- publica los ficheros compartidos y su metainformación en  el servidor de directorios
 
 ## Software empleado
 
