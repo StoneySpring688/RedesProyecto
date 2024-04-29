@@ -44,12 +44,14 @@ key : ("integer")
 
 
 
-##confirmation-filelistok
+#confirmation-filelistok
 
 operation : "filelistok"
-fichname : ("String")
 fichsize : ("Integer")
+fichname : ("String")
+separador : 12
 fichhash : ("String")
+
 ...
 
 
