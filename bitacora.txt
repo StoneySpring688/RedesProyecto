@@ -180,3 +180,24 @@ cambios :
 pendiente :
 - implementar el comando publish
 - implementar el comando download para descargar un fichero de todos los peers que lo compartan
+
+-----30-04-2024 00:57 (StoneySpring):
+cambios :
+- se solucionó un error con la recepción de  los mensajes de NFDirectoryServer
+- se solucionó una serie de bugs en el comando publish
+- se implementó la funcionalidad de filelist
+
+complicaciones :
+- tras imprimir todo lo que sucesia entre cliente y servidor ,(mensajes,  iteraciones de bucles, guardar información en estructuras de datos,...), se observaba que en NFDirectoryServer se "concatenaban"
+  fragmentos de mensajes anteriores en el mensaje  actual, lo que provocaba comportamientos inesperados, tras busacar la causa del problema se determinó que era el DatagramPackage "pakFromClient"
+  y sus dependencias,los cuales se inicializaban fuera de el bucle del servidor, ocasionado que no se reiniciaran de mensaje en mensaje, por lo que cuando un menssaje ocupaba más bytes que el posterior,
+  esos bytes  se "adherían" al siguiente mensaje, ocasionando que no se lo puediera tratar correctamente con el método "fromString" de la clase "DirMessage"
+- el mensaje  publish no fué debidamente tratado con  el método "fromString" de la clase "DirMessage", lo que ocasionaba que se sobrescribiera la información a cada campo que se leía,
+  la solución fué incorporar un bloque try catch, que en caso de que saltara una excepcion "NullPointerException" inicializara la estructura de datos anntes de añadir información, logrando así inicializar la
+  estructura solo la primera vez, y no cada vex que se accedía a sus casos en el switch.
+
+pendiente : 
+- implementar la funcionalidad de search
+- implementar la funcionalidad  de stopserver, recordando dar de baja al peer de los ficheros que deje de compartir, y en caso de que no los comparta nadie más, dar de baja los ficheros y su metainformación,
+  así como dar de baja al peer de la lista de peers
+- implementar el método download para descargar un fichero a la vez, de todos  los peers que lo compartan
