@@ -1,12 +1,14 @@
 package es.um.redes.nanoFiles.udp.server;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,14 +102,18 @@ public class NFDirectoryServer {
 																					 * asociado al búfer
 																					 */
 		//byte[] receptionBuffer = null;
-		byte[] receptionBuffer = new byte[DirMessage.PACKET_MAX_SIZE];
+		/*byte[] receptionBuffer = new byte[DirMessage.PACKET_MAX_SIZE];
 		InetSocketAddress clientAddr = null; // estos 2 valores se sobreecriben luego con el valor correcto
 		int dataLength = -1;
-		DatagramPacket pakFromClient = new DatagramPacket(receptionBuffer,receptionBuffer.length);
+		DatagramPacket pakFromClient = new DatagramPacket(receptionBuffer,receptionBuffer.length);*/
 		
 		System.out.println("Directory starting...");
 
 		while (true) { // Bucle principal del servidor de directorio
+			byte[] receptionBuffer = new byte[DirMessage.PACKET_MAX_SIZE];
+			InetSocketAddress clientAddr = null; // estos 2 valores se sobreecriben luego con el valor correcto
+			int dataLength = -1;
+			DatagramPacket pakFromClient = new DatagramPacket(receptionBuffer,receptionBuffer.length);
 			try {
 				this.socket.receive(pakFromClient);
 			} catch (Exception e) {
@@ -326,7 +332,7 @@ public class NFDirectoryServer {
 				response = DirMessage.lookupServAdrOk(port, ip);
 			}else {
 				response = DirMessage.errorMessage(DirMessageOps.OPERATION_LOOKUPSERVADRFAILED);
-			}	
+			}
 			break;
 		}case DirMessageOps.OPERATION_PUBLISH : {
 			int key = msg.getKey();
@@ -338,18 +344,51 @@ public class NFDirectoryServer {
 			if(this.peerServeDir.keySet().contains(nick)) { //comprobar que sea un servidor de ficheros dado de alta
 				for(int i = 0; i<nfichs; i++) {
 					if(this.fichPeer.keySet().contains(hashes[i]) && !this.fichPeer.get(hashes[i]).contains(key)) {
+						//System.out.println("iteracion : " + i);
 						this.fichPeer.get(hashes[i]).add(key);
+						//System.out.println("añadiendo al hash : " + hashes[i]);
 					}else if(!this.fichPeer.keySet().contains(hashes[i])) {
+						//System.out.println("iteracion : " + i);
 						List<Integer> listaPeers = new ArrayList<Integer>();
 						listaPeers.add(key);
 						fichPeer.put(hashes[i], listaPeers);
+						//System.out.println("añadiendo hash : " + hashes[i]);
 						fichName.put(hashes[i], names[i]);
+						//System.out.println("añadiendo nombre : " + names[i]);
 						fichSize.put(hashes[i], sizes[i]);
+						//System.out.println("añadiendo tamano : " + sizes[i]);
 					}
 				}
 				response = DirMessage.publishOk();
 			}else {
 				response = DirMessage.errorMessage(DirMessageOps.OPERATION_PUBLISH_FAILED);
+			}
+			
+			break;
+		}
+		case DirMessageOps.OPERATION_FILELIST : {
+			int nFichs = this.fichPeer.keySet().size();
+			System.out.println(nFichs);
+			if(nFichs >= 1) {
+				System.out.println("nfichs : "+nFichs);
+				String fichHash[] = new String[nFichs];
+				String fichName[] = new String[nFichs];
+				long fichSize[] = this.fichSize.values().stream().mapToLong(Long::longValue).toArray();
+				this.fichPeer.keySet().toArray(fichHash);
+				this.fichName.values().toArray(fichName);
+				
+				/*for(String h : fichHash) {
+					System.out.println("hash : "+h);
+				}
+				for(String n : fichName) {
+					System.out.println("name : "+n);
+				}
+				for(long s : fichSize) {
+					System.out.println("size : "+s);
+				}*/
+				response = DirMessage.publish(fichHash, fichSize, fichName, nFichs, 0);
+			}else {
+				response  = DirMessage.errorMessage(DirMessageOps.OPERATION_FILELIST_FAILED);
 			}
 			break;
 		}

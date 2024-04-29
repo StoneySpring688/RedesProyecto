@@ -20,6 +20,12 @@ public class FileInfo {
 		fileSize = size;
 		filePath = path;
 	}
+	
+	public FileInfo(String hash, String name, long size) { // constructor sin file path para filelist
+		fileHash = hash;
+		fileName = name;
+		fileSize = size;
+	}
 
 	public FileInfo() {
 	}

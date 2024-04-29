@@ -7,6 +7,8 @@ public class DirMessageOps {
 	 * mensajes(values) del protocolo de comunicación con el directorio.
 	 */
 	
+	//hay muchos mensajes  iguales, pero  los que van al servidor, por la forma de contruirlos es necesarios hacerlos, aunque puedan  ser iguales
+	
 	//operations
 	public static final String OPERATION_INVALID = "invalid_operation";
 	public static final String OPERATION_LOGIN = "login";
@@ -17,6 +19,8 @@ public class DirMessageOps {
 	public static final String OPERATION_REGISTER_FILESERVER = "registerfileserver";
 	public static final String OPERATION_LOOKUP_SERVADR = "lookupservadr";
 	public static final String OPERATION_PUBLISH = "publish";
+	public static final String OPERATION_FILELIST = "filelist";
+	
 	
 	//codes
 	public static final String OPERATION_LOGINFAILED = "login_failed";
@@ -30,6 +34,8 @@ public class DirMessageOps {
 	public static final String OPERATION_LOOKUPSERVADROK = "lookupservadrok";
 	public static final String OPERATION_PUBLISHOK = "publishok";
 	public static final String OPERATION_PUBLISH_FAILED = "publish_failed";
+	public static final String OPERATION_FILELISTOK = "filelistok";
+	public static final String OPERATION_FILELIST_FAILED = "filelist_failed";
 
 
 

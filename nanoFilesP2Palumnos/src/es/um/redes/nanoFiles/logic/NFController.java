@@ -164,8 +164,10 @@ public class NFController {
 			 */
 			boolean logged5 = false;
 			logged5 = this.controllerDir.test();
-			if(logged5 && this.currentState == LOGGED_IN) {
+			if(logged5 && this.currentState == LOGGED_IN && this.controllerPeer.isServer) {
 				commandSucceeded = controllerDir.publishLocalFiles();
+			}else if(!this.controllerPeer.isServer){
+				System.err.println("[warning] you must run a server first");
 			}else {
 				System.err.println("[warning] you must login first");
 			}
