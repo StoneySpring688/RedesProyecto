@@ -96,6 +96,11 @@ public class DirMessage {
 		m.setFichName(n);
 		return m;
 	}
+	public static DirMessage fileList(int k) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_FILELIST);
+		m.setKey(k);
+		return m;
+	}
 	public static DirMessage lookupServAdrOk(int port,String ip) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOOKUPSERVADROK);
 		m.setPort(port);
@@ -108,6 +113,15 @@ public class DirMessage {
 	}
 	public static DirMessage publishOk() {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_PUBLISHOK);
+		return m;
+	}
+	public static DirMessage filelistok(String[]h,long[]s,String[]n, int nf, int k) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_FILELISTOK);
+		m.setKey(k);
+		m.setNFichs(nf);
+		m.setFichHash(h);
+		m.setFichSize(s);
+		m.setFichName(n);
 		return m;
 	}
 	public static DirMessage errorMessage(String code) {
@@ -292,19 +306,37 @@ public class DirMessage {
 					break;
 				}
 				case DirMessageField.FIELDNAME_FICHHASH: {
-					m.setFichHash(new String[m.getNFichs()]);
-					m.fichhash[aux] = val;
+					try {
+						m.fichhash[aux] = val;
+					} catch (NullPointerException e) {
+						m.setFichHash(new String[m.getNFichs()]);
+						m.fichhash[aux] = val;
+					}
+					
 					break;
 				}
 				case DirMessageField.FIELDNAME_FICHSIZE: {
-					m.setFichSize(new long[m.getNFichs()]);
-					m.fichsize[aux] = Long.parseLong(val);
+					try {
+						m.fichsize[aux] = Long.parseLong(val);
+					} catch (NullPointerException e) {
+						m.setFichSize(new long[m.getNFichs()]);
+						m.fichsize[aux] = Long.parseLong(val);
+					}
+					
 					break;
 				}
 				case DirMessageField.FIELDNAME_FICHNAME: {
-					m.setFichName(new String[m.getNFichs()]);
-					m.fichname[aux] = val;
-					aux++; // se itera ya que es el ultimo atributo de un fichero tal cual está la estructura de el mensaje
+					try {
+						m.fichname[aux] = val;
+						//System.out.println("nombre an msg : " + val);
+						aux++; // se itera ya que es el ultimo atributo de un fichero tal cual está la estructura de el mensaje
+					} catch (NullPointerException e) {
+						m.setFichName(new String[m.getNFichs()]);
+						//System.out.println("nombre an msg : " + val);
+						m.fichname[aux] = val;
+						aux++; // se itera ya que es el ultimo atributo de un fichero tal cual está la estructura de el mensaje
+					}
+					
 					break;
 				}
 				//TODO ir ampliando para el resto de mensajes
@@ -374,6 +406,10 @@ public class DirMessage {
 				sb.append(DirMessageField.FIELDNAME_FICHSIZE + DELIMITER + fichsize[i] + END_LINE);
 				sb.append(DirMessageField.FIELDNAME_FICHNAME + DELIMITER + fichname[i] + END_LINE);
 			}
+			break;
+		}
+		case DirMessageOps.OPERATION_FILELIST :{
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
 			break;
 		}
 		case DirMessageOps.OPERATION_REGISTERFILESERVEROK :{

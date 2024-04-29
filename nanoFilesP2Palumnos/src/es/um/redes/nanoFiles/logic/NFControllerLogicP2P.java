@@ -23,6 +23,7 @@ public class NFControllerLogicP2P {
 																										 * servidor de ficheros en segundo plano de este peer
 																										 */
 	NFServer server = null;
+	boolean isServer = false;
 	NFServerSimple fgserv = null;
 	boolean fgstatus = false;																			// para poder dar de alta el servidor de ficheros fg
 																										// hace falta saber si está funcionando correctamente
@@ -103,6 +104,7 @@ public class NFControllerLogicP2P {
 				System.exit(-1);
 			}else {
 				System.out.println("[bgserve] ok " + port);
+				this.isServer = true;
 				return true;
 			}
 		}
@@ -242,6 +244,7 @@ public class NFControllerLogicP2P {
 	public void stopBackgroundFileServer() {
 		if(this.server!=null) {
 			this.server.stopServer();
+			this.isServer = false;
 		}
 		
 		/*

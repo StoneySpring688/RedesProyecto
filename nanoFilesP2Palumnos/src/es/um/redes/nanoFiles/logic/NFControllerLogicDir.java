@@ -141,7 +141,17 @@ public class NFControllerLogicDir {
 		 * operación.
 		 */
 		boolean result = false;
-
+		FileInfo[] fichs = this.directoryConnector.getFileList();
+		
+		if(fichs != null) {
+			FileInfo.printToSysout(fichs);
+			/*for(FileInfo f : fichs) {
+				System.out.println(f.fileHash + " : " + f.fileSize + " : " + f.fileName);
+			}*/
+			result = true;
+		}
+		
+		
 
 
 		return result;

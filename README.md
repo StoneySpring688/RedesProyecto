@@ -14,6 +14,7 @@ ficheros
 - downloadfrom
 - fgserve & bgserve
 - publish
+- filelist
 
 ## Documentation
 
@@ -48,6 +49,9 @@ en la terminal introducir uno de los comandos:
 
 ### publish
 - publica los ficheros compartidos y su metainformación en  el servidor de directorios
+
+### filelist
+- muestra una lista con información de todos los ficheros publicados en el directorio
 
 ## Software empleado
 
