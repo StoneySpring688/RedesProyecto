@@ -23,8 +23,17 @@ key : ("Integer")
 
 operation : publish
 key : ("Integer")
+nfichs : ("Integer")
 fichHash : ("String")
+fichSize : ("Long")
+fichName : ("String")
 ...
+
+
+
+#publishok
+
+operation : publishok
 
 
 
@@ -41,12 +50,6 @@ operation : search
 key : ("Integer")
 hash : ("String")
 
-
-#updateinfo
-
-operation  : updateinfo
-key : ("Integer")
-hash : ("String")
 
 
 #registerFileServer

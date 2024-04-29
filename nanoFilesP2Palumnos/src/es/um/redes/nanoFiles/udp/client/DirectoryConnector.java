@@ -247,7 +247,7 @@ public class DirectoryConnector {
 		//System.out.println("msg recivido " +recived);
 		DirMessage recivedDir = DirMessage.fromString(recived);
 		if(recivedDir.getCode().equals(DirMessageOps.OPERATION_LISTFAILED)) {
-			System.err.println("Failed getting userlist");
+			System.err.println("[error] Failed getting userlist");
 		}else {
 			//userlist = recivedDir.getPeers();
 			String[] peers = recivedDir.getPeers();
@@ -273,7 +273,7 @@ public class DirectoryConnector {
 		try {
 			assert (this.sessionKey != INVALID_SESSION_KEY);
 		} catch (AssertionError e) {
-			System.err.println("invalid session key \ncould not logout"); //los assert no funcionan si no tiene el parametro -ea al ejecutar el programa, esto no es el error que buscas
+			System.err.println("[error] invalid session key \ncould not logout"); //los assert no funcionan si no tiene el parametro -ea al ejecutar el programa, esto no es el error que buscas
 		}
 		
 		boolean success = false;
@@ -357,8 +357,29 @@ public class DirectoryConnector {
 	 */
 	public boolean publishLocalFiles(FileInfo[] files) {
 		boolean success = false;
-
-		// TODO: Ver TODOs en logIntoDirectory y seguir esquema similar
+		String[] hashes = new String[files.length]; 
+		String[] names =  new String[files.length];
+		long[] sizes = new long[files.length];
+		for(int i  = 0; i<files.length; i++) {
+			hashes[i] = files[i].fileHash;
+			names[i] = files[i].fileName;
+			sizes[i] = files[i].fileSize;
+		}
+		DirMessage msg = DirMessage.publish(hashes, sizes, names, files.length, this.getSessionKey());
+		String msgToServ = msg.toString();
+		System.out.println(msgToServ);
+		byte[] byteBuff = msgToServ.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		String confirmation = recivedDir.getOperation();
+		System.out.println("[recived]\n"+recivedDir);
+		if(confirmation.matches(DirMessageOps.OPERATION_PUBLISHOK)) {
+			success = true;
+		}else {
+			System.err.println("[warning] an error occurred");
+		}
+		
 
 
 

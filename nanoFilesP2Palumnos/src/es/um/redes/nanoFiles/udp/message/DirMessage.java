@@ -106,6 +106,10 @@ public class DirMessage {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_REGISTERFILESERVEROK);
 		return m;
 	}
+	public static DirMessage publishOk() {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_PUBLISHOK);
+		return m;
+	}
 	public static DirMessage errorMessage(String code) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_ERROR);
 		m.setCode(code);
@@ -379,6 +383,9 @@ public class DirMessage {
 			sb.append(DirMessageField.FIELDNAME_PORT + DELIMITER + port + END_LINE);
 			sb.append(DirMessageField.FIELDNAME_IP + DELIMITER + ip + END_LINE);
 			break;
+		}
+		case DirMessageOps.OPERATION_PUBLISHOK : {
+			break; // no tiene más información a parte del codigo
 		}
 		case DirMessageOps.OPERATION_CONFIRMATION: {
 			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de confirmacion

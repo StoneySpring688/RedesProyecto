@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -326,6 +327,30 @@ public class NFDirectoryServer {
 			}else {
 				response = DirMessage.errorMessage(DirMessageOps.OPERATION_LOOKUPSERVADRFAILED);
 			}	
+			break;
+		}case DirMessageOps.OPERATION_PUBLISH : {
+			int key = msg.getKey();
+			String nick = this.sessionKeys.get(key);
+			String[] hashes = msg.getFichHash();
+			String[] names = msg.getFichName();
+			long[] sizes = msg.getFichSize();
+			int nfichs = msg.getNFichs();
+			if(this.peerServeDir.keySet().contains(nick)) { //comprobar que sea un servidor de ficheros dado de alta
+				for(int i = 0; i<nfichs; i++) {
+					if(this.fichPeer.keySet().contains(hashes[i]) && !this.fichPeer.get(hashes[i]).contains(key)) {
+						this.fichPeer.get(hashes[i]).add(key);
+					}else if(!this.fichPeer.keySet().contains(hashes[i])) {
+						List<Integer> listaPeers = new ArrayList<Integer>();
+						listaPeers.add(key);
+						fichPeer.put(hashes[i], listaPeers);
+						fichName.put(hashes[i], names[i]);
+						fichSize.put(hashes[i], sizes[i]);
+					}
+				}
+				response = DirMessage.publishOk();
+			}else {
+				response = DirMessage.errorMessage(DirMessageOps.OPERATION_PUBLISH_FAILED);
+			}
 			break;
 		}
 		default:

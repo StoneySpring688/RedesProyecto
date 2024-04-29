@@ -136,7 +136,11 @@ public class NFController {
 			 * hay publicados (los ficheros que otros peers están sirviendo), y la imprima
 			 * por pantalla (método getAndPrintFileList)
 			 */
-			commandSucceeded = controllerDir.getAndPrintFileList();
+			if(this.controllerDir.test() && this.currentState == LOGGED_IN) {
+				commandSucceeded = controllerDir.getAndPrintFileList();
+			}else {
+				System.err.println("[warning] you must login first");
+			}
 			break;
 		case NFCommands.COM_FGSERVE:
 			/*
