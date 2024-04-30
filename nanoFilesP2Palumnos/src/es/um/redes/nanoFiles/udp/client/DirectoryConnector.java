@@ -430,13 +430,52 @@ public class DirectoryConnector {
 	 */
 	public String[] getServerNicknamesSharingThisFile(String fileHash) {
 		String[] nicklist = null;
-		// TODO: Ver TODOs en logIntoDirectory y seguir esquema similar
+		DirMessage msgToServe =  DirMessage.search(this.getSessionKey(), fileHash);
+		String strToServe = msgToServe.toString();
+		//System.out.println("mensaje enviado : "+strToServe);
+		byte[] byteBuff = strToServe.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String recived = new String(byteDataRecived,0,byteDataRecived.length);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_SEARCHOK)) {
+			nicklist = recivedDir.getFichName();
+		}else if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_PUBLISH)){
+			System.err.println("[warning] multiple options found");
+			System.out.println(recivedDir.getNFichs() + "options aviable");
+			FileInfo[] filelist = new FileInfo[recivedDir.getNFichs()];
+			for(int i = 0;i<recivedDir.getNFichs();i++) {
+				filelist[i] = new FileInfo(recivedDir.getFichHash()[i], recivedDir.getFichName()[i], recivedDir.getFichSize()[i]);
+			}
+			if(filelist != null) {
+				FileInfo.printToSysout(filelist);
+			}
+		}else  if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_ERROR)){
+			System.err.println("[warning] file not found or an error occurred");
+		}
 
 
 
 		return nicklist;
 	}
-	//@return devuelve un booleano como true, esto  sirve para ver si directory connector está  iniciado
+	
+	public boolean unregisterFilesAndServer(String[] hashes) {
+		boolean success = false;
+		DirMessage msgToServe = DirMessage.stopsServer(this.getSessionKey(), hashes.length, hashes);
+		String strToServe = msgToServe.toString();
+		//System.out.println("mensaje enviado : " + strToServe);
+		byte[] byteBuff = strToServe.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String recived = new String(byteDataRecived,0,byteDataRecived.length);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_STOPSERVEROK)) {
+			success = true;
+		}else {
+			System.err.println("[warning] an error occurred");
+		}
+		return success;
+	}
+	
+	/**@return devuelve un booleano como true, esto  sirve para ver si directory connector está  iniciado**/
 	public boolean test () {
 		return true;
 	}

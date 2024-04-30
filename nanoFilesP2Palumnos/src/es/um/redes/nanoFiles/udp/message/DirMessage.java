@@ -101,6 +101,21 @@ public class DirMessage {
 		m.setKey(k);
 		return m;
 	}
+	public static DirMessage search(int k, String h) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_SEARCH);
+		m.setKey(k);
+		m.setNFichs(1);
+		m.setFichHash(new String[m.getNFichs()]);
+		m.fichhash[0] = h;
+		return m;
+	}
+	public static DirMessage stopsServer(int k, int nf, String[] h) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_STOPSERVER);
+		m.setKey(k);
+		m.setNFichs(nf);
+		m.setFichName(h);
+		return m;
+	}
 	public static DirMessage lookupServAdrOk(int port,String ip) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOOKUPSERVADROK);
 		m.setPort(port);
@@ -122,6 +137,16 @@ public class DirMessage {
 		m.setFichHash(h);
 		m.setFichSize(s);
 		m.setFichName(n);
+		return m;
+	}
+	public static DirMessage searchOk(int nf, String[]n) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_SEARCHOK);
+		m.setNFichs(nf);
+		m.setFichName(n); // fich name porque en el método fromString es el campo donde se itera
+		return m;
+	}
+	public static DirMessage stopServerOk() {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_STOPSERVEROK);
 		return m;
 	}
 	public static DirMessage errorMessage(String code) {
@@ -412,6 +437,20 @@ public class DirMessage {
 			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
 			break;
 		}
+		case DirMessageOps.OPERATION_SEARCH :{
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_FICHHASH + DELIMITER + fichhash[0] + END_LINE);
+			break;
+		}
+		case DirMessageOps.OPERATION_STOPSERVER :{
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key +END_LINE);
+			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);
+			for(int i = 0; i< this.nfichs ; i++) {
+				sb.append(DirMessageField.FIELDNAME_FICHNAME + DELIMITER + fichname[i] + END_LINE);
+			}
+			break;
+		}
 		case DirMessageOps.OPERATION_REGISTERFILESERVEROK :{
 			break; //no tiene más informacion a parte del codigo
 		}
@@ -423,7 +462,17 @@ public class DirMessage {
 		case DirMessageOps.OPERATION_PUBLISHOK : {
 			break; // no tiene más información a parte del codigo
 		}
-		case DirMessageOps.OPERATION_CONFIRMATION: {
+		case DirMessageOps.OPERATION_SEARCHOK : {
+			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);
+			for(int i = 0; i< this.nfichs ; i++) {
+				sb.append(DirMessageField.FIELDNAME_FICHNAME + DELIMITER + fichname[i] + END_LINE);
+			}
+			break;
+		}
+		case DirMessageOps.OPERATION_STOPSERVEROK : {
+			break; // no tiene más información a parte del codigo
+		}
+		case DirMessageOps.OPERATION_CONFIRMATION : {
 			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de confirmacion
 			switch (code) {
 			case DirMessageOps.OPERATION_LOGINOK: {

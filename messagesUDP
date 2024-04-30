@@ -44,7 +44,7 @@ key : ("integer")
 
 
 
-#confirmation-filelistok
+#filelistok
 
 operation : publish        //filelistok utiliza el mismo mensaje de publish, ya que son iguales y al llegar al cliente es posible hacerlo
 key : ("Integer")          // key se dejará a cero al no ser necesario
@@ -60,7 +60,46 @@ fichName : ("String")
 
 operation : search
 key : ("Integer")
-hash : ("String")
+nfichs : 1
+fichHash : ("String")    // se va a usar el campo ya tratado fichHash, para almacenar el hash
+
+
+
+#searchok
+
+operation : "searchok"
+nfichs : ("Integer")
+fichName : ("String")    //se va a usar el campo ya tratado fichName, para almacenar los nickas de los peer que comparten el fichero
+fichName : ("String")
+...
+
+
+
+#searchMO
+
+operation : publish        //searchMultipleOptions utiliza el mismo mensaje de publish, ya que son iguales y al llegar al cliente es posible hacerlo
+key : ("Integer")          // key se dejará a cero al no ser necesario
+nfichs : ("Integer")
+fichHash : ("String")
+fichSize : ("Long")
+fichName : ("String")
+...
+
+
+
+#stopServer
+
+operation : stopServer
+key : ("Integer")
+fichHash-1 : ("String")
+...
+fichHash-n : ("String")
+
+
+
+#stopServerOk
+
+operation : stopServerOk
 
 
 
@@ -124,19 +163,6 @@ isServer : ("Boolean")
 operation : confirmation
 code : "logoutok"
 
-
-##confirmation-publishok
-
-operation : confirmation
-code : "publishok"
-
-
-
-##confirmation-searchok
-
-operation : confirmation
-code : "searchok"
-nick : ("String") "," ("String") ...
 
 
 ##confirmation-updateinfook

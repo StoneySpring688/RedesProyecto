@@ -145,9 +145,6 @@ public class NFControllerLogicDir {
 		
 		if(fichs != null) {
 			FileInfo.printToSysout(fichs);
-			/*for(FileInfo f : fichs) {
-				System.out.println(f.fileHash + " : " + f.fileSize + " : " + f.fileName);
-			}*/
 			result = true;
 		}
 		
@@ -287,8 +284,12 @@ public class NFControllerLogicDir {
 		 * operación.
 		 */
 		boolean result = false;
-
-
+		String[] names = this.directoryConnector.getServerNicknamesSharingThisFile(fileHashSubstring);
+		if(names != null) {
+			for(String n :names) {
+				System.out.println("peer : " + n);
+			}
+		}
 
 		return result;
 	}
@@ -329,13 +330,21 @@ public class NFControllerLogicDir {
 	 * @return Éxito o fracaso de la operación
 	 */
 	public boolean unregisterFileServer() {
-		/*
-		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
-		 * darse de baja como servidor de ficheros. Se debe enviar la clave de sesión
-		 * para identificarse.
-		 */
+																															/*
+																															 * Comunicarse con el directorio (a través del directoryConnector) para
+																															 * darse de baja como servidor de ficheros. Se debe enviar la clave de sesión
+																															 * para identificarse.
+																															 */
 		boolean result = false;
-
+		FileInfo[] files = NanoFiles.db.getFiles();
+		String[] hashes = new String[files.length];
+		for(int i=0;i<files.length;i++) {
+			hashes[i] = files[i].fileHash;
+		}
+		result = this.directoryConnector.unregisterFilesAndServer(hashes);
+		if(result) {
+			System.out.println("[stopserver] ok");
+		}
 
 
 		return result;
