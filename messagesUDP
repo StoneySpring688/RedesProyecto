@@ -60,7 +60,16 @@ fichName : ("String")
 
 operation : search
 key : ("Integer")
-hash : ("String")
+fichHash : ("String")    // se va a usar el campo ya tratado fichHash, para almacenar el hash
+
+
+
+#confirmation-searchok
+
+operation : "searchok"
+fichName : ("String")    //se va a usar el campo ya tratado fichName, para almacenar los nickas de los peer que comparten el fichero
+fichName : ("String")
+...
 
 
 
@@ -124,19 +133,6 @@ isServer : ("Boolean")
 operation : confirmation
 code : "logoutok"
 
-
-##confirmation-publishok
-
-operation : confirmation
-code : "publishok"
-
-
-
-##confirmation-searchok
-
-operation : confirmation
-code : "searchok"
-nick : ("String") "," ("String") ...
 
 
 ##confirmation-updateinfook
