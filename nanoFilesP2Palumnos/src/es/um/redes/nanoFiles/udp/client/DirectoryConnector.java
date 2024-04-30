@@ -432,7 +432,7 @@ public class DirectoryConnector {
 		String[] nicklist = null;
 		DirMessage msgToServe =  DirMessage.search(this.getSessionKey(), fileHash);
 		String strToServe = msgToServe.toString();
-		System.out.println("mensaje enviado : "+strToServe);
+		//System.out.println("mensaje enviado : "+strToServe);
 		byte[] byteBuff = strToServe.getBytes();
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String recived = new String(byteDataRecived,0,byteDataRecived.length);
