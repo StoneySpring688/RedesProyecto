@@ -368,7 +368,7 @@ public class DirectoryConnector {
 		}
 		DirMessage msg = DirMessage.publish(hashes, sizes, names, files.length, this.getSessionKey());
 		String msgToServ = msg.toString();
-		//System.out.println(msgToServ);
+		System.out.println(msgToServ);
 		byte[] byteBuff = msgToServ.getBytes();
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
@@ -404,11 +404,14 @@ public class DirectoryConnector {
 		byte[] byteBuff = strToServe.getBytes();
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String recived = new String(byteDataRecived,0,byteDataRecived.length);
+		System.out.println("mensaje recivido : "+ recived);
 		DirMessage recivedDir = DirMessage.fromString(recived);
-		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_PUBLISH)) {
+		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)) {
 			filelist = new FileInfo[recivedDir.getNFichs()];
 			for(int i = 0;i<recivedDir.getNFichs();i++) {
-				filelist[i] = new FileInfo(recivedDir.getFichHash()[i], recivedDir.getFichName()[i], recivedDir.getFichSize()[i]);
+				System.out.println("de : " + recivedDir.getFichName()[i]);
+				System.out.println("esto : " + recivedDir.getFichPeers(recivedDir.getFichHash()[i])[0]);
+				filelist[i] = new FileInfo(recivedDir.getFichHash()[i], recivedDir.getFichName()[i], recivedDir.getFichSize()[i], recivedDir.getFichPeers(recivedDir.getFichHash()[i]));
 			}
 		}else {
 			System.err.println("[warning] no files upload at the server or an error occurred");

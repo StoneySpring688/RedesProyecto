@@ -17,4 +17,6 @@ public class DirMessageField {
 	public static final String FIELDNAME_FICHSIZE = "fich_size";
 	public static final String FIELDNAME_FICHNAME = "fich_name";
 	public static final String FIELDNAME_NFICHS = "nfichs";
+	public static final String FIELDNAME_FICHPEER = "fich_peer";
+	public static final String FIELDNAME_NPEER = "npeer";
 }

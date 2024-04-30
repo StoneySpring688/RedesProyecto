@@ -144,7 +144,7 @@ public class NFControllerLogicDir {
 		FileInfo[] fichs = this.directoryConnector.getFileList();
 		
 		if(fichs != null) {
-			FileInfo.printToSysout(fichs);
+			FileInfo.printToSysoutPlus(fichs);
 			result = true;
 		}
 		
