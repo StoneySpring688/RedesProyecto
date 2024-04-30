@@ -330,13 +330,21 @@ public class NFControllerLogicDir {
 	 * @return Éxito o fracaso de la operación
 	 */
 	public boolean unregisterFileServer() {
-		/*
-		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
-		 * darse de baja como servidor de ficheros. Se debe enviar la clave de sesión
-		 * para identificarse.
-		 */
+																															/*
+																															 * Comunicarse con el directorio (a través del directoryConnector) para
+																															 * darse de baja como servidor de ficheros. Se debe enviar la clave de sesión
+																															 * para identificarse.
+																															 */
 		boolean result = false;
-
+		FileInfo[] files = NanoFiles.db.getFiles();
+		String[] hashes = new String[files.length];
+		for(int i=0;i<files.length;i++) {
+			hashes[i] = files[i].fileHash;
+		}
+		result = this.directoryConnector.unregisterFilesAndServer(hashes);
+		if(result) {
+			System.out.println("[stopserver] ok");
+		}
 
 
 		return result;

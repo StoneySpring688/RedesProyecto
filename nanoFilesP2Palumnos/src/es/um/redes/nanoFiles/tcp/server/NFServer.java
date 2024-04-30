@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 /**
@@ -65,20 +66,25 @@ public class NFServer implements Runnable {
 		}
 		
 																																	
-		
+		try {
+			this.serverSocket.setSoTimeout(SERVERSOCKET_ACCEPT_TIMEOUT_MILISECS);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		System.out.println("[waiting]");
 		while(!this.stopServer){
 			try {
-				System.out.println("[waiting]");
 				Socket socket = this.serverSocket.accept();
 				NFServerThread servThread = new NFServerThread(socket);
 				servThread.start();
-				
-			} catch (IOException e) {
+			}catch(SocketTimeoutException e) {
+				//if(this.stopServer) System.out.println("[server] stop signal detected");
+			}catch (IOException e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 			}
 		}
-		System.out.println("[Server] stopped");
+		//System.out.println("[Server] stopped");
 																																	
 	}
 	
@@ -97,7 +103,7 @@ public class NFServer implements Runnable {
 	}
 	
 	public void stopServer() {
-		System.out.println("stopping server");
+		//System.out.println("stopping server");
 		this.stopServer = true;
 	}
 	

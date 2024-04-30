@@ -397,7 +397,7 @@ public class NFDirectoryServer {
 		}
 		case DirMessageOps.OPERATION_SEARCH : {
 			String hash = msg.getFichHash()[0];
-			System.out.println("el hash buscado : " + hash);
+			//System.out.println("el hash buscado : " + hash);
 			FileInfo [] db  = this.getFiles();
 			FileInfo[] coincidence = FileInfo.lookupHashSubstring(db, hash);
 			if(coincidence.length >1) {
@@ -428,6 +428,24 @@ public class NFDirectoryServer {
 				}
 				response = DirMessage.searchOk(names.length, names);
 			}
+			break;
+		}case DirMessageOps.OPERATION_STOPSERVER : {
+			Integer key = msg.getKey();
+			String[] hashes = msg.getFichName();
+			//System.out.println("nombre es :" + this.sessionKeys.get(key));
+			this.peerServerPort.remove(this.sessionKeys.get(key));
+			this.peerServeDir.remove(this.sessionKeys.get(key));
+			for(String h : hashes) {
+				//System.out.println("remove : " + this.fichPeer.get(h));	
+				this.fichPeer.get(h).remove(key);
+				if(this.fichPeer.get(h).isEmpty()) {
+					this.fichPeer.remove(h);
+					this.fichInfo.remove(h);
+					this.fichName.remove(h);
+					this.fichSize.remove(h);
+				}
+			}
+			response = DirMessage.stopServerOk();
 			break;
 		}
 		default:

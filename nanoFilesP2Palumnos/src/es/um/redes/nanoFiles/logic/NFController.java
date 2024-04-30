@@ -200,8 +200,14 @@ public class NFController {
 			 * solicite al directorio darnos de baja como servidor de ficheros (método
 			 * unregisterFileServer).
 			 */
-			controllerPeer.stopBackgroundFileServer();
-			commandSucceeded = controllerDir.unregisterFileServer();
+			if(this.controllerDir.test() && this.currentState == LOGGED_IN && this.controllerPeer.isServer) {
+				controllerPeer.stopBackgroundFileServer();
+				commandSucceeded = controllerDir.unregisterFileServer();
+			}else if(!this.controllerPeer.isServer) {
+				System.err.println("[warning] you must run a server first");
+			}else {
+				System.err.println("[warning] you must login first");
+			}
 			break;
 		case NFCommands.COM_DOWNLOADFROM:
 																																/*
