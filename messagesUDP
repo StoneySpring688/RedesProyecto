@@ -52,6 +52,9 @@ nfichs : ("Integer")
 fichHash : ("String")
 fichSize : ("Long")
 fichName : ("String")
+fichPeer-1 : ("String")
+...
+fichPeer-n : ("String")
 ...
 
 
