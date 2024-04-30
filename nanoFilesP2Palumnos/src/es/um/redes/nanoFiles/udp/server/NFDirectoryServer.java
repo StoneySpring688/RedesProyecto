@@ -52,6 +52,7 @@ public class NFDirectoryServer {
 	
 	// estructuras para almacenar la información de los ficheros que comparten los peers
 	
+	private HashMap <String, FileInfo> fichInfo;
 	private HashMap <String, List<Integer> > fichPeer;
 	private HashMap <String, String> fichName;
 	private HashMap <String, Long> fichSize;
@@ -83,6 +84,7 @@ public class NFDirectoryServer {
 																					 */
 		this.nicks = new  HashMap<String, Integer>();
 		this.sessionKeys = new HashMap<Integer, String>();
+		this.fichInfo = new HashMap<String, FileInfo>();
 		this.fichPeer = new HashMap<String, List<Integer>>();
 		this.fichName = new HashMap<String, String>();
 		this.fichSize = new HashMap<String, Long>();
@@ -357,6 +359,7 @@ public class NFDirectoryServer {
 						//System.out.println("añadiendo nombre : " + names[i]);
 						fichSize.put(hashes[i], sizes[i]);
 						//System.out.println("añadiendo tamano : " + sizes[i]);
+						fichInfo.put(hashes[i], new FileInfo(hashes[i],names[i],sizes[i]));
 					}
 				}
 				response = DirMessage.publishOk();
@@ -392,6 +395,41 @@ public class NFDirectoryServer {
 			}
 			break;
 		}
+		case DirMessageOps.OPERATION_SEARCH : {
+			String hash = msg.getFichHash()[0];
+			System.out.println("el hash buscado : " + hash);
+			FileInfo [] db  = this.getFiles();
+			FileInfo[] coincidence = FileInfo.lookupHashSubstring(db, hash);
+			if(coincidence.length >1) {
+				int nFichs = coincidence.length;
+				System.out.println(nFichs);
+				if(nFichs >= 1) {
+					System.out.println("nfichs : "+nFichs);
+					String fichHash[] = new String[nFichs];
+					String fichName[] = new String[nFichs];
+					long fichSize[] = new long[nFichs];
+					for(int i=0;i<nFichs;i++) {
+						fichHash[i] = coincidence[i].fileHash;
+						fichName[i] = coincidence[i].fileName;
+						fichSize[i] = coincidence[i].fileSize;
+					}
+					
+					response = DirMessage.publish(fichHash, fichSize, fichName, nFichs, 0);
+				}
+			}else if(coincidence.length == 0) {
+				response = DirMessage.errorMessage(DirMessageOps.OPERATION_SEARCH_FAILED);
+			}else {
+				String hashComplete = coincidence[0].fileHash;
+				int[] keys = this.fichPeer.get(hashComplete).stream().mapToInt(Integer::intValue).toArray();
+				String[] names = new String[keys.length];
+				for(int i=0;i<keys.length;i++) {
+					names[i] = this.sessionKeys.get(keys[i]);
+					System.out.println("se añade el nombre : " + this.sessionKeys.get(keys[i]));
+				}
+				response = DirMessage.searchOk(names.length, names);
+			}
+			break;
+		}
 		default:
 			System.out.println("Unexpected message operation: \"" + msg.getOperation() + "\"");
 		}
@@ -399,4 +437,14 @@ public class NFDirectoryServer {
 		return response;
 
 	}
+	
+	private FileInfo[] getFiles() {
+		FileInfo[] fileinfoarray = new FileInfo[fichInfo.size()];
+		int numFiles = 0;
+		for(FileInfo f : fichInfo.values()) {
+			fileinfoarray[numFiles++] = f;
+		}
+		return fileinfoarray;
+	}
+	
 }

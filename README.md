@@ -15,6 +15,7 @@ ficheros
 - fgserve & bgserve
 - publish
 - filelist
+- search
 
 ## Documentation
 
@@ -39,6 +40,7 @@ en la terminal introducir uno de los comandos:
 - primera forma de uso : DIRECCION:PUERTO
   si se conoce la dirección y el puerto de el servidor de ficheros se puede efectuar la descarga con ellos
 - uso : downloadfrom DIRECCION:PUERTO HASH FILENAME
+  uso : downloadfrom NICK HASH FILENAME
 
 ### fgserve & bgserve
 - hay dos comandos para establecer un servidor de ficheros :
@@ -52,6 +54,12 @@ en la terminal introducir uno de los comandos:
 
 ### filelist
 - muestra una lista con información de todos los ficheros publicados en el directorio
+
+### search
+- muestra una lista de los peers que comparten un determinado fichero
+- si el hash no se encuentra se envia un error
+- si se encuentran varios hash iguales, imprime un mensaje con información de los ficheros encontrados
+- uso : search HASH
 
 ## Software empleado
 

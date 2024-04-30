@@ -229,7 +229,12 @@ public class NFController {
 			 * que tienen disponible el fichero identificado por dicho hash (puede ser una
 			 * subcadena del hash o el hash completo)
 			 */
-			commandSucceeded = controllerDir.getAndPrintServersNicknamesSharingThisFile(downloadTargetFileHash);
+			
+			if(this.controllerDir.test() && this.currentState == LOGGED_IN) {
+				commandSucceeded = controllerDir.getAndPrintServersNicknamesSharingThisFile(downloadTargetFileHash);
+			}else {
+				System.err.println("[warning] you must login first");
+			}
 			break;
 		case NFCommands.COM_DOWNLOAD:
 			/*
