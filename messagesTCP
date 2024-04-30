@@ -24,7 +24,6 @@ tam : ("Long")
 
 opCode : downl(0x1)
 hash : ("String")
-nick : ("String")
 init: ("long")
 tam : ("long")
 
