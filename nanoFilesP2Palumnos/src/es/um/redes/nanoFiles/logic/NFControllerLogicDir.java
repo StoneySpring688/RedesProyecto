@@ -145,9 +145,6 @@ public class NFControllerLogicDir {
 		
 		if(fichs != null) {
 			FileInfo.printToSysout(fichs);
-			/*for(FileInfo f : fichs) {
-				System.out.println(f.fileHash + " : " + f.fileSize + " : " + f.fileName);
-			}*/
 			result = true;
 		}
 		
@@ -287,8 +284,12 @@ public class NFControllerLogicDir {
 		 * operación.
 		 */
 		boolean result = false;
-
-
+		String[] names = this.directoryConnector.getServerNicknamesSharingThisFile(fileHashSubstring);
+		if(names != null) {
+			for(String n :names) {
+				System.out.println("peer : " + n);
+			}
+		}
 
 		return result;
 	}

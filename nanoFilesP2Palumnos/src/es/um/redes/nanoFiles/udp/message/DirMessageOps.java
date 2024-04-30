@@ -20,6 +20,7 @@ public class DirMessageOps {
 	public static final String OPERATION_LOOKUP_SERVADR = "lookupservadr";
 	public static final String OPERATION_PUBLISH = "publish";
 	public static final String OPERATION_FILELIST = "filelist";
+	public static final String OPERATION_SEARCH = "search";
 	
 	
 	//codes
@@ -36,6 +37,8 @@ public class DirMessageOps {
 	public static final String OPERATION_PUBLISH_FAILED = "publish_failed";
 	public static final String OPERATION_FILELISTOK = "filelistok";
 	public static final String OPERATION_FILELIST_FAILED = "filelist_failed";
+	public static final String OPERATION_SEARCHOK = "searchok";
+	public static final String OPERATION_SEARCH_FAILED = "search_failed";
 
 
 
