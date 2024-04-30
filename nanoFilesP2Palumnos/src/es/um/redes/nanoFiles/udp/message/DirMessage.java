@@ -51,8 +51,10 @@ public class DirMessage {
 	private int port;
 	private int nfichs;
 	private HashMap<String, Boolean> peers;
+	private HashMap<String, String[]> fichpeers;
 	private String[] fichhash;
 	private String[] fichname;
+	private int[] npeer;
 	private long[] fichsize;
 	
 	
@@ -130,13 +132,15 @@ public class DirMessage {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_PUBLISHOK);
 		return m;
 	}
-	public static DirMessage filelistok(String[]h,long[]s,String[]n, int nf, int k) {
+	public static DirMessage filelistok(String[]h,long[]s,String[]n, int[]npeers, int nf, int k) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_FILELISTOK);
 		m.setKey(k);
 		m.setNFichs(nf);
 		m.setFichHash(h);
 		m.setFichSize(s);
 		m.setFichName(n);
+		m.setNPeers(npeers);
+		m.fichpeers = new HashMap<String, String[]>();
 		return m;
 	}
 	public static DirMessage searchOk(int nf, String[]n) {
@@ -204,11 +208,17 @@ public class DirMessage {
 	public void setPeers(String peer, Boolean isServer) {
 		this.peers.put(peer, isServer);
 	}
+	public void setFichPeers(String h, String[] p) {
+		this.fichpeers.put(h, p);
+	}
 	public void setFichHash(String[] h) {
 		this.fichhash = h;
 	}
 	public void setFichSize(long[] s) {
 		this.fichsize = s;
+	}
+	public void setNPeers(int[] npeeers) {
+		this.npeer = npeeers;
 	}
 	public void setFichName(String[] n) {
 		this.fichname = n;
@@ -243,11 +253,17 @@ public class DirMessage {
 	public Boolean[] getIsServer() {
 		return this.peers.values().toArray(new Boolean[this.peers.values().size()]);
 	}
+	public String[] getFichPeers(String h) {
+		return this.fichpeers.get(h);
+	}
 	public String[] getFichHash() {
 		return Arrays.copyOf(this.fichhash, this.fichhash.length);
 	}
 	public long[] getFichSize() {
 		return Arrays.copyOf(this.fichsize, this.fichsize.length);
+	}
+	public int[] getNPeers() {
+		return Arrays.copyOf(this.npeer, this.npeer.length);
 	}
 	public String[] getFichName() {
 		return Arrays.copyOf(this.fichname, this.fichname.length);
@@ -279,6 +295,8 @@ public class DirMessage {
 		DirMessage m = null;
 		String auxNick = null;
 		int aux = 0; // se utiliza para guardar en las estruturas fhash,fsize,fname
+		int nn = 0;  // se utiliza para guardar en la estrutura nicks
+		String[] nicks = null; // se pone a null cuando empiece la información de un nuevo fichero
 		
 		for (String line : lines) {
 			if(!line.contains(END_MESSAGE)) {  //HAY QUE HACER QUE NO SE PROCESE LA LINEA FIN DEL MENSAJE
@@ -353,15 +371,51 @@ public class DirMessage {
 				case DirMessageField.FIELDNAME_FICHNAME: {
 					try {
 						m.fichname[aux] = val;
+						if(m.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)) {
+							System.out.println("añadiendo");
+							m.fichpeers.put(m.getFichHash()[aux], nicks);
+							nn = 0;
+							nicks = null;
+						}
 						//System.out.println("nombre an msg : " + val);
 						aux++; // se itera ya que es el ultimo atributo de un fichero tal cual está la estructura de el mensaje
 					} catch (NullPointerException e) {
 						m.setFichName(new String[m.getNFichs()]);
-						//System.out.println("nombre an msg : " + val);
 						m.fichname[aux] = val;
+						//System.out.println("nombre an msg : " + val);
+						if(m.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)) {
+							System.out.println("añadiendo");
+							m.fichpeers.put(m.getFichHash()[aux], nicks);
+							nn = 0;
+							nicks = null;
+						}
 						aux++; // se itera ya que es el ultimo atributo de un fichero tal cual está la estructura de el mensaje
 					}
 					
+					break;
+				}
+				case DirMessageField.FIELDNAME_NPEER : {
+					
+					try {
+						m.npeer[aux] = Integer.parseInt(val);
+					} catch (NullPointerException e) {
+						m.setNPeers(new int[m.getNFichs()]);
+						m.fichpeers = new HashMap<String, String[]>();
+						m.npeer[aux] = Integer.parseInt(val);
+					}
+					break;
+				}
+				case DirMessageField.FIELDNAME_FICHPEER:{
+					try {
+						 nicks[nn] = val;
+						 nn++;
+					} catch (NullPointerException e) {
+						nicks = new String[m.getNPeers()[aux]];
+						System.out.println("aux : " + aux);
+						System.out.println("nn : " + nn);
+						nicks[nn] = val;
+						nn++;
+						}
 					break;
 				}
 				//TODO ir ampliando para el resto de mensajes
@@ -461,6 +515,21 @@ public class DirMessage {
 		}
 		case DirMessageOps.OPERATION_PUBLISHOK : {
 			break; // no tiene más información a parte del codigo
+		}
+		case DirMessageOps.OPERATION_FILELISTOK : {
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key +END_LINE);
+			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);
+			for(int i = 0; i< this.nfichs ; i++) {
+				sb.append(DirMessageField.FIELDNAME_FICHHASH + DELIMITER + fichhash[i] + END_LINE);
+				sb.append(DirMessageField.FIELDNAME_FICHSIZE + DELIMITER + fichsize[i] + END_LINE);
+				sb.append(DirMessageField.FIELDNAME_NPEER + DELIMITER + npeer[i] + END_LINE);
+				for(int j = 0; j<npeer[i];j++) {
+					sb.append(DirMessageField.FIELDNAME_FICHPEER + DELIMITER + fichpeers.get(fichhash[i])[j] + END_LINE);
+				}
+				sb.append(DirMessageField.FIELDNAME_FICHNAME + DELIMITER + fichname[i] + END_LINE);
+			}
+			
+			break;
 		}
 		case DirMessageOps.OPERATION_SEARCHOK : {
 			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);

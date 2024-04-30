@@ -13,6 +13,7 @@ public class FileInfo {
 	public String fileName;
 	public String filePath;
 	public long fileSize = -1;
+	public String[] peers;
 
 	public FileInfo(String hash, String name, long size, String path) {
 		fileHash = hash;
@@ -21,10 +22,21 @@ public class FileInfo {
 		filePath = path;
 	}
 	
-	public FileInfo(String hash, String name, long size) { // constructor sin file path para filelist
+	public FileInfo(String hash, String name, long size) { // constructor sin file path para publish
 		fileHash = hash;
 		fileName = name;
 		fileSize = size;
+	}
+	
+	public FileInfo(String hash, String name, long size, String[] p) { // constructor sin file path para filelist
+		fileHash = hash;
+		fileName = name;
+		fileSize = size; 
+		peers = p;
+	}
+	
+	public void setPeers(String[] p) {
+		this.peers = p;
 	}
 
 	public FileInfo() {
@@ -48,7 +60,29 @@ public class FileInfo {
 		for (FileInfo file : files) {
 			System.out.println(file);
 		}
+		
 	}
+	
+	public static void printToSysoutPlus(FileInfo[] files) {
+	    StringBuffer strBuf = new StringBuffer();
+	    strBuf.append(String.format("%1$-30s", "Name"));
+	    strBuf.append(String.format("%1$10s", "Size"));
+	    strBuf.append(String.format(" %1$-45s", "Hash"));
+	    strBuf.append(String.format("%1$-30s", "Peers")); // Nueva columna de Peers
+	    System.out.println(strBuf);
+	    for (FileInfo file : files) {
+	        System.out.print(file.toString()); // Imprime las primeras tres columnas igual que printToSysout
+	        if (file.peers != null) { // Verifica si el arreglo de peers no es nulo
+	            for(String n : file.peers) {
+	                System.out.print(n + "   ");
+	            }
+	        } else {
+	            System.out.print("N/A"); // Si no hay peers, imprime "N/A"
+	        }
+	        System.out.println(); // Agrega un salto de línea al final de cada fila
+	    }
+	}
+
 
 	/**
 	 * Scans the given directory and returns an array of FileInfo objects, one for

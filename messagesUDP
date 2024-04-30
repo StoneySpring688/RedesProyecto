@@ -51,7 +51,11 @@ key : ("Integer")          // key se dejará a cero al no ser necesario
 nfichs : ("Integer")
 fichHash : ("String")
 fichSize : ("Long")
+nPeer : ("Integer")
 fichName : ("String")
+fichPeer-1 : ("String")
+...
+fichPeer-n : ("String")
 ...
 
 

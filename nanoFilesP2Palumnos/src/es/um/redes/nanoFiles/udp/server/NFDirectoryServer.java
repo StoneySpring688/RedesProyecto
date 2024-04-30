@@ -376,10 +376,13 @@ public class NFDirectoryServer {
 				System.out.println("nfichs : "+nFichs);
 				String fichHash[] = new String[nFichs];
 				String fichName[] = new String[nFichs];
+				int npeers[] = new int[nFichs];
 				long fichSize[] = this.fichSize.values().stream().mapToLong(Long::longValue).toArray();
 				this.fichPeer.keySet().toArray(fichHash);
 				this.fichName.values().toArray(fichName);
-				
+				for(int i =0;i<this.fichInfo.size();i++) {
+					npeers[i] = this.fichPeer.get(fichHash[i]).size();
+				}
 				/*for(String h : fichHash) {
 					System.out.println("hash : "+h);
 				}
@@ -389,7 +392,15 @@ public class NFDirectoryServer {
 				for(long s : fichSize) {
 					System.out.println("size : "+s);
 				}*/
-				response = DirMessage.publish(fichHash, fichSize, fichName, nFichs, 0);
+				response = DirMessage.filelistok(fichHash, fichSize, fichName, npeers, nFichs, 0);
+				for(int i=0;i<this.fichPeer.size();i++) {
+					int[] key = this.fichPeer.get(fichHash[i]).stream().mapToInt(Integer::intValue).toArray();
+					String[] nicks = new String[key.length];
+					for(int j=0;j<key.length;j++) {
+						nicks[j] = this.sessionKeys.get(key[j]);
+					}
+					response.setFichPeers(fichHash[i], nicks);
+				}
 			}else {
 				response  = DirMessage.errorMessage(DirMessageOps.OPERATION_FILELIST_FAILED);
 			}
