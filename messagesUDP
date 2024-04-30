@@ -44,7 +44,7 @@ key : ("integer")
 
 
 
-#confirmation-filelistok
+#filelistok
 
 operation : publish        //filelistok utiliza el mismo mensaje de publish, ya que son iguales y al llegar al cliente es posible hacerlo
 key : ("Integer")          // key se dejará a cero al no ser necesario
@@ -60,13 +60,15 @@ fichName : ("String")
 
 operation : search
 key : ("Integer")
+nfichs : 1
 fichHash : ("String")    // se va a usar el campo ya tratado fichHash, para almacenar el hash
 
 
 
-#confirmation-searchok
+#searchok
 
 operation : "searchok"
+nfichs : ("Integer")
 fichName : ("String")    //se va a usar el campo ya tratado fichName, para almacenar los nickas de los peer que comparten el fichero
 fichName : ("String")
 ...
