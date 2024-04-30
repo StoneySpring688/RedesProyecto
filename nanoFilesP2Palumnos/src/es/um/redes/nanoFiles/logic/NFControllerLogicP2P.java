@@ -89,7 +89,7 @@ public class NFControllerLogicP2P {
 		 * comprobar que el servidor está escuchando en un puerto válido (>0) e imprimir
 		 * mensaje informando sobre el puerto, y devolver verdadero.
 		 */
-		if(this.server != null) {
+		if(this.server != null && this.isServer) {
 			System.err.println("[bgserve] An error ocurred, a server is already running");
 		}else {
 			try {
@@ -245,6 +245,7 @@ public class NFControllerLogicP2P {
 		if(this.server!=null) {
 			this.server.stopServer();
 			this.isServer = false;
+			System.out.println("[bgserve] stopping server");
 		}
 		
 		/*

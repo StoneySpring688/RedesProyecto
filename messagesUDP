@@ -87,6 +87,21 @@ fichName : ("String")
 
 
 
+#stopServer
+
+operation : stopServer
+key : ("Integer")
+fichHash-1 : ("String")
+...
+fichHash-n : ("String")
+
+
+
+#stopServerOk
+
+operation : stopServerOk
+
+
 
 #registerFileServer
 

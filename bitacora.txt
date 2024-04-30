@@ -220,3 +220,20 @@ pendiente :
 - en caso de tener tiempo: 
   - cambiar los mensajes para que no hayan mensajes de confirmación con subtipos, si no que cada confirmación sea un mensaje.
   - cambiar la forma en que se tratan publish y fileinfo para que no sean necesarias tantas estructuras de datos en el servidor de directorios
+
+
+
+-----30-04-2024 18:57 (StoneySpring):
+cambios :
+- se implementó la funcionalidad de stopServer
+- se implementó la funcionalidad necesaria para mantener actualizada la información del servidor de directorios
+
+complicaciones :
+- cuando se usaba stopServer, al estar el método esperando en accept() aceptaba una última operación, la solución fué  establecer un timeout de 1 segundo, ya que así al segundo de usar el comando se parará el
+  servidor, pero esto no hace que se vaya pasando ya que al saltar el timeout vuelve a iniciar el bucle y estar a la espera de peticiones
+
+pendiente :
+- implementar el método download para descargar un fichero a la vez, de todos  los peers que lo compartan
+- en caso de tener tiempo: 
+  - cambiar los mensajes para que no hayan mensajes de confirmación con subtipos, si no que cada confirmación sea un mensaje.
+  - cambiar la forma en que se tratan publish y fileinfo para que no sean necesarias tantas estructuras de datos en el servidor de directorios

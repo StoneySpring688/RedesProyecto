@@ -457,7 +457,25 @@ public class DirectoryConnector {
 
 		return nicklist;
 	}
-	//@return devuelve un booleano como true, esto  sirve para ver si directory connector está  iniciado
+	
+	public boolean unregisterFilesAndServer(String[] hashes) {
+		boolean success = false;
+		DirMessage msgToServe = DirMessage.stopsServer(this.getSessionKey(), hashes.length, hashes);
+		String strToServe = msgToServe.toString();
+		//System.out.println("mensaje enviado : " + strToServe);
+		byte[] byteBuff = strToServe.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String recived = new String(byteDataRecived,0,byteDataRecived.length);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_STOPSERVEROK)) {
+			success = true;
+		}else {
+			System.err.println("[warning] an error occurred");
+		}
+		return success;
+	}
+	
+	/**@return devuelve un booleano como true, esto  sirve para ver si directory connector está  iniciado**/
 	public boolean test () {
 		return true;
 	}
