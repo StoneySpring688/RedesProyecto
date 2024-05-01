@@ -5,10 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import es.um.redes.nanoFiles.udp.message.DirMessage;
 import es.um.redes.nanoFiles.udp.message.DirMessageOps;
@@ -51,8 +49,6 @@ public class DirectoryConnector {
 	private InetSocketAddress directoryAddress;
 
 	private int sessionKey = INVALID_SESSION_KEY;
-	private boolean successfulResponseStatus;
-	private String errorDescription;
 	
 	public DirectoryConnector(String address) throws IOException {
 																										/*

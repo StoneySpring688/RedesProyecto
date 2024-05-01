@@ -39,6 +39,7 @@ public class NFConnectorThread extends Thread{
 	}
 	public void run() {
 		try {
+			System.out.println("hilo : " + this.id + " init : "+ this.init + " fin : " +this.fin);
 			byte[] data =this.nfc.downloadChunk(Hash, init, fin);
 			l.lock();
 			try {

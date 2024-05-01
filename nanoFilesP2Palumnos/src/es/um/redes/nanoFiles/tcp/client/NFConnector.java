@@ -3,21 +3,16 @@ package es.um.redes.nanoFiles.tcp.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Random;
 
-import es.um.redes.nanoFiles.application.NanoFiles;
 import es.um.redes.nanoFiles.tcp.message.PeerMessage;
 import es.um.redes.nanoFiles.tcp.message.PeerMessageOps;
 import es.um.redes.nanoFiles.util.FileDigest;
-import es.um.redes.nanoFiles.util.FileInfo;
 
 //Esta clase proporciona la funcionalidad necesaria para intercambiar mensajes entre el cliente y el servidor
 public class NFConnector {
@@ -132,8 +127,7 @@ public class NFConnector {
 	
 	public byte[] downloadChunk(String hash, long init, long fin) throws IOException {
 		byte data[] = null;
-		long tam = fin;
-		PeerMessage p = PeerMessage.peerMessageDownload(hash, init, tam);
+		PeerMessage p = PeerMessage.peerMessageDownload(hash, init, fin);
 		p.writeMessageToOutputStream(dos);
 		PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
 		data = msgFromServ.getData();

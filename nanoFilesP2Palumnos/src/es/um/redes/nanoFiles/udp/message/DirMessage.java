@@ -1,25 +1,18 @@
 package es.um.redes.nanoFiles.udp.message;
 
-import java.lang.reflect.Array;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
-import es.um.redes.nanoFiles.util.FileInfo;
 
-																												/**
-																												 * Clase que modela los mensajes del protocolo de comunicación entre pares para
-																												 * implementar el explorador de ficheros remoto (servidor de ficheros). Estos
-																												 * mensajes son intercambiados entre las clases DirectoryServer y
-																												 * DirectoryConnector, y se codifican como texto en formato "campo:valor".
-																												 * 
-																												 * @author rtitos
-																												 *
-																												 */
+/**
+* Clase que modela los mensajes del protocolo de comunicación entre pares para
+* implementar el explorador de ficheros remoto (servidor de ficheros). Estos
+* mensajes son intercambiados entre las clases DirectoryServer y
+* DirectoryConnector, y se codifican como texto en formato "campo:valor".
+* 
+* @author rtitos
+*
+*/
 public class DirMessage {
 	public static final int PACKET_MAX_SIZE = 65507; // 65535 - 8 (UDP header) - 20 (IP header)
 
@@ -27,23 +20,8 @@ public class DirMessage {
 	private static final char END_LINE = '\n'; // Define el carácter de fin de línea
 	private static final String END_MESSAGE = "END_MESSAGE";
 
-																												/**
-																												 * Nombre del campo que define el tipo de mensaje (primera línea)
-																												 */
-																												//private static final String FIELDNAME_OPERATION = "operation";
-																												/*
-																												 * Definir de manera simbólica los nombres de todos los campos que pueden
-																												 * aparecer en los mensajes de este protocolo (formato campo:valor) Esto está en la clase DirMessageField
-																												 */
-
-																												/**
-																												 * Tipo del mensaje, de entre los tipos definidos en PeerMessageOps.
-																												 */
-	private String operation = DirMessageOps.OPERATION_INVALID;
-																												/*
-																												 * Crear un atributo correspondiente a cada uno de los campos de los
-																												 * diferentes mensajes de este protocolo.
-																												 */
+																												
+	private String operation = DirMessageOps.OPERATION_INVALID;																									
 	private String nickname;
 	private String ip;
 	private String code;
@@ -288,26 +266,17 @@ public class DirMessage {
 
 
 
-																							/**
-																							 * Método que convierte un mensaje codificado como una cadena de caracteres, a
-																							 * un objeto de la clase PeerMessage, en el cual los atributos correspondientes
-																							 * han sido establecidos con el valor de los campos del mensaje.
-																							 * 
-																							 * @param message El mensaje recibido por el socket, como cadena de caracteres
-																							 * @return Un objeto PeerMessage que modela el mensaje recibido (tipo, valores,
-																							 *         etc.)
-																							 */
+/**
+* Método que convierte un mensaje codificado como una cadena de caracteres, a
+* un objeto de la clase PeerMessage, en el cual los atributos correspondientes
+* han sido establecidos con el valor de los campos del mensaje.
+* 
+* @param message El mensaje recibido por el socket, como cadena de caracteres
+* @return Un objeto PeerMessage que modela el mensaje recibido (tipo, valores, etc.)
+*/
 	public static DirMessage fromString(String message) {
-																							/*
-																							 * Usar un bucle para parsear el mensaje línea a línea, extrayendo para
-																							 * cada línea el nombre del campo y el valor, usando el delimitador DELIMITER, y
-																							 * guardarlo en variables locales.
-																							 */
 
-		//System.out.println("DirMessage read from socket:");
-		//System.out.println(message);
 		String[] lines = message.split(END_LINE + "");
-		// Local variables to save data during parsing
 		DirMessage m = null;
 		String auxNick = null;
 		int aux = 0; // se utiliza para guardar en las estruturas fhash,fsize,fname
@@ -316,7 +285,6 @@ public class DirMessage {
 		
 		for (String line : lines) {
 			if(!line.contains(END_MESSAGE)) {  //HAY QUE HACER QUE NO SE PROCESE LA LINEA FIN DEL MENSAJE
-				//System.out.println("linea procesada  : "+ line);
 				
 				int ind = line.indexOf(DELIMITER); // Posición del delimitador
 				String fieldName = line.substring(0, ind).toLowerCase(); // minúsculas
@@ -397,14 +365,11 @@ public class DirMessage {
 							nn = 0;
 							nicks = null;
 						}
-						//System.out.println("nombre an msg : " + val);
 						aux++; // se itera ya que es el ultimo atributo de un fichero tal cual está la estructura de el mensaje
 					} catch (NullPointerException e) {
 						m.setFichName(new String[m.getNFichs()]);
 						m.fichname[aux] = val;
-						//System.out.println("nombre an msg : " + val);
 						if(m.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)) {
-							//System.out.println("añadiendo");
 							m.fichpeers.put(m.getFichHash()[aux], nicks);
 							nn = 0;
 							nicks = null;
@@ -440,7 +405,6 @@ public class DirMessage {
 						}
 					break;
 				}
-				//TODO ir ampliando para el resto de mensajes
 				default:
 					System.err.println("PANIC: DirMessage.fromString - message with unknown field name " + fieldName);
 					System.err.println("Message was:\n" + message);
@@ -455,20 +419,13 @@ public class DirMessage {
 		return m;
 	}
 
-																												/**
-																												 * Método que devuelve una cadena de caracteres con la codificación del mensaje
-																												 * según el formato campo:valor, a partir del tipo y los valores almacenados en
-																												 * los atributos.
-																												 * 
-																												 * @return La cadena de caracteres con el mensaje a enviar por el socket.
-																												 */
+/**
+* Método que devuelve una cadena de caracteres con la codificación del mensaje
+* según el formato campo:valor, a partir del tipo y los valores almacenados en los atributos.
+* 
+* @return La cadena de caracteres con el mensaje a enviar por el socket.
+*/
 	public String toString() {
-		
-																												/*
-																												 * En función del tipo de mensaje, crear una cadena con el tipo y
-																												 * concatenar el resto de campos necesarios usando los valores de los atributos
-																												 * del objeto.
-																												 */
 		StringBuffer sb = new StringBuffer();
 		sb.append(DirMessageField.FIELDNAME_OPERATION + DELIMITER + operation + END_LINE); // Construimos el campo
 		
@@ -605,7 +562,7 @@ public class DirMessage {
 			System.exit(-1);
 		}
 		
-		sb.append(END_MESSAGE); // Marcamos el final del mensaje
+		sb.append(END_MESSAGE);
 		return sb.toString();
 	}
 }
