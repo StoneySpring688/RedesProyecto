@@ -22,6 +22,7 @@ public class DirMessageOps {
 	public static final String OPERATION_FILELIST = "filelist";
 	public static final String OPERATION_SEARCH = "search";
 	public static final String OPERATION_STOPSERVER = "stopserver";
+	public static final String OPERATION_DOWNLOADASKINFO = "downloadAskInfo";
 	
 	
 	//codes
@@ -41,6 +42,7 @@ public class DirMessageOps {
 	public static final String OPERATION_SEARCHOK = "searchok";
 	public static final String OPERATION_SEARCH_FAILED = "search_failed";
 	public static final String OPERATION_STOPSERVEROK = "stopserverok";
+	public static final String OPERATION_DOWNLOADASKINFOOK = "downloadAskInfook";
 
 
 

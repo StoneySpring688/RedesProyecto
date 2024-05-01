@@ -118,6 +118,11 @@ public class DirMessage {
 		m.setFichName(h);
 		return m;
 	}
+	public static DirMessage downloadAskInfo(String h) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_DOWNLOADASKINFO);
+		m.setNickname(h);
+		return m;
+	}
 	public static DirMessage lookupServAdrOk(int port,String ip) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOOKUPSERVADROK);
 		m.setPort(port);
@@ -151,6 +156,17 @@ public class DirMessage {
 	}
 	public static DirMessage stopServerOk() {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_STOPSERVEROK);
+		return m;
+	}
+	public static DirMessage downloadAskInfoOk(int nPeers, long tam, String h, int[] p, String[] ip) {
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_DOWNLOADASKINFOOK);
+		m.setNFichs(nPeers);
+		long[] t = new long[1];
+		t[0] = tam;
+		m.setFichSize(t);
+		m.setNickname(h);
+		m.setNPeers(p);
+		m.setFichName(ip);
 		return m;
 	}
 	public static DirMessage errorMessage(String code) {
@@ -362,7 +378,11 @@ public class DirMessage {
 					try {
 						m.fichsize[aux] = Long.parseLong(val);
 					} catch (NullPointerException e) {
-						m.setFichSize(new long[m.getNFichs()]);
+						if(m.getOperation().matches(DirMessageOps.OPERATION_DOWNLOADASKINFOOK)) {
+							m.setFichSize(new long[1]);
+						}else {
+							m.setFichSize(new long[m.getNFichs()]);
+						}
 						m.fichsize[aux] = Long.parseLong(val);
 					}
 					
@@ -372,7 +392,7 @@ public class DirMessage {
 					try {
 						m.fichname[aux] = val;
 						if(m.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)) {
-							System.out.println("añadiendo");
+							//System.out.println("añadiendo");
 							m.fichpeers.put(m.getFichHash()[aux], nicks);
 							nn = 0;
 							nicks = null;
@@ -384,7 +404,7 @@ public class DirMessage {
 						m.fichname[aux] = val;
 						//System.out.println("nombre an msg : " + val);
 						if(m.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)) {
-							System.out.println("añadiendo");
+							//System.out.println("añadiendo");
 							m.fichpeers.put(m.getFichHash()[aux], nicks);
 							nn = 0;
 							nicks = null;
@@ -400,7 +420,9 @@ public class DirMessage {
 						m.npeer[aux] = Integer.parseInt(val);
 					} catch (NullPointerException e) {
 						m.setNPeers(new int[m.getNFichs()]);
-						m.fichpeers = new HashMap<String, String[]>();
+						if(m.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)){
+							m.fichpeers = new HashMap<String, String[]>();
+						}
 						m.npeer[aux] = Integer.parseInt(val);
 					}
 					break;
@@ -411,8 +433,8 @@ public class DirMessage {
 						 nn++;
 					} catch (NullPointerException e) {
 						nicks = new String[m.getNPeers()[aux]];
-						System.out.println("aux : " + aux);
-						System.out.println("nn : " + nn);
+						//System.out.println("aux : " + aux);
+						//System.out.println("nn : " + nn);
 						nicks[nn] = val;
 						nn++;
 						}
@@ -505,6 +527,10 @@ public class DirMessage {
 			}
 			break;
 		}
+		case DirMessageOps.OPERATION_DOWNLOADASKINFO :{
+			sb.append(DirMessageField.FIELDNAME_NICK + DELIMITER + nickname + END_LINE);
+			break;
+		}
 		case DirMessageOps.OPERATION_REGISTERFILESERVEROK :{
 			break; //no tiene más informacion a parte del codigo
 		}
@@ -540,6 +566,16 @@ public class DirMessage {
 		}
 		case DirMessageOps.OPERATION_STOPSERVEROK : {
 			break; // no tiene más información a parte del codigo
+		}
+		case DirMessageOps.OPERATION_DOWNLOADASKINFOOK :{
+			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_FICHSIZE + DELIMITER + fichsize[0] + END_LINE);
+			sb.append(DirMessageField.FIELDNAME_NICK + DELIMITER + nickname + END_LINE);
+			for(int i=0;i<nfichs;i++) {
+				sb.append(DirMessageField.FIELDNAME_NPEER + DELIMITER + npeer[i] + END_LINE);
+				sb.append(DirMessageField.FIELDNAME_FICHNAME + DELIMITER + fichname[i] + END_LINE);
+			}
+			break;
 		}
 		case DirMessageOps.OPERATION_CONFIRMATION : {
 			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de confirmacion

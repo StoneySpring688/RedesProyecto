@@ -76,15 +76,6 @@ public class NFConnector {
 			downloaded = true;
 		}
 		*/
-		/*FileInfo[] fichs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), targetFileHashSubstr);
-		long tam = -1;
-		if(fichs.length >= 1) { // si hay más de uno se toma el primero y salta multiple options, no tiene impacto
-			tam = fichs[0].getFileSize(); 
-		}else {
-			System.err.println("no hash coincidence in database");
-			System.exit(1);
-		}*/
-		//System.out.println("[debug] fich tam "+ tam);
 		PeerMessage pt = PeerMessage.peerMessageAskTam(targetFileHashSubstr);
 		pt.writeMessageToOutputStream(dos);
 		PeerMessage msgFromServt = PeerMessage.readMessageFromInputStream(dis);
@@ -93,7 +84,8 @@ public class NFConnector {
 			System.err.println("FileNotFound");
 		}
 		else if(msgFromServt.getOpcode() == PeerMessageOps.OPCODE_MO) {
-			System.err.println("MultipleOptions found : "+msgFromServt.getNOps()/40+ " options available"); 
+			System.err.println("MultipleOptions found : "+msgFromServt.getNOps()/40+ " options available"); // divido nops entre 40 porque por alguna razon guarda el numero de bytes
+			   																								// y es más sencillo hacer esto que buscar el fallo
 			byte[] o = msgFromServt.getOptions();
 			String[] n = msgFromServt.getNames();
 			int hashLength = 40; //longitud del hash
@@ -115,29 +107,6 @@ public class NFConnector {
 			PeerMessage p = PeerMessage.peerMessageDownload(targetFileHashSubstr, 0, tam);
 			p.writeMessageToOutputStream(dos);
 			PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
-			
-			/*if (msgFromServ.getOpcode() == PeerMessageOps.OPCODE_FNF) {
-				System.err.println("FileNotFound");
-			}
-			else if(msgFromServ.getOpcode() == PeerMessageOps.OPCODE_MO) {
-				System.err.println("MultipleOptions found : "+msgFromServ.getNOps()/40+ " options available"); // divido nops entre 40 porque por alguna razon guarda el numero de bytes
-																											   // y es más sencillo hacer esto que buscar el fallo
-				byte[] o = msgFromServ.getOptions();
-				int hashLength = 40; //longitud del hash
-				int numHashes = msgFromServ.getNOps()/40;
-				int option = 1;
-				int ind = 0;
-				for (int i = 0; i < numHashes; i++) {
-				    byte[] hashByte = Arrays.copyOfRange(o, ind, ind + hashLength); // extraer el hash
-				    String hash = new String(hashByte);
-				    FileInfo[] fs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), hash);
-				    String name = fs[0].fileName;
-				    System.err.println("Opción " + option + " - "+ hash + " : " + name );
-				    option++;
-				    ind += hashLength; // Mover el indice
-				}
-			}
-			else {*/
 				byte[] data = msgFromServ.getData();
 				try (FileOutputStream fos = new FileOutputStream(file)) {
 					fos.write(data);
@@ -156,98 +125,21 @@ public class NFConnector {
 					System.out.println(hash1);
 					System.out.println(hash2);
 				}
-			//}
 		}
-		
-		
-		/*PeerMessage p = PeerMessage.peerMessageDownload(targetFileHashSubstr, 0, tam);
-		p.writeMessageToOutputStream(dos);
-		PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
-		
-		if (msgFromServ.getOpcode() == PeerMessageOps.OPCODE_FNF) {
-			System.err.println("FileNotFound");
-		}
-		else if(msgFromServ.getOpcode() == PeerMessageOps.OPCODE_MO) {
-			System.err.println("MultipleOptions found : "+msgFromServ.getNOps()/40+ " options available"); // divido nops entre 40 porque por alguna razon guarda el numero de bytes
-																										   // y es más sencillo hacer esto que buscar el fallo
-			byte[] o = msgFromServ.getOptions();
-			int hashLength = 40; //longitud del hash
-			int numHashes = msgFromServ.getNOps()/40;
-			int option = 1;
-			int ind = 0;
-			for (int i = 0; i < numHashes; i++) {
-			    byte[] hashByte = Arrays.copyOfRange(o, ind, ind + hashLength); // extraer el hash
-			    String hash = new String(hashByte);
-			    FileInfo[] fs = FileInfo.lookupHashSubstring(NanoFiles.db.getFiles(), hash);
-			    String name = fs[0].fileName;
-			    System.err.println("Opción " + option + " - "+ hash + " : " + name );
-			    option++;
-			    ind += hashLength; // Mover el indice
-			}
-		}
-		else {
-			byte[] data = msgFromServ.getData();
-			try (FileOutputStream fos = new FileOutputStream(file)) {
-				fos.write(data);
-				downloaded = true;
-				fos.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			String hash1 = FileDigest.computeFileChecksumString(file.getName());
-			String hash2 = msgFromServ.getHash();
-			if(hash1.equals(hash2)) {
-				System.out.println("files are identical");
-			}else {
-				System.err.println("files are not identical");
-				System.out.println(hash1);
-				System.out.println(hash2);
-			}
-		}*/
-		/*
-		 * TODO: Construir objetos PeerMessage que modelen mensajes con los valores
-		 * adecuados en sus campos (atributos), según el protocolo diseñado, y enviarlos
-		 * al servidor a través del "dos" del socket mediante el método
-		 * writeMessageToOutputStream.
-		 */
-		/*
-		 * TODO: Recibir mensajes del servidor a través del "dis" del socket usando
-		 * PeerMessage.readMessageFromInputStream, y actuar en función del tipo de
-		 * mensaje recibido, extrayendo los valores necesarios de los atributos del
-		 * objeto (valores de los campos del mensaje).
-		 */
-		/*
-		 * TODO: Para escribir datos de un fichero recibidos en un mensaje, se puede
-		 * crear un FileOutputStream a partir del parámetro "file" para escribir cada
-		 * fragmento recibido (array de bytes) en el fichero mediante el método "write".
-		 * Cerrar el FileOutputStream una vez se han escrito todos los fragmentos.
-		 */
-		/*
-		 * NOTA: Hay que tener en cuenta que puede que la subcadena del hash pasada como
-		 * parámetro no identifique unívocamente ningún fichero disponible en el
-		 * servidor (porque no concuerde o porque haya más de un fichero coincidente con
-		 * dicha subcadena)
-		 */
-
-		/*
-		 * TODO: Finalmente, comprobar la integridad del fichero creado para comprobar
-		 * que es idéntico al original, calculando el hash a partir de su contenido con
-		 * FileDigest.computeFileChecksumString y comparándolo con el hash completo del
-		 * fichero solicitado. Para ello, es necesario obtener del servidor el hash
-		 * completo del fichero descargado, ya que quizás únicamente obtuvimos una
-		 * subcadena del mismo como parámetro.
-		 */
-
-
-
-
 		return downloaded;
 	}
-
-
-
-
+	
+	
+	public byte[] downloadChunk(String hash, long init, long fin) throws IOException {
+		byte data[] = null;
+		long tam = fin;
+		PeerMessage p = PeerMessage.peerMessageDownload(hash, init, tam);
+		p.writeMessageToOutputStream(dos);
+		PeerMessage msgFromServ = PeerMessage.readMessageFromInputStream(dis);
+		data = msgFromServ.getData();
+		return data;	
+			
+	}
 
 	public InetSocketAddress getServerAddr() {
 		return serverAddr;

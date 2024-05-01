@@ -1,17 +1,22 @@
 package es.um.redes.nanoFiles.logic;
 
+import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Random;
 
 import es.um.redes.nanoFiles.tcp.client.NFConnector;
+import es.um.redes.nanoFiles.tcp.client.NFConnectorThread;
 import es.um.redes.nanoFiles.tcp.server.NFServer;
 import es.um.redes.nanoFiles.tcp.server.NFServerSimple;
+import es.um.redes.nanoFiles.udp.message.DirMessage;
+import es.um.redes.nanoFiles.util.FileDigest;
 
 
 
@@ -179,14 +184,74 @@ public class NFControllerLogicP2P {
 	 * @param targetFileHash    Hash completo del fichero a descargar
 	 * @param localFileName     Nombre con el que se guardará el fichero descargado
 	 */
-	public boolean downloadFileFromMultipleServers(LinkedList<InetSocketAddress> serverAddressList,
-			String targetFileHash, String localFileName) {
+	public boolean downloadFileFromMultipleServers(DirMessage MsgServerAddressList, String targetFileHash, String localFileName) { //LinkedList<InetSocketAddress> serverAddressList
 		boolean downloaded = false;
 
-		if (serverAddressList == null) {
+		long tam = MsgServerAddressList.getFichSize()[0];
+		int np = MsgServerAddressList.getNFichs();
+		String hash = MsgServerAddressList.getNickname();
+		int[] ports = MsgServerAddressList.getNPeers();
+		String[] ips = MsgServerAddressList.getFichName();
+		InetSocketAddress[] addresses = new InetSocketAddress[np];
+		long init = -1;
+		long fin = tam/np;
+		NFConnectorThread[] threads = new NFConnectorThread[np];
+		
+		if (ips == null) {
 			System.err.println("* Cannot start download - No list of server addresses provided");
 			return false;
+		}else {
+			for(int i=0; i<np; i++) {
+				try {
+					addresses[i] = new InetSocketAddress(InetAddress.getByName(ips[i]),ports[i]);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				}
+				System.out.println("dirección añadida : " + addresses[i]);
+				init = init + 1;
+				threads[i] = new NFConnectorThread(hash, init, init+fin, i, addresses[i]);
+				System.out.println("empieza en : " + init);
+				System.out.println("termina en : " + fin);
+				init = init + fin;	
+			}
 		}
+		
+		File f = new File(localFileName);
+		if(!f.exists() || f.length()<=0) {
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else {
+			System.err.println("[downl]the file already exist\ndownload cancelled");
+			return false;
+		}
+		NFConnectorThread.npeers = np;
+		NFConnectorThread.f = f;
+		for(int i=0;i<np;i++) {
+			threads[i].start();
+		}
+		
+		for (int i = 0; i < np; i++) {
+		    try {
+		        threads[i].join();
+		    } catch (InterruptedException e) {
+		        System.err.println(e.getMessage());
+		        e.printStackTrace();
+		    }
+		}
+		
+		
+		String hash1 = FileDigest.computeFileChecksumString(f.getName());
+		if(hash1.equals(hash)) {
+			System.out.println("files are identical");
+		}else {
+			System.err.println("files are not identical");
+			System.out.println(hash1);
+			System.out.println(hash);
+		}
+		
 		/*
 		 * TODO: Crear un objeto NFConnector para establecer la conexión con cada
 		 * servidor de ficheros, y usarlo para descargar un trozo (chunk) del fichero

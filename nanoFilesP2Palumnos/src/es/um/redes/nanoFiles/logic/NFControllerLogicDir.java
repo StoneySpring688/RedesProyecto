@@ -9,7 +9,9 @@ import java.util.LinkedList;
 
 import es.um.redes.nanoFiles.application.NanoFiles;
 import es.um.redes.nanoFiles.udp.client.DirectoryConnector;
+import es.um.redes.nanoFiles.udp.message.DirMessage;
 import es.um.redes.nanoFiles.udp.message.DirMessageField;
+import es.um.redes.nanoFiles.udp.message.DirMessageOps;
 import es.um.redes.nanoFiles.util.FileInfo;
 
 public class NFControllerLogicDir {
@@ -209,13 +211,6 @@ public class NFControllerLogicDir {
 	 *         sirviendo ficheros.
 	 */
 	private InetSocketAddress lookupServerAddrByUsername(String nickname) {
-		/*
-		 * Obtener IP:puerto de un servidor de ficheros a partir de su nickname.
-		 * Comunicarse con el directorio (a través del directoryConnector) para
-		 * preguntar la dirección de socket en la que el usuario con 'nickname' está
-		 * sirviendo ficheros. Si la operación fracasa (no se obtiene una respuesta con
-		 * IP:puerto válidos), se debe devolver null.
-		 */
 		InetSocketAddress serverAddr = null;
 		serverAddr = this.directoryConnector.lookupServerAddrByUsername(nickname);
 		
@@ -236,14 +231,6 @@ public class NFControllerLogicDir {
 	 */
 	public InetSocketAddress getServerAddress(String serverNicknameOrSocketAddr) {
 		InetSocketAddress fserverAddr = null;
-		/*
-		 * TODO: Averiguar si el nickname es en realidad una cadena "IP:puerto", en cuyo
-		 * caso no es necesario comunicarse con el directorio (simplemente se devuelve
-		 * un InetSocketAddress); en otro caso, utilizar el método
-		 * lookupServerAddrByUsername de esta clase para comunicarse con el directorio y
-		 * obtener la IP:puerto del servidor con dicho nickname. Devolver null si la
-		 * operación fracasa.
-		 */
 		if (serverNicknameOrSocketAddr.contains(":")) { // Then it has to be a socket address (IP:port)
 			String[] partes = serverNicknameOrSocketAddr.split(":");
 			String ip = partes[0];
@@ -300,13 +287,21 @@ public class NFControllerLogicDir {
 	 * 
 	 * @param fileHashSubstring una subcadena del hash del fichero por el que se
 	 *                          pregunta
-	 * @return Una lista de direcciones de socket de los servidores que comparten
-	 *         dicho fichero, o null si dicha subcadena del hash no identifica
-	 *         ningún fichero concreto (no existe o es una subcadena ambigua)
+	 * @return El mensaje con toda la infrormación necesaria, la cual tratará el
+	 * 		   contrladorP2P
 	 * 
 	 */
-	public LinkedList<InetSocketAddress> getServerAddressesSharingThisFile(String downloadTargetFileHash) {
-		LinkedList<InetSocketAddress> serverAddressList = null;
+	public DirMessage getServerAddressesSharingThisFile(String downloadTargetFileHash) { //LinkedList<InetSocketAddress>
+		// se  podría hacer con search y lookupServerAdr, pero he modelado un mensaje para hacerlo todo de golpe
+		// como son varios tipos de datos, se pasará el mensaje para obtenerlos donde sea necesario
+		DirMessage resp = null;
+		resp = this.directoryConnector.downloadAskInfo2Dir(downloadTargetFileHash);
+		if(resp != null && resp.getOperation().matches(DirMessageOps.OPERATION_DOWNLOADASKINFOOK)) {
+			//System.out.println("mensaje recivido : "+ resp);
+			System.out.println("[askInfo] ok");
+		}else {
+			//System.err.println("[askInfo] something went wrong");
+		}
 		/*
 		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
 		 * preguntar por aquellos servidores que están sirviendo un determinado fichero,
@@ -321,7 +316,7 @@ public class NFControllerLogicDir {
 
 
 
-		return serverAddressList;
+		return resp;
 	}
 
 	/**
