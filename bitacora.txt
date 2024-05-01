@@ -258,7 +258,7 @@ pendiente :
 
 -----01-05-2024 17:57 (StoneySpring):
 cambios :
-- se implementó el comando download de form concurrente
+- se implementó el comando download de forma concurrente
 
 complicaciones :
 - este método requería comunicarse con el servidor de directorios y el o los peers que comparten un fichero, por lo que requería de mucho más diseño previo, por lo que hubo que pensar largo y tendido
@@ -267,6 +267,20 @@ complicaciones :
   de directorios.
 - la siguiente complicación, fué coordinar los hilos, ya que había que plantearlo muy bien de antemano, y sufrió numerosos cambios, pasando de una variable compartida, a un método synchronize, y de ahí al uso
   de un ReenTrantLock junto con condition y una variable compartida.
+
+pendiente :
+- en caso de tener tiempo: 
+  - cambiar los mensajes para que no hayan mensajes de confirmación con subtipos, si no que cada confirmación sea un mensaje.
+  - cambiar la forma en que se tratan publish y fileinfo para que no sean necesarias tantas estructuras de datos en el servidor de directorios
+
+
+
+-----01-05-2024 19:08 (StoneySpring):
+cambios :
+- se solucinó un bug de download de forma concurrente
+
+complicaciones :
+- la forma de repartir la carga del fivhero entre los hilos era incorrecta, por lo que uno se salia del fichero, causando que se lanzara una excepción
 
 pendiente :
 - en caso de tener tiempo: 
