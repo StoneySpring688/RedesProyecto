@@ -1,16 +1,13 @@
 package es.um.redes.nanoFiles.udp.server;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -457,6 +454,53 @@ public class NFDirectoryServer {
 				}
 			}
 			response = DirMessage.stopServerOk();
+			break;
+		}
+		case DirMessageOps.OPERATION_DOWNLOADASKINFO : {
+			String hash = msg.getNickname();
+			System.out.println("el hash es : " + hash);
+			FileInfo [] db  = this.getFiles();
+			FileInfo[] coincidence = FileInfo.lookupHashSubstring(db, hash);
+			if(coincidence.length >1) {
+				int nFichs = coincidence.length;
+				System.out.println(nFichs);
+				if(nFichs >= 1) {
+					System.out.println("nfichs : "+nFichs);
+					String fichHash[] = new String[nFichs];
+					String fichName[] = new String[nFichs];
+					long fichSize[] = new long[nFichs];
+					for(int i=0;i<nFichs;i++) {
+						fichHash[i] = coincidence[i].fileHash;
+						fichName[i] = coincidence[i].fileName;
+						fichSize[i] = coincidence[i].fileSize;
+					}
+					
+					response = DirMessage.publish(fichHash, fichSize, fichName, nFichs, 0);
+				}
+			}else if(coincidence.length == 0) {
+				response = DirMessage.errorMessage(DirMessageOps.OPERATION_SEARCH_FAILED);
+			}else {
+				String hashComplete = coincidence[0].fileHash;
+				long tamano = coincidence[0].fileSize;
+				System.out.println("el has completo es : " + hashComplete);
+				int[] keys = this.fichPeer.get(hashComplete).stream().mapToInt(Integer::intValue).toArray();
+				int peerCompFich = keys.length;
+				String[] names = new String[keys.length];
+				String[] ips = new String[keys.length]; 
+				int ports[] = new int[keys.length];
+				for(int i=0;i<keys.length;i++) {
+					names[i] = this.sessionKeys.get(keys[i]);
+					System.out.println("se añade el nombre : " + this.sessionKeys.get(keys[i]));
+					InetSocketAddress ipInetSocket = this.peerServeDir.get(names[i]);
+					System.out.println("añadiendo dirección : " + ipInetSocket.getHostString() );
+					ips[i] =  ipInetSocket.getHostString();
+					System.out.println("añadiendo puerto : " + this.peerServerPort.get(names[i]) );
+					ports[i] = this.peerServerPort.get(names[i]);
+				}
+				response = DirMessage.downloadAskInfoOk(peerCompFich, tamano, hashComplete, ports, ips);
+				
+				
+			}
 			break;
 		}
 		default:

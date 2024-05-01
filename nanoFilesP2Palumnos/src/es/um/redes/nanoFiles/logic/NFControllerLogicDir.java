@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 import es.um.redes.nanoFiles.application.NanoFiles;
 import es.um.redes.nanoFiles.udp.client.DirectoryConnector;
+import es.um.redes.nanoFiles.udp.message.DirMessage;
 import es.um.redes.nanoFiles.udp.message.DirMessageField;
+import es.um.redes.nanoFiles.udp.message.DirMessageOps;
 import es.um.redes.nanoFiles.util.FileInfo;
 
 public class NFControllerLogicDir {
@@ -54,14 +54,7 @@ public class NFControllerLogicDir {
 																												 */
 	protected boolean doLogin(String directoryHostname, String nickname) {
 
-																												/*
-																												 * Debe crear un objeto DirectoryConnector a partir del parámetro
-																												 * directoryHostname y guardarlo en el atributo correspondiente para que pueda
-																												 * ser utilizado por el resto de métodos de esta clase. A continuación,
-																												 * utilizarlo para comunicarse con el directorio y tratar de realizar el
-																												 * "login", informar por pantalla del éxito/fracaso e imprimir la clave de
-																												 * sesión asignada por el directorio. Devolver éxito/fracaso de la operación.
-																												 */
+																												
 		boolean result = false;
 		try {
 			this.directoryConnector = new DirectoryConnector(directoryHostname);
@@ -85,11 +78,7 @@ public class NFControllerLogicDir {
 																												 * nombre de usuario registrado
 																												 */
 	public boolean doLogout() {
-																												/*
-																												 * Comunicarse con el directorio (a través del directoryConnector) para
-																												 * dar de baja a este usuario. Se debe enviar la clave de sesión para
-																												 * identificarse. Devolver éxito/fracaso de la operación.
-																												 */
+																												
 		boolean result = false;
 		result = this.directoryConnector.logoutFromDirectory();
 		if(!result) {
@@ -105,11 +94,7 @@ public class NFControllerLogicDir {
 	 * Método para obtener y mostrar la lista de nicks registrados en el directorio
 	 */
 	protected boolean getAndPrintUserList() {
-																												/*
-																												 * TODO: Obtener la lista de usuarios registrados. Comunicarse con el directorio
-																												 * (a través del directoryConnector) para obtener la lista de nicks registrados
-																												 * e imprimirla por pantalla. Devolver éxito/fracaso de la operación.
-																												 */
+																												
 		boolean result = false;
 		String[] list = this.directoryConnector.getUserList();
 		try {
@@ -134,12 +119,7 @@ public class NFControllerLogicDir {
 	 * han publicado al directorio
 	 */
 	protected boolean getAndPrintFileList() {
-		/*
-		 * TODO: Obtener la lista de ficheros servidos. Comunicarse con el directorio (a
-		 * través del directoryConnector) para obtener la lista de ficheros e imprimirla
-		 * por pantalla (método FileInfo.printToSysout). Devolver éxito/fracaso de la
-		 * operación.
-		 */
+		
 		boolean result = false;
 		FileInfo[] fichs = this.directoryConnector.getFileList();
 		
@@ -163,13 +143,7 @@ public class NFControllerLogicDir {
 	 */
 
 	public boolean registerFileServer(int serverPort) {
-																								/*
-																								 * Darse de alta en el directorio como servidor. Comunicarse con el
-																								 * directorio (a través del directoryConnector) para enviar el número de puerto
-																								 * TCP en el que escucha el servidor de ficheros que habremos arrancado
-																								 * previamente. Se debe enviar la clave de sesión para identificarse. Devolver
-																								 * éxito/fracaso de la operación.
-																								 */
+																								
 		boolean result = false;
 		result = this.directoryConnector.registerServerPort(serverPort);
 
@@ -183,14 +157,7 @@ public class NFControllerLogicDir {
 	 * 
 	 */
 	protected boolean publishLocalFiles() {
-		/*
-		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
-		 * enviar la lista de ficheros servidos por este peer. Los ficheros de la
-		 * carpeta local compartida están disponibles en NanoFiles.db). Se debe enviar
-		 * la clave de sesión para identificarse. Devolver éxito/fracaso de la
-		 * operación.
-		 */
-		//System.out.println(NanoFiles.db.getFiles());
+		
 		boolean result = false;
 		result = this.directoryConnector.publishLocalFiles(NanoFiles.db.getFiles());
 
@@ -209,13 +176,6 @@ public class NFControllerLogicDir {
 	 *         sirviendo ficheros.
 	 */
 	private InetSocketAddress lookupServerAddrByUsername(String nickname) {
-		/*
-		 * Obtener IP:puerto de un servidor de ficheros a partir de su nickname.
-		 * Comunicarse con el directorio (a través del directoryConnector) para
-		 * preguntar la dirección de socket en la que el usuario con 'nickname' está
-		 * sirviendo ficheros. Si la operación fracasa (no se obtiene una respuesta con
-		 * IP:puerto válidos), se debe devolver null.
-		 */
 		InetSocketAddress serverAddr = null;
 		serverAddr = this.directoryConnector.lookupServerAddrByUsername(nickname);
 		
@@ -236,14 +196,6 @@ public class NFControllerLogicDir {
 	 */
 	public InetSocketAddress getServerAddress(String serverNicknameOrSocketAddr) {
 		InetSocketAddress fserverAddr = null;
-		/*
-		 * TODO: Averiguar si el nickname es en realidad una cadena "IP:puerto", en cuyo
-		 * caso no es necesario comunicarse con el directorio (simplemente se devuelve
-		 * un InetSocketAddress); en otro caso, utilizar el método
-		 * lookupServerAddrByUsername de esta clase para comunicarse con el directorio y
-		 * obtener la IP:puerto del servidor con dicho nickname. Devolver null si la
-		 * operación fracasa.
-		 */
 		if (serverNicknameOrSocketAddr.contains(":")) { // Then it has to be a socket address (IP:port)
 			String[] partes = serverNicknameOrSocketAddr.split(":");
 			String ip = partes[0];
@@ -254,16 +206,9 @@ public class NFControllerLogicDir {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 			}
-																											/*
-																											 * Extraer la dirección IP y el puerto de la cadena y devolver un
-																											 * InetSocketAddress. Para convertir un string con la IP a un objeto InetAddress
-																											 * se debe usar InetAddress.getByName()
-																											 */
+																											
 		} else {
-																											/*
-																											 * Si es un nickname, preguntar al directorio la IP:puerto asociada a
-																											 * dicho peer servidor.
-																											 */
+																											
 			fserverAddr = lookupServerAddrByUsername(serverNicknameOrSocketAddr);
 		}
 		return fserverAddr;
@@ -277,12 +222,7 @@ public class NFControllerLogicDir {
 	 *                          pregunta
 	 */
 	public boolean getAndPrintServersNicknamesSharingThisFile(String fileHashSubstring) {
-		/*
-		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
-		 * preguntar por aquellos servidores que están sirviendo un determinado fichero,
-		 * y obtener una lista con sus nicknames. Devolver éxito/fracaso de la
-		 * operación.
-		 */
+		
 		boolean result = false;
 		String[] names = this.directoryConnector.getServerNicknamesSharingThisFile(fileHashSubstring);
 		if(names != null) {
@@ -300,28 +240,21 @@ public class NFControllerLogicDir {
 	 * 
 	 * @param fileHashSubstring una subcadena del hash del fichero por el que se
 	 *                          pregunta
-	 * @return Una lista de direcciones de socket de los servidores que comparten
-	 *         dicho fichero, o null si dicha subcadena del hash no identifica
-	 *         ningún fichero concreto (no existe o es una subcadena ambigua)
+	 * @return El mensaje con toda la infrormación necesaria, la cual tratará el
+	 * 		   contrladorP2P
 	 * 
 	 */
-	public LinkedList<InetSocketAddress> getServerAddressesSharingThisFile(String downloadTargetFileHash) {
-		LinkedList<InetSocketAddress> serverAddressList = null;
-		/*
-		 * TODO: Comunicarse con el directorio (a través del directoryConnector) para
-		 * preguntar por aquellos servidores que están sirviendo un determinado fichero,
-		 * y obtener una lista con sus nicknames (método
-		 * getServerNicknamesSharingThisFile). A continuación, obtener la dirección de
-		 * socket de cada servidor a partir de su nickname (método getServerAddress), y
-		 * devolver una lista con dichas direcciones. Devolver null si la operación
-		 * fracasa.
-		 * 
-		 */
-
-
-
-
-		return serverAddressList;
+	public DirMessage getServerAddressesSharingThisFile(String downloadTargetFileHash) { 
+		// se  podría hacer con search y lookupServerAdr, pero he modelado un mensaje para hacerlo todo de golpe
+		// como son varios tipos de datos, se pasará el mensaje para obtenerlos donde sea necesario
+		DirMessage resp = null;
+		resp = this.directoryConnector.downloadAskInfo2Dir(downloadTargetFileHash);
+		if(resp != null && resp.getOperation().matches(DirMessageOps.OPERATION_DOWNLOADASKINFOOK)) {
+			System.out.println("[server] Info ok");
+		}else {
+			System.err.println("[warning] something went wrong");
+		}
+		return resp;
 	}
 
 	/**
@@ -330,11 +263,7 @@ public class NFControllerLogicDir {
 	 * @return Éxito o fracaso de la operación
 	 */
 	public boolean unregisterFileServer() {
-																															/*
-																															 * Comunicarse con el directorio (a través del directoryConnector) para
-																															 * darse de baja como servidor de ficheros. Se debe enviar la clave de sesión
-																															 * para identificarse.
-																															 */
+																															
 		boolean result = false;
 		FileInfo[] files = NanoFiles.db.getFiles();
 		String[] hashes = new String[files.length];
@@ -353,10 +282,9 @@ public class NFControllerLogicDir {
 	protected InetSocketAddress getDirectoryAddress() {
 		return directoryConnector.getDirectoryAddress();
 	}
-	
-	//@return devuelve un booleano como true, esto  sirve para ver si directory connector está iniciado
-	//comprueba la  session key por  si  se ha hecho un loggin con un nick ya en uso
-	//en el controlador también comprueba el estado actual por si se ha hecho logout
+	/**
+	@return devuelve true si se poseé un session key, y false en caso contrario
+	**/
 	protected boolean test() {
 		try {
 			//System.out.println(this.directoryConnector.getSessionKey());

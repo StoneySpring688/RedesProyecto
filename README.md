@@ -12,6 +12,7 @@ ficheros
 - logout
 - userlist
 - downloadfrom
+- download
 - fgserve & bgserve
 - stopServer
 - publish
@@ -42,6 +43,10 @@ en la terminal introducir uno de los comandos:
   si se conoce la dirección y el puerto de el servidor de ficheros se puede efectuar la descarga con ellos
 - uso : downloadfrom DIRECCION:PUERTO HASH FILENAME
   uso : downloadfrom NICK HASH FILENAME
+
+### download
+- descarga un fichero, de forma concurrente, de todos los peers que lo compartan 
+- uso : download HASH FNAME
 
 ### fgserve & bgserve
 - hay dos comandos para establecer un servidor de ficheros :

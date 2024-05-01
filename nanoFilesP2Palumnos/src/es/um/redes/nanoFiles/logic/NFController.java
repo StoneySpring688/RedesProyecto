@@ -2,12 +2,11 @@ package es.um.redes.nanoFiles.logic;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 import es.um.redes.nanoFiles.application.NanoFiles;
 import es.um.redes.nanoFiles.shell.NFCommands;
 import es.um.redes.nanoFiles.shell.NFShell;
+import es.um.redes.nanoFiles.udp.message.DirMessage;
 import es.um.redes.nanoFiles.util.FileInfo;
 
 public class NFController {
@@ -251,10 +250,11 @@ public class NFController {
 			 * servidores obtenidos, y lo guarde con el nombre indicado en
 			 * downloadLocalFileName (2º argumento)
 			 */
-			LinkedList<InetSocketAddress> serverAddressList = controllerDir
-					.getServerAddressesSharingThisFile(downloadTargetFileHash);
-			commandSucceeded = controllerPeer.downloadFileFromMultipleServers(serverAddressList, downloadTargetFileHash,
-					downloadLocalFileName);
+			if(this.controllerDir.test() && this.currentState == LOGGED_IN) {
+				//LinkedList<InetSocketAddress> serverAddressList = controllerDir.getServerAddressesSharingThisFile(downloadTargetFileHash);
+				DirMessage serverAddressList = controllerDir.getServerAddressesSharingThisFile(downloadTargetFileHash);
+				commandSucceeded = controllerPeer.downloadFileFromMultipleServers(serverAddressList, downloadTargetFileHash,downloadLocalFileName);
+			}
 			break;
 		case NFCommands.COM_QUIT:
 		default:

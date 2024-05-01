@@ -5,10 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import es.um.redes.nanoFiles.udp.message.DirMessage;
 import es.um.redes.nanoFiles.udp.message.DirMessageOps;
@@ -51,8 +49,6 @@ public class DirectoryConnector {
 	private InetSocketAddress directoryAddress;
 
 	private int sessionKey = INVALID_SESSION_KEY;
-	private boolean successfulResponseStatus;
-	private String errorDescription;
 	
 	public DirectoryConnector(String address) throws IOException {
 																										/*
@@ -368,7 +364,7 @@ public class DirectoryConnector {
 		}
 		DirMessage msg = DirMessage.publish(hashes, sizes, names, files.length, this.getSessionKey());
 		String msgToServ = msg.toString();
-		System.out.println(msgToServ);
+		//System.out.println(msgToServ);
 		byte[] byteBuff = msgToServ.getBytes();
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
@@ -404,13 +400,11 @@ public class DirectoryConnector {
 		byte[] byteBuff = strToServe.getBytes();
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String recived = new String(byteDataRecived,0,byteDataRecived.length);
-		System.out.println("mensaje recivido : "+ recived);
+		//System.out.println("mensaje recivido : "+ recived);
 		DirMessage recivedDir = DirMessage.fromString(recived);
 		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_FILELISTOK)) {
 			filelist = new FileInfo[recivedDir.getNFichs()];
 			for(int i = 0;i<recivedDir.getNFichs();i++) {
-				System.out.println("de : " + recivedDir.getFichName()[i]);
-				System.out.println("esto : " + recivedDir.getFichPeers(recivedDir.getFichHash()[i])[0]);
 				filelist[i] = new FileInfo(recivedDir.getFichHash()[i], recivedDir.getFichName()[i], recivedDir.getFichSize()[i], recivedDir.getFichPeers(recivedDir.getFichHash()[i]));
 			}
 		}else {
@@ -442,7 +436,7 @@ public class DirectoryConnector {
 		DirMessage recivedDir = DirMessage.fromString(recived);
 		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_SEARCHOK)) {
 			nicklist = recivedDir.getFichName();
-		}else if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_PUBLISH)){
+		}else if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_PUBLISH)){// MO
 			System.err.println("[warning] multiple options found");
 			System.out.println(recivedDir.getNFichs() + "options aviable");
 			FileInfo[] filelist = new FileInfo[recivedDir.getNFichs()];
@@ -476,6 +470,34 @@ public class DirectoryConnector {
 			System.err.println("[warning] an error occurred");
 		}
 		return success;
+	}
+	
+	public DirMessage downloadAskInfo2Dir(String h) {
+		DirMessage resp = null;
+		DirMessage msgToServe = DirMessage.downloadAskInfo(h);
+		String strToServe = msgToServe.toString();
+		//System.out.println("mensaje enviado : " + strToServe);
+		byte[] byteBuff = strToServe.getBytes();
+		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
+		//System.out.println("mensaje recivido : "+ recived);
+		DirMessage recivedDir = DirMessage.fromString(recived);
+		if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_DOWNLOADASKINFOOK)) {
+			resp = recivedDir;
+		} else if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_PUBLISH)){  // MO
+			System.err.println("[warning] multiple options found");
+			System.out.println(recivedDir.getNFichs() + "options aviable");
+			FileInfo[] filelist = new FileInfo[recivedDir.getNFichs()];
+			for(int i = 0;i<recivedDir.getNFichs();i++) {
+				filelist[i] = new FileInfo(recivedDir.getFichHash()[i], recivedDir.getFichName()[i], recivedDir.getFichSize()[i]);
+			}
+			if(filelist != null) {
+				FileInfo.printToSysout(filelist);
+			}
+		}else {
+			System.err.println("[warning] file not found or an error occurred");
+		}
+		return resp;
 	}
 	
 	/**@return devuelve un booleano como true, esto  sirve para ver si directory connector está  iniciado**/

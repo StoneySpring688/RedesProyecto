@@ -133,6 +133,28 @@ port : ("Integer")
 ip : ("String")
 
 
+
+#downloadAskInfo
+
+operation : downloadAskInfo
+nick : ("String")    // se usará el campo, ya tratado, nickname para almacenar el hash del fichero del que se solicita la información 
+
+
+
+#downloadAskInfoOk
+
+operation : downloadAskInfoOk
+nfichs : ("Integer")     //se usa el campo nfichs, ya tratado, para almacenar el número de peers que comparten el fichero
+fichSize : ("Integer")   //se usará solo una posición del array, el cual se inicializa con un tamaño de 1, para almacenar el tamaño del fichero
+nick : ("String")        //se usa el campo nicks, ya tratado, para almacenar el hash completo
+nPeer-1 : ("Integer")    //se usa el campo nPeer, ya tratado, para almacenar los puertos de los peers
+fichname-1 : ("String")  //se usa el campo fichName, ya tratado, para almacenar las ip's de los peers
+...
+nPeer-n : ("Integer")   
+fichname-n : ("String") 
+
+
+
 #error
 
 operation : error
