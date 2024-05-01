@@ -275,12 +275,12 @@ pendiente :
 
 
 
------01-05-2024 19:08 (StoneySpring):
+-----01-05-2024 23:03 (StoneySpring):
 cambios :
 - se solucinó un bug de download de forma concurrente
 
 complicaciones :
-- la forma de repartir la carga del fivhero entre los hilos era incorrecta, por lo que uno se salia del fichero, causando que se lanzara una excepción
+- la forma de repartir la carga del fichero entre los hilos era incorrecta, por lo que uno se salia del fichero, causando que se lanzara una excepción
 
 pendiente :
 - en caso de tener tiempo: 
