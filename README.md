@@ -21,7 +21,7 @@ ficheros
 
 ## Documentation
 
-Ejecutar uno o ambos archivos JAR. En caso de NanoFiles : 
+Ejecutar uno o ambos archivos JAR. En el caso de ejecutar NanoFiles : 
 - introducir los archivos que se deseen compartir en la carpeta nf-shared, la cual se creará en el directorio donde se encuantre el archivo JAR
 - en la terminal introducir uno de los comandos:
 #### login
