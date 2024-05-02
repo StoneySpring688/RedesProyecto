@@ -438,24 +438,36 @@ public class NFDirectoryServer {
 			}
 			break;
 		}case DirMessageOps.OPERATION_STOPSERVER : {
-			Integer key = msg.getKey();
-			String[] hashes = msg.getFichName();
-			//System.out.println("nombre es :" + this.sessionKeys.get(key));
-			this.peerServerPort.remove(this.sessionKeys.get(key));
-			this.peerServeDir.remove(this.sessionKeys.get(key));
-			for(String h : hashes) {
-				//System.out.println("remove : " + this.fichPeer.get(h));
-				if(this.fichPeer.get(h) != null) {
-					this.fichPeer.get(h).remove(key);
-					if(this.fichPeer.get(h).isEmpty()) {
-						this.fichPeer.remove(h);
-						this.fichInfo.remove(h);
-						this.fichName.remove(h);
-						this.fichSize.remove(h);
+			try {
+				
+				Integer key = msg.getKey();
+				String[] hashes = msg.getFichName();
+				for(String h : hashes) {
+					//System.out.println("remove : " + this.fichPeer.get(h));
+					if(this.fichPeer.get(h) != null) {
+						this.fichPeer.get(h).remove(key);
+						if(this.fichPeer.get(h).isEmpty()) {
+							this.fichPeer.remove(h);
+							this.fichInfo.remove(h);
+							this.fichName.remove(h);
+							this.fichSize.remove(h);
+						}
 					}
+						
 				}
+				//System.out.println("nombre es :" + this.sessionKeys.get(key));
+				this.peerServerPort.remove(this.sessionKeys.get(key));
+				this.peerServeDir.remove(this.sessionKeys.get(key));
+				
+			} catch (NullPointerException e) {//significa que al no tener ficheros, numca los pudo subir
+				
+				Integer key = msg.getKey();
+				this.peerServerPort.remove(this.sessionKeys.get(key));
+				this.peerServeDir.remove(this.sessionKeys.get(key));
 				
 			}
+			
+			
 			response = DirMessage.stopServerOk();
 			break;
 		}

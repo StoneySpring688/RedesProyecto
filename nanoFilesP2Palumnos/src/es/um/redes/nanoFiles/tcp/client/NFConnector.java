@@ -87,11 +87,25 @@ public class NFConnector {
 			int numHashes = msgFromServt.getNOps()/40;
 			int option = 1;
 			int ind = 0;
+			
+			   StringBuffer strBuf = new StringBuffer();
+			    strBuf.append(String.format("%1$-10s", "Option"));
+			    strBuf.append(String.format("%1$-45s", "Hash"));
+				strBuf.append(String.format("%1$-30s", "Name"));
+			    System.err.println(strBuf);
+			
 			for (int i = 0; i < numHashes; i++) {
 			    byte[] hashByte = Arrays.copyOfRange(o, ind, ind + hashLength); // extraer el hash
 			    String hash = new String(hashByte);
 			    String name = n[i];
-			    System.err.println("Opción " + option + " - "+ hash + " : " + name );
+			    
+				StringBuffer strBuff = new StringBuffer();
+				strBuff.append(String.format("%1$-10s", option));
+				strBuff.append(String.format("%1$-45s", hash));
+				strBuff.append(String.format("%1$-30s", name));
+				System.err.println(strBuff);
+			    
+			    //System.err.println("Opción " + option + " - "+ hash + " : " + name );
 			    option++;
 			    ind += hashLength; // Mover el indice
 			}

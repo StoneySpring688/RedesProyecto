@@ -211,7 +211,7 @@ public class DirectoryConnector {
 		String recived =  new String(byteDataRecived, 0, byteDataRecived.length);
 		DirMessage recivedDir = DirMessage.fromString(recived);
 		//System.out.println("Respuesta : " +recivedDir);
-		String confirmation = recivedDir.getCode();
+		String confirmation = recivedDir.getOperation();
 		int key = recivedDir.getKey();
 		
 		if(confirmation.matches("loginok")) {//la key es un entero, por lo tanto será una clave valida
@@ -242,7 +242,7 @@ public class DirectoryConnector {
 		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
 		//System.out.println("msg recivido " +recived);
 		DirMessage recivedDir = DirMessage.fromString(recived);
-		if(recivedDir.getCode().equals(DirMessageOps.OPERATION_LISTFAILED)) {
+		if(recivedDir.getOperation().equals(DirMessageOps.OPERATION_LISTFAILED)) {
 			System.err.println("[error] Failed getting userlist");
 		}else {
 			//userlist = recivedDir.getPeers();
@@ -280,7 +280,7 @@ public class DirectoryConnector {
 		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
 		String Recived = new String(byteDataRecived, 0, byteDataRecived.length);
 		DirMessage recivedDir = DirMessage.fromString(Recived);
-		String confirmation = recivedDir.getCode();
+		String confirmation = recivedDir.getOperation();
 		if(confirmation.matches(DirMessageOps.OPERATION_LOGOUTOK)) success = true;
 		return success;
 	}
@@ -353,30 +353,35 @@ public class DirectoryConnector {
 	 */
 	public boolean publishLocalFiles(FileInfo[] files) {
 		boolean success = false;
-		String[] hashes = new String[files.length]; 
-		String[] names =  new String[files.length];
-		long[] sizes = new long[files.length];
-		for(int i  = 0; i<files.length; i++) {
-			hashes[i] = files[i].fileHash;
-			names[i] = files[i].fileName;
-			sizes[i] = files[i].fileSize;
-			//System.out.println("an cl nombre : " + names[i]);
-		}
-		DirMessage msg = DirMessage.publish(hashes, sizes, names, files.length, this.getSessionKey());
-		String msgToServ = msg.toString();
-		//System.out.println(msgToServ);
-		byte[] byteBuff = msgToServ.getBytes();
-		byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
-		String recived = new String(byteDataRecived, 0, byteDataRecived.length);
-		DirMessage recivedDir = DirMessage.fromString(recived);
-		String confirmation = recivedDir.getOperation();
-		//System.out.println("[recived]\n"+recivedDir);
-		if(confirmation.matches(DirMessageOps.OPERATION_PUBLISHOK)) {
-			System.out.println("[publish] ok");
-			success = true;
+		if(files != null && files.length != 0) {
+			String[] hashes = new String[files.length]; 
+			String[] names =  new String[files.length];
+			long[] sizes = new long[files.length];
+			for(int i  = 0; i<files.length; i++) {
+				hashes[i] = files[i].fileHash;
+				names[i] = files[i].fileName;
+				sizes[i] = files[i].fileSize;
+				//System.out.println("an cl nombre : " + names[i]);
+			}
+			DirMessage msg = DirMessage.publish(hashes, sizes, names, files.length, this.getSessionKey());
+			String msgToServ = msg.toString();
+			//System.out.println(msgToServ);
+			byte[] byteBuff = msgToServ.getBytes();
+			byte[] byteDataRecived = this.sendAndReceiveDatagrams(byteBuff);
+			String recived = new String(byteDataRecived, 0, byteDataRecived.length);
+			DirMessage recivedDir = DirMessage.fromString(recived);
+			String confirmation = recivedDir.getOperation();
+			//System.out.println("[recived]\n"+recivedDir);
+			if(confirmation.matches(DirMessageOps.OPERATION_PUBLISHOK)) {
+				System.out.println("[publish] ok");
+				success = true;
+			}else {
+				System.err.println("[warning] an error occurred");
+			}
 		}else {
-			System.err.println("[warning] an error occurred");
+			System.err.println("[warning] no files to publish");
 		}
+		
 		
 
 
@@ -439,13 +444,13 @@ public class DirectoryConnector {
 			nicklist = recivedDir.getFichName();
 		}else if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_PUBLISH)){// MO
 			System.err.println("[warning] multiple options found");
-			System.out.println(recivedDir.getNFichs() + "options aviable");
+			System.err.println(recivedDir.getNFichs() + " options aviable");
 			FileInfo[] filelist = new FileInfo[recivedDir.getNFichs()];
 			for(int i = 0;i<recivedDir.getNFichs();i++) {
 				filelist[i] = new FileInfo(recivedDir.getFichHash()[i], recivedDir.getFichName()[i], recivedDir.getFichSize()[i]);
 			}
 			if(filelist != null) {
-				FileInfo.printToSysout(filelist);
+				FileInfo.printToSysoutErr(filelist);
 			}
 		}else  if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_ERROR)){
 			System.err.println("[warning] file not found or an error occurred");
@@ -487,13 +492,13 @@ public class DirectoryConnector {
 			resp = recivedDir;
 		} else if(recivedDir.getOperation().matches(DirMessageOps.OPERATION_PUBLISH)){  // MO
 			System.err.println("[warning] multiple options found");
-			System.out.println(recivedDir.getNFichs() + "options aviable");
+			System.err.println(recivedDir.getNFichs() + " options aviable");
 			FileInfo[] filelist = new FileInfo[recivedDir.getNFichs()];
 			for(int i = 0;i<recivedDir.getNFichs();i++) {
 				filelist[i] = new FileInfo(recivedDir.getFichHash()[i], recivedDir.getFichName()[i], recivedDir.getFichSize()[i]);
 			}
 			if(filelist != null) {
-				FileInfo.printToSysout(filelist);
+				FileInfo.printToSysoutErr(filelist);
 			}
 		}else {
 			System.err.println("[warning] file not found or an error occurred");

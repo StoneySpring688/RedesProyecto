@@ -21,7 +21,9 @@ ficheros
 
 ## Documentation
 
-en la terminal introducir uno de los comandos:
+Ejecutar uno o ambos archivos JAR. En el caso de ejecutar NanoFiles : 
+- introducir los archivos que se deseen compartir en la carpeta nf-shared, la cual se creará en el directorio donde se encuantre el archivo JAR
+- en la terminal introducir uno de los comandos:
 #### login
 - contacta con el servidor udp para enviar el nombre de usuario introducido con el comando 
 - si el nickname es valido, el directorio lo registra en la lista de usuarios y devuelve un identificador(sessionKey)
@@ -69,6 +71,10 @@ en la terminal introducir uno de los comandos:
 - si el hash no se encuentra se envia un error
 - si se encuentran varios hash iguales, imprime un mensaje con información de los ficheros encontrados
 - uso : search HASH
+
+### quit
+
+- finaliza la ejecución
 
 ## Software empleado
 

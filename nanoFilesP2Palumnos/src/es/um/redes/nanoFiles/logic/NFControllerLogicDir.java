@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import es.um.redes.nanoFiles.application.NanoFiles;
 import es.um.redes.nanoFiles.udp.client.DirectoryConnector;
 import es.um.redes.nanoFiles.udp.message.DirMessage;
-import es.um.redes.nanoFiles.udp.message.DirMessageField;
 import es.um.redes.nanoFiles.udp.message.DirMessageOps;
 import es.um.redes.nanoFiles.util.FileInfo;
 
@@ -104,12 +103,23 @@ public class NFControllerLogicDir {
 			System.exit(-1);
 		}
 		
-		for(int i = 0; i < list.length; i++) {
+		/*for(int i = 0; i < list.length; i++) {
 			System.out.println(DirMessageField.FIELDNAME_USER + " : "+ list[i]);
 			i++;
 			System.out.println(DirMessageField.FIELDNAME_ISSERVER + " : "+ list[i]);
 			;
-		} 
+		} */
+		StringBuffer strBuf = new StringBuffer();
+		strBuf.append(String.format("%1$-30s", "Name"));
+		strBuf.append(String.format("%1$-20s", "Peers"));
+	    System.out.println(strBuf);
+		for(int i = 0; i < list.length; i++) {
+			StringBuffer strBuff = new StringBuffer();
+			strBuff.append(String.format("%1$-30s", list[i]));
+			i++;
+			strBuff.append(String.format("%1$-20s", list[i]));
+			System.out.println(strBuff);
+		}
 		
 		return result;
 	}
@@ -251,8 +261,6 @@ public class NFControllerLogicDir {
 		resp = this.directoryConnector.downloadAskInfo2Dir(downloadTargetFileHash);
 		if(resp != null && resp.getOperation().matches(DirMessageOps.OPERATION_DOWNLOADASKINFOOK)) {
 			System.out.println("[server] Info ok");
-		}else {
-			System.err.println("[warning] something went wrong");
 		}
 		return resp;
 	}

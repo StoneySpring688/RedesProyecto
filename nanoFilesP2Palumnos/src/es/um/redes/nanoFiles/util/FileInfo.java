@@ -63,6 +63,18 @@ public class FileInfo {
 		
 	}
 	
+	public static void printToSysoutErr(FileInfo[] files) {
+		StringBuffer strBuf = new StringBuffer();
+		strBuf.append(String.format("%1$-30s", "Name"));
+		strBuf.append(String.format("%1$10s", "Size"));
+		strBuf.append(String.format(" %1$-45s", "Hash"));
+		System.err.println(strBuf);
+		for (FileInfo file : files) {
+			System.err.println(file);
+		}
+		
+	}
+	
 	public static void printToSysoutPlus(FileInfo[] files) {
 	    StringBuffer strBuf = new StringBuffer();
 	    strBuf.append(String.format("%1$-30s", "Name"));

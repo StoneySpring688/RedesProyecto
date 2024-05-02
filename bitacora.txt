@@ -299,3 +299,9 @@ complicaciones :
 pendiente :
 - en caso de tener tiempo: 
   - cambiar los mensajes para que no hayan mensajes de confirmación con subtipos, si no que cada confirmación sea un mensaje.
+
+
+
+-----02-05-2024 19:31 (StoneySpring):
+cambios :
+- se solucionó un error por el cual se producía una excepción si se hacía un publish y la carpeta nf-shared estaba vacía, lo que provocaba que stopserver también lanzara una excepción
