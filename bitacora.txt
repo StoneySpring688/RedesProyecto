@@ -286,3 +286,16 @@ pendiente :
 - en caso de tener tiempo: 
   - cambiar los mensajes para que no hayan mensajes de confirmación con subtipos, si no que cada confirmación sea un mensaje.
   - cambiar la forma en que se tratan publish y fileinfo para que no sean necesarias tantas estructuras de datos en el servidor de directorios
+
+
+
+-----02-05-2024 14:04 (StoneySpring):
+cambios :
+- se agregó stopserver para el servidor en primer plano
+
+complicaciones :
+- las complicaciones fueron derivadas de cambios en en  "NFController" pero fueron facilmente solucionadas
+
+pendiente :
+- en caso de tener tiempo: 
+  - cambiar los mensajes para que no hayan mensajes de confirmación con subtipos, si no que cada confirmación sea un mensaje.

@@ -15,13 +15,7 @@ public class NFController {
 	 */
 	private static final byte LOGGED_OUT = 0;
 	private static final byte LOGGED_IN = 1;
-	/*
-	 * TODO: Añadir más constantes que representen los estados del autómata del
-	 * cliente de directorio.
-	 */
-
-
-
+	private static final byte IS_SERVER = 2;
 
 	/**
 	 * Shell para leer comandos de usuario de la entrada estándar
@@ -78,15 +72,8 @@ public class NFController {
 
 		if (!canProcessCommandInCurrentState()) {
 			return;
-		}
-		/*
-		 * En función del comando, invocar los métodos adecuados de NFControllerLogicDir
-		 * y NFControllerLogicP2P, ya que son estas dos clases las que implementan
-		 * realmente la lógica de cada comando y procesan la información recibida
-		 * mediante la comunicación con el directorio u otros pares de NanoFiles
-		 * (imprimir por pantalla el resultado de la acción y los datos recibidos,
-		 * etc.).
-		 */
+		}		
+		
 		boolean commandSucceeded = false;
 		switch (currentCommand) {
 		case NFCommands.COM_MYFILES:
@@ -103,158 +90,57 @@ public class NFController {
 					System.exit(-1);
 				}
 			}
-			/*
-			 * Pedir al controllerDir que "inicie sesión" en el directorio, para comprobar
-			 * que está activo y disponible, y registrar un nombre de usuario.
-			 */
+			
 			commandSucceeded = controllerDir.doLogin(directory, nickname);
 			break;
 		case NFCommands.COM_LOGOUT:
-			/*
-			 * Pedir al controllerDir que "cierre sesión" en el directorio para dar de baja
-			 * el nombre de usuario registrado (método doLogout).
-			 */
+			
 			commandSucceeded = controllerDir.doLogout();
 			break;
 		case NFCommands.COM_USERLIST:
-			/*
-			 * Pedir al controllerDir que obtenga del directorio la lista de nicknames
-			 * registrados, y la muestre por pantalla (método getAndPrintUserList)
-			 */
-			boolean logged2 = false;
-			logged2 = this.controllerDir.test();
-			if(logged2 && this.currentState == LOGGED_IN) {
-				commandSucceeded = controllerDir.getAndPrintUserList();
-			}else {
-				System.err.println("[warning] you must login first");
-			}
+			
+			commandSucceeded = controllerDir.getAndPrintUserList();
 			break;
 		case NFCommands.COM_FILELIST:
-			/*
-			 * Pedir al controllerDir que obtenga del directorio la lista de ficheros que
-			 * hay publicados (los ficheros que otros peers están sirviendo), y la imprima
-			 * por pantalla (método getAndPrintFileList)
-			 */
-			if(this.controllerDir.test() && this.currentState == LOGGED_IN) {
-				commandSucceeded = controllerDir.getAndPrintFileList();
-			}else {
-				System.err.println("[warning] you must login first");
-			}
+			
+			commandSucceeded = controllerDir.getAndPrintFileList();
 			break;
 		case NFCommands.COM_FGSERVE:
-			/*
-			 * Pedir al controllerPeer que lance un servidor de ficheros en primer plano
-			 * (método foregroundServeFiles). Este método no retorna...
-			 */
-			boolean logged4 = false;
-			logged4 = this.controllerDir.test();
-			if(logged4 && this.currentState == LOGGED_IN) {
-				controllerPeer.foregroundServeFiles(this.controllerDir,this.controllerPeer);
-			}else {
-				System.err.println("[warning] you must login first");
-			}
+			
+			controllerPeer.foregroundServeFiles(this.controllerDir,this.controllerPeer);
+			commandSucceeded = true; // si devuelve la terminal porque se ha desbloqueado, ha sido  un exito
 			
 			break;
 		case NFCommands.COM_PUBLISH:
-			/*
-			 * Pedir al controllerDir que publique en el directorio nuestra lista de
-			 * ficheros disponibles (NanoFiles.db) para ser descargados desde otros peers
-			 * (método publishLocalFiles)
-			 */
-			boolean logged5 = false;
-			logged5 = this.controllerDir.test();
-			if(logged5 && this.currentState == LOGGED_IN && this.controllerPeer.isServer) {
-				commandSucceeded = controllerDir.publishLocalFiles();
-			}else if(!this.controllerPeer.isServer){
-				System.err.println("[warning] you must run a server first");
-			}else {
-				System.err.println("[warning] you must login first");
-			}
+			
+			commandSucceeded = controllerDir.publishLocalFiles();
 			break;
 		case NFCommands.COM_BGSERVE:
-			/*
-			 * Pedir al controllerPeer que lance un servidor en segundo plano. A
-			 * continuación (método backgroundServeFiles). Si el servidor se ha podido
-			 * iniciar correctamente, pedir al controllerDir darnos de alta como servidor de
-			 * ficheros en el directorio, indicando el puerto en el que nuestro servidor
-			 * escucha conexiones de otros peers (método registerFileServer).
-			 */
 			
-			boolean logged1 = false;
-			logged1 = this.controllerDir.test();
-			if(logged1 && this.currentState == LOGGED_IN) {
-				boolean serverRunning = controllerPeer.backgroundServeFiles();
-				if (serverRunning) {
-					commandSucceeded = controllerDir.registerFileServer(controllerPeer.getServerPort());
-				}
-			}else {
-				System.err.println("[warning] you must login first");
+			boolean serverRunning = controllerPeer.backgroundServeFiles();
+			if (serverRunning) {
+				commandSucceeded = controllerDir.registerFileServer(controllerPeer.getServerPort());
 			}
 			
 			break;
 		case NFCommands.COM_STOP_SERVER:
-			/*
-			 * Pedir al controllerPeer que pare el servidor en segundo plano (método método
-			 * stopBackgroundFileServer). A continuación, pedir al controllerDir que
-			 * solicite al directorio darnos de baja como servidor de ficheros (método
-			 * unregisterFileServer).
-			 */
-			if(this.controllerDir.test() && this.currentState == LOGGED_IN && this.controllerPeer.isServer) {
-				controllerPeer.stopBackgroundFileServer();
-				commandSucceeded = controllerDir.unregisterFileServer();
-			}else if(!this.controllerPeer.isServer) {
-				System.err.println("[warning] you must run a server first");
-			}else {
-				System.err.println("[warning] you must login first");
-			}
+			
+			controllerPeer.stopBackgroundFileServer();
+			commandSucceeded = controllerDir.unregisterFileServer();
 			break;
 		case NFCommands.COM_DOWNLOADFROM:
-																																/*
-																																 * Pedir al controllerDir que obtenga del directorio la dirección de socket (IP
-																																 * y puerto) del servidor cuyo nickname indica el atributo downloadTargetServer
-																																 * (1er argumento pasado al comando en el shell). Si se ha obtenido del
-																																 * directorio la dirección del servidor de ficheros asociada al nick
-																																 * exitosamente, pedir al controllerPeer que descargue del servidor en dicha
-																																 * dirección el fichero indicado en downloadTargetFileHash (2º argumento pasado
-																																 * al comando) y lo guarde con el nombre indicado en downloadLocalFileName (3er
-																																 * argumento)
-																																 */
-			boolean logged3 = false;
-			logged3 = this.controllerDir.test();
-			if(logged3 && this.currentState == LOGGED_IN) {
-				InetSocketAddress serverAddr = controllerDir.getServerAddress(downloadTargetServer);
-				commandSucceeded = controllerPeer.downloadFileFromSingleServer(serverAddr, downloadTargetFileHash, downloadLocalFileName);
-			}else {
-				System.err.println("[warning] you must login first");
-			}
+																																
+			InetSocketAddress serverAddr = controllerDir.getServerAddress(downloadTargetServer);
+			commandSucceeded = controllerPeer.downloadFileFromSingleServer(serverAddr, downloadTargetFileHash, downloadLocalFileName);
 			break;
 		case NFCommands.COM_SEARCH:
-			/*
-			 * Pedir al controllerDir que obtenga del directorio y muestre los servidores
-			 * que tienen disponible el fichero identificado por dicho hash (puede ser una
-			 * subcadena del hash o el hash completo)
-			 */
 			
-			if(this.controllerDir.test() && this.currentState == LOGGED_IN) {
-				commandSucceeded = controllerDir.getAndPrintServersNicknamesSharingThisFile(downloadTargetFileHash);
-			}else {
-				System.err.println("[warning] you must login first");
-			}
+			commandSucceeded = controllerDir.getAndPrintServersNicknamesSharingThisFile(downloadTargetFileHash);
 			break;
 		case NFCommands.COM_DOWNLOAD:
-			/*
-			 * Pedir al controllerDir que obtenga del directorio la lista de nicknames de
-			 * servidores que comparten el fichero indicado en downloadTargetFileHash (1er
-			 * argumento pasado al comando). Si existen servidores que comparten dicho
-			 * fichero, pedir al controllerPeer que descargue el fichero indicado de los
-			 * servidores obtenidos, y lo guarde con el nombre indicado en
-			 * downloadLocalFileName (2º argumento)
-			 */
-			if(this.controllerDir.test() && this.currentState == LOGGED_IN) {
-				//LinkedList<InetSocketAddress> serverAddressList = controllerDir.getServerAddressesSharingThisFile(downloadTargetFileHash);
-				DirMessage serverAddressList = controllerDir.getServerAddressesSharingThisFile(downloadTargetFileHash);
-				commandSucceeded = controllerPeer.downloadFileFromMultipleServers(serverAddressList, downloadTargetFileHash,downloadLocalFileName);
-			}
+			
+			DirMessage serverAddressList = controllerDir.getServerAddressesSharingThisFile(downloadTargetFileHash);
+			commandSucceeded = controllerPeer.downloadFileFromMultipleServers(serverAddressList, downloadTargetFileHash,downloadLocalFileName);
 			break;
 		case NFCommands.COM_QUIT:
 		default:
@@ -268,12 +154,7 @@ public class NFController {
 	 * usuario, en función del estado del autómata en el que nos encontramos.
 	 */
 	public boolean canProcessCommandInCurrentState() {
-		/*
-		 * TODO: Para cada comando tecleado en el shell (currentCommand), comprobar
-		 * "currentState" para ver si dicho comando es válido según el estado actual del
-		 * autómata, ya que no todos los comandos serán válidos en cualquier estado.
-		 * Este método NO debe modificar clientStatus.
-		 */
+		
 		boolean commandAllowed = true;
 		switch (currentCommand) {
 		case NFCommands.COM_MYFILES: {
@@ -283,25 +164,102 @@ public class NFController {
 		case NFCommands.COM_LOGIN:
 			if (currentState != LOGGED_OUT) {
 				commandAllowed = false;
-				System.err.println("* You cannot login because you are not logged out from the directory");
+				System.err.println("[warning] you must logout first");
 			}
 			break;
-
+		case NFCommands.COM_LOGOUT : {
+			if(currentState == IS_SERVER) {
+				commandAllowed = false;
+				System.err.println("[warning] stop the server first");
+			}else if(currentState != LOGGED_IN) {
+				commandAllowed = false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case NFCommands.COM_BGSERVE : {
+			if(currentState != LOGGED_IN) {
+				commandAllowed = false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case NFCommands.COM_FGSERVE : {
+			if(currentState != LOGGED_IN) {
+				commandAllowed = false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case NFCommands.COM_STOP_SERVER : {
+			if(currentState != IS_SERVER) {
+				commandAllowed = false;
+				System.err.println("[warning] you must run a server first");
+			}
+			break;
+		}
+		case NFCommands.COM_PUBLISH : {
+			if(currentState != IS_SERVER) {
+				commandAllowed = false;
+				System.err.println("[warning] you must run a server first");
+			}
+			break;
+		}
+		case NFCommands.COM_FILELIST : {
+			if(currentState != LOGGED_IN && currentState != IS_SERVER) {
+				commandAllowed =  false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case NFCommands.COM_SEARCH : {
+			if(currentState != LOGGED_IN && currentState != IS_SERVER) {
+				commandAllowed =  false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case NFCommands.COM_USERLIST : {
+			if(currentState != LOGGED_IN && currentState != IS_SERVER) {
+				commandAllowed =  false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case NFCommands.COM_DOWNLOAD : {
+			if(currentState != LOGGED_IN && currentState != IS_SERVER) {
+				commandAllowed =  false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case NFCommands.COM_DOWNLOADFROM : {
+			if(currentState != LOGGED_IN && currentState != IS_SERVER) {
+				commandAllowed =  false;
+				System.err.println("[warning] you must login first");
+			}
+			break;
+		}
+		case  NFCommands.COM_QUIT : {
+			if(currentState == IS_SERVER) {
+				commandAllowed = false;
+				System.err.println("[warning] stop the server first");
+			}else if (currentState != LOGGED_OUT) {
+				commandAllowed = false;
+				System.err.println("[warning] you must logout first");
+			}
+			break;
+		}
 
 
 		default:
-			// System.err.println("ERROR: undefined behaviour for " + currentCommand + "
-			// command!");
+			System.err.println("ERROR: undefined behaviour for " + currentCommand + "command!");
 		}
 		return commandAllowed;
 	}
 
 	private void updateCurrentState(boolean success) {
-		/*
-		 * TODO: Si el comando ha sido procesado con éxito, debemos actualizar
-		 * currentState de acuerdo con el autómata diseñado para pasar al siguiente
-		 * estado y así permitir unos u otros comandos en cada caso.
-		 */
+		
 		if (!success) {
 			return;
 		}
@@ -312,6 +270,18 @@ public class NFController {
 		}
 		case NFCommands.COM_LOGOUT: {
 			currentState = LOGGED_OUT;
+			break;
+		}
+		case NFCommands.COM_BGSERVE : {
+			currentState = IS_SERVER;
+			break;
+		}
+		case NFCommands.COM_FGSERVE : {
+			currentState = LOGGED_IN; //como ya ha dejado de ser un servidor el estado pasa a ser logged_in, el stopserver de fgserve se gestiona en un hilo
+			break;
+		}
+		case NFCommands.COM_STOP_SERVER : {
+			currentState = LOGGED_IN;
 			break;
 		}
 

@@ -444,14 +444,17 @@ public class NFDirectoryServer {
 			this.peerServerPort.remove(this.sessionKeys.get(key));
 			this.peerServeDir.remove(this.sessionKeys.get(key));
 			for(String h : hashes) {
-				//System.out.println("remove : " + this.fichPeer.get(h));	
-				this.fichPeer.get(h).remove(key);
-				if(this.fichPeer.get(h).isEmpty()) {
-					this.fichPeer.remove(h);
-					this.fichInfo.remove(h);
-					this.fichName.remove(h);
-					this.fichSize.remove(h);
+				//System.out.println("remove : " + this.fichPeer.get(h));
+				if(this.fichPeer.get(h) != null) {
+					this.fichPeer.get(h).remove(key);
+					if(this.fichPeer.get(h).isEmpty()) {
+						this.fichPeer.remove(h);
+						this.fichInfo.remove(h);
+						this.fichName.remove(h);
+						this.fichSize.remove(h);
+					}
 				}
+				
 			}
 			response = DirMessage.stopServerOk();
 			break;

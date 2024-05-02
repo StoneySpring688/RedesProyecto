@@ -42,7 +42,7 @@ public class NFControllerLogicP2P {
 																												 * Crear objeto servidor NFServerSimple y ejecutarlo en primer plano.
 		
 																												 */
-		if(this.server != null) {
+		if(this.server != null && this.isServer) {
 			System.err.println("[fgserve] An error ocurred, a server is already running");
 		}
 		try {
@@ -58,6 +58,10 @@ public class NFControllerLogicP2P {
 			ControllerThread ct = new ControllerThread(nfld, nflp);
 			ct.start();
 			this.fgserv.run();
+			if (getFgStatus()) {
+				stopForegroundServer();
+				nfld.unregisterFileServer();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("[fgserve] An error occurred, failed to communicate with directory");
@@ -300,13 +304,13 @@ public class NFControllerLogicP2P {
 			this.isServer = false;
 			System.out.println("[bgserve] stopping server");
 		}
-		
-		/*
-		 * Enviar señal para detener nuestro servidor de ficheros en segundo plano
-		 */
 
-
-
+	}
+	
+	public void stopForegroundServer() {
+		if(getFgStatus()) {
+			this.fgstatus = false;
+		}
 	}
 	
 	protected boolean getFgStatus() {
