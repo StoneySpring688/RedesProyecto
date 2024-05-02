@@ -56,7 +56,7 @@ en la terminal introducir uno de los comandos:
 - establece un servidor de ficheros en segundo plano, lo que permite seguir utilizando la consola de comandos
 
 ### stopServer
-- finaliza la ejecución del servidor en segundo plano, dá de baja el peer y en caso de ser necesario sus ficheros de el servidor de directorios 
+- finaliza la ejecución del servidor, dá de baja el peer y en caso de ser necesario sus ficheros de el servidor de directorios 
 
 ### publish
 - publica los ficheros compartidos y su metainformación en  el servidor de directorios
