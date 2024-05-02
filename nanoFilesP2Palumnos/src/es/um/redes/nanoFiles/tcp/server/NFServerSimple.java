@@ -48,6 +48,7 @@ public class NFServerSimple {
 		}else {
 			System.out.println("[socket] ok");
 		}
+		
 		NFServerSimpleThread thread = new NFServerSimpleThread(STOP_SERVER_COMMAND);
 		thread.start();
 		
@@ -71,7 +72,7 @@ public class NFServerSimple {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 			}
-		}																																	
+		}
 	}
 	
 	public int getListeningPort() {

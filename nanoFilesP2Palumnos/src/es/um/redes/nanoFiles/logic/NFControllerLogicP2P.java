@@ -185,80 +185,82 @@ public class NFControllerLogicP2P {
 	 */
 	public boolean downloadFileFromMultipleServers(DirMessage MsgServerAddressList, String targetFileHash, String localFileName) {
 		boolean downloaded = false;
-
-		long tam = MsgServerAddressList.getFichSize()[0];
-		int np = MsgServerAddressList.getNFichs();
-		String hash = MsgServerAddressList.getNickname();
-		int[] ports = MsgServerAddressList.getNPeers();
-		String[] ips = MsgServerAddressList.getFichName();
-		InetSocketAddress[] addresses = new InetSocketAddress[np];
-		long segment = tam/np;
-		long bytesRest = tam%np;
-		long init = 0;
-		long fin = 0;
-		NFConnectorThread[] threads = new NFConnectorThread[np];
-		
-		if (ips == null) {
-			System.err.println("* Cannot start download - No list of server addresses provided");
-			return false;
-		}else {
-			for(int i=0; i<np; i++) {
+		if(MsgServerAddressList != null) {
+			long tam = MsgServerAddressList.getFichSize()[0];
+			int np = MsgServerAddressList.getNFichs();
+			String hash = MsgServerAddressList.getNickname();
+			int[] ports = MsgServerAddressList.getNPeers();
+			String[] ips = MsgServerAddressList.getFichName();
+			InetSocketAddress[] addresses = new InetSocketAddress[np];
+			long segment = tam/np;
+			long bytesRest = tam%np;
+			long init = 0;
+			long fin = 0;
+			NFConnectorThread[] threads = new NFConnectorThread[np];
+			
+			if (ips == null) {
+				System.err.println("* Cannot start download - No list of server addresses provided");
+				return false;
+			}else {
+				for(int i=0; i<np; i++) {
+					try {
+						addresses[i] = new InetSocketAddress(InetAddress.getByName(ips[i]),ports[i]);
+					} catch (UnknownHostException e) {
+						e.printStackTrace();
+					}
+					//System.out.println("dirección añadida : " + addresses[i]);
+					fin = init + segment - 1;
+					if(i < bytesRest) {
+						fin++;
+					}
+					if(i == 0) {
+						threads[i] = new NFConnectorThread(hash, init, fin-init+1, i, addresses[i]);
+					}else {
+						threads[i] = new NFConnectorThread(hash, init, fin-init+1, i, addresses[i]);
+					}
+					//System.out.println("Para el servidor " + i + ", el rango de bytes a leer es: " + init + " - " + fin);
+					init = fin + 1;
+				}
+			}
+			
+			File f = new File(localFileName);
+			if(!f.exists() || f.length()<=0) {
 				try {
-					addresses[i] = new InetSocketAddress(InetAddress.getByName(ips[i]),ports[i]);
-				} catch (UnknownHostException e) {
+					f.createNewFile();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				//System.out.println("dirección añadida : " + addresses[i]);
-				fin = init + segment - 1;
-				if(i < bytesRest) {
-					fin++;
-				}
-				if(i == 0) {
-					threads[i] = new NFConnectorThread(hash, init, fin-init+1, i, addresses[i]);
-				}else {
-					threads[i] = new NFConnectorThread(hash, init, fin-init+1, i, addresses[i]);
-				}
-				//System.out.println("Para el servidor " + i + ", el rango de bytes a leer es: " + init + " - " + fin);
-				init = fin + 1;
+			}else {
+				System.err.println("[downl]the file already exist\ndownload cancelled");
+				return false;
+			}
+			NFConnectorThread.npeers = np;
+			NFConnectorThread.f = f;
+			for(int i=0;i<np;i++) {
+				threads[i].start();
+			}
+			
+			for (int i = 0; i < np; i++) {
+			    try {
+			        threads[i].join();
+			    } catch (InterruptedException e) {
+			        System.err.println(e.getMessage());
+			        e.printStackTrace();
+			    }
+			}
+			
+			
+			String hash1 = FileDigest.computeFileChecksumString(f.getName());
+			if(hash1.equals(hash)) {
+				System.out.println("files are identical");
+				downloaded = true;
+			}else {
+				System.err.println("files are not identical");
+				System.out.println(hash1);
+				System.out.println(hash);
 			}
 		}
-		
-		File f = new File(localFileName);
-		if(!f.exists() || f.length()<=0) {
-			try {
-				f.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}else {
-			System.err.println("[downl]the file already exist\ndownload cancelled");
-			return false;
-		}
-		NFConnectorThread.npeers = np;
-		NFConnectorThread.f = f;
-		for(int i=0;i<np;i++) {
-			threads[i].start();
-		}
-		
-		for (int i = 0; i < np; i++) {
-		    try {
-		        threads[i].join();
-		    } catch (InterruptedException e) {
-		        System.err.println(e.getMessage());
-		        e.printStackTrace();
-		    }
-		}
-		
-		
-		String hash1 = FileDigest.computeFileChecksumString(f.getName());
-		if(hash1.equals(hash)) {
-			System.out.println("files are identical");
-			downloaded = true;
-		}else {
-			System.err.println("files are not identical");
-			System.out.println(hash1);
-			System.out.println(hash);
-		}
+
 		
 		return downloaded;
 	}

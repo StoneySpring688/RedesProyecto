@@ -40,7 +40,8 @@ public class NFServerComm {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("[comm] closed");																													
+		System.out.println("[comm] closed");
+		System.out.println("(nanoFiles@nf-shared)");
 	}
 	
 	private PeerMessage buildResponseFromRequest(PeerMessage msg) { //debe ser statico para poder usarlo en un método estático

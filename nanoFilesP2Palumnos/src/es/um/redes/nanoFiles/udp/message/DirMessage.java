@@ -152,22 +152,17 @@ public class DirMessage {
 		m.setCode(code);
 		return m;
 	}
-	public static DirMessage confirmationMessage(String code) {
-		DirMessage m = new DirMessage(DirMessageOps.OPERATION_CONFIRMATION);
-		m.setCode(code);
-		return m;
-	}
 	public static DirMessage confirmationMessageLoginOk(int key) {
-		DirMessage m = DirMessage.confirmationMessage(DirMessageOps.OPERATION_LOGINOK);
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOGINOK);
 		m.setKey(key);
 		return m;
 	}
 	public static DirMessage confirmationMessageLogoutOk() {
-		DirMessage m = DirMessage.confirmationMessage(DirMessageOps.OPERATION_LOGOUTOK);
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LOGOUTOK);
 		return m;
 	}
 	public static DirMessage confirmationMessageListOk() {
-		DirMessage m = DirMessage.confirmationMessage(DirMessageOps.OPERATION_LISTOK);
+		DirMessage m = new DirMessage(DirMessageOps.OPERATION_LISTOK);
 		m.peers = new HashMap<String, Boolean>(); //la estructura se cargará con la información en otra clase, donde se recorran las estructuras correspondientes
 		return m;
 	}
@@ -534,29 +529,20 @@ public class DirMessage {
 			}
 			break;
 		}
-		case DirMessageOps.OPERATION_CONFIRMATION : {
-			sb.append(DirMessageField.FIELDNAME_CODE + DELIMITER + code + END_LINE); //mensaje de confirmacion
-			switch (code) {
-			case DirMessageOps.OPERATION_LOGINOK: {
-				sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE); //confirmación de tipo loginok
-				break;
-			}
-			case DirMessageOps.OPERATION_LOGOUTOK: {
-				break;																	//confirmacionb de tipo logoutok
-			}
-			case DirMessageOps.OPERATION_LISTOK: {
-					for(String n : this.peers.keySet()) {
-						sb.append(DirMessageField.FIELDNAME_USER + DELIMITER + n + END_LINE);
-						sb.append(DirMessageField.FIELDNAME_ISSERVER + DELIMITER + this.peers.get(n) + END_LINE);
-					}
-				break;
-			}
-			default:
-				System.err.println("Unrecognised confirmation code, toString method error");
-				System.exit(-1);
-			}
+		case DirMessageOps.OPERATION_LOGINOK: {
+			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key + END_LINE); //confirmación de tipo loginok
 			break;
 		}
+		case DirMessageOps.OPERATION_LOGOUTOK: {
+			break;																	//confirmacionb de tipo logoutok
+		}
+		case DirMessageOps.OPERATION_LISTOK: {
+				for(String n : this.peers.keySet()) {
+					sb.append(DirMessageField.FIELDNAME_USER + DELIMITER + n + END_LINE);
+					sb.append(DirMessageField.FIELDNAME_ISSERVER + DELIMITER + this.peers.get(n) + END_LINE);
+				}
+				break;
+			}
 		default:
 			System.err.println("Unable to do toString method from DirMessage");
 			System.exit(-1);
