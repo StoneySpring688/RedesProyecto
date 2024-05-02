@@ -46,8 +46,8 @@ key : ("integer")
 
 #filelistok
 
-operation : publish        //filelistok utiliza el mismo mensaje de publish, ya que son iguales y al llegar al cliente es posible hacerlo
-key : ("Integer")          // key se dejará a cero al no ser necesario
+operation : filelistok
+key : ("Integer")          // key se dejará a cero al no ser necesario, está presente ya que en un principio se utilizó el mensaje de publish y fué más rápido copiarlo , al adaptarlo quedó por error 
 nfichs : ("Integer")
 fichHash : ("String")
 fichSize : ("Long")
