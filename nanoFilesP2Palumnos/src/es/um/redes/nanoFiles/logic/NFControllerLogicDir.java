@@ -279,23 +279,6 @@ public class NFControllerLogicDir {
 		return result;
 	}
 
-	protected InetSocketAddress getDirectoryAddress() {
-		return directoryConnector.getDirectoryAddress();
-	}
-	/**
-	@return devuelve true si se poseé un session key, y false en caso contrario
-	**/
-	protected boolean test() {
-		try {
-			//System.out.println(this.directoryConnector.getSessionKey());
-			if(this.directoryConnector.getSessionKey() == -1) {
-				return false;
-			}
-			return true;
-		} catch (NullPointerException e) {
-			return false;
-		}
-		
-	}
+	
 
 }

@@ -372,6 +372,7 @@ public class DirectoryConnector {
 		String confirmation = recivedDir.getOperation();
 		//System.out.println("[recived]\n"+recivedDir);
 		if(confirmation.matches(DirMessageOps.OPERATION_PUBLISHOK)) {
+			System.out.println("[publish] ok");
 			success = true;
 		}else {
 			System.err.println("[warning] an error occurred");
@@ -500,11 +501,4 @@ public class DirectoryConnector {
 		return resp;
 	}
 	
-	/**@return devuelve un booleano como true, esto  sirve para ver si directory connector está  iniciado**/
-	public boolean test () {
-		return true;
-	}
-
-
-
 }

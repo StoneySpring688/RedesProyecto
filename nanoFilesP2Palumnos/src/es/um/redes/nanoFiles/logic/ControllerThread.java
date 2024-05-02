@@ -13,6 +13,7 @@ public class ControllerThread extends Thread {
 	public void run() {
 		if (this.contPeer.getFgStatus()) {
 			contDir.registerFileServer(contPeer.getFgServerPort());
+			contDir.publishLocalFiles();
 		}
 	}
 	

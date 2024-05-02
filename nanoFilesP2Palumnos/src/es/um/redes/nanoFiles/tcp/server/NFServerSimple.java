@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.BindException;
 
 public class NFServerSimple {
 
 	private static final int SERVERSOCKET_ACCEPT_TIMEOUT_MILISECS = 1000;
-	private static final String STOP_SERVER_COMMAND = "fgstop";
+	private static final String STOP_SERVER_COMMAND = "stopserver";
 	private static final int PORT = 10000;
 	private ServerSocket serverSocket = null;
 
@@ -46,22 +48,30 @@ public class NFServerSimple {
 		}else {
 			System.out.println("[socket] ok");
 		}
-																																
-		while(true){
+		NFServerSimpleThread thread = new NFServerSimpleThread(STOP_SERVER_COMMAND);
+		thread.start();
+		
+		try {
+			this.serverSocket.setSoTimeout(SERVERSOCKET_ACCEPT_TIMEOUT_MILISECS);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		System.out.println("[waiting]");
+		
+		while(NFServerSimpleThread.continu3){
 			try {
-				System.out.println("[waiting]");
 				Socket socket = this.serverSocket.accept();
 				System.out.println("New client connected: " + socket.getInetAddress().toString() + ":" + socket.getPort());
 				NFServerComm nfsc = new NFServerComm();
 				nfsc.serveFilesToClient(socket);
+				
+			} catch(SocketTimeoutException e) {
 				
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 			}
 		}																																	
-
-		//TODO System.out.println("NFServerSimple stopped. Returning to the nanoFiles shell...");
 	}
 	
 	public int getListeningPort() {
