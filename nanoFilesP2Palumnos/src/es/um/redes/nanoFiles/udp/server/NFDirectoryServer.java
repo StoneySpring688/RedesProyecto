@@ -248,6 +248,9 @@ public class NFDirectoryServer {
 			}
 			else {
 				int sesionKey = random.nextInt(10000);
+				while(this.nicks.containsValue(sesionKey)) {
+					sesionKey = random.nextInt(10000);
+				}
 				this.nicks.put(username, sesionKey);
 				this.sessionKeys.put(sesionKey, username);
 				response = DirMessage.confirmationMessageLoginOk(sesionKey);
@@ -389,7 +392,7 @@ public class NFDirectoryServer {
 				for(long s : fichSize) {
 					System.out.println("size : "+s);
 				}*/
-				response = DirMessage.filelistok(fichHash, fichSize, fichName, npeers, nFichs, 0);
+				response = DirMessage.filelistok(fichHash, fichSize, fichName, npeers, nFichs);
 				for(int i=0;i<this.fichPeer.size();i++) {
 					int[] key = this.fichPeer.get(fichHash[i]).stream().mapToInt(Integer::intValue).toArray();
 					String[] nicks = new String[key.length];
