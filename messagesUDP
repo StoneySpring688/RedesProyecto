@@ -46,8 +46,7 @@ key : ("integer")
 
 #filelistok
 
-operation : filelistok
-key : ("Integer")          // key se dejará a cero al no ser necesario, está presente ya que en un principio se utilizó el mensaje de publish y fué más rápido copiarlo , al adaptarlo quedó por error 
+operation : filelistok 
 nfichs : ("Integer")
 fichHash : ("String")
 fichSize : ("Long")
