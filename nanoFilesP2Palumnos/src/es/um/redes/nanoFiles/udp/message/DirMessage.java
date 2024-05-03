@@ -115,9 +115,8 @@ public class DirMessage {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_PUBLISHOK);
 		return m;
 	}
-	public static DirMessage filelistok(String[]h,long[]s,String[]n, int[]npeers, int nf, int k) {
+	public static DirMessage filelistok(String[]h,long[]s,String[]n, int[]npeers, int nf) {
 		DirMessage m = new DirMessage(DirMessageOps.OPERATION_FILELISTOK);
-		m.setKey(k);
 		m.setNFichs(nf);
 		m.setFichHash(h);
 		m.setFichSize(s);
@@ -495,7 +494,6 @@ public class DirMessage {
 			break; // no tiene más información a parte del codigo
 		}
 		case DirMessageOps.OPERATION_FILELISTOK : {
-			sb.append(DirMessageField.FIELDNAME_KEY + DELIMITER + key +END_LINE);
 			sb.append(DirMessageField.FIELDNAME_NFICHS + DELIMITER + nfichs + END_LINE);
 			for(int i = 0; i< this.nfichs ; i++) {
 				sb.append(DirMessageField.FIELDNAME_FICHHASH + DELIMITER + fichhash[i] + END_LINE);
