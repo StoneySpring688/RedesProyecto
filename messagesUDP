@@ -46,8 +46,7 @@ key : ("integer")
 
 #filelistok
 
-operation : filelistok
-key : ("Integer")          // key se dejará a cero al no ser necesario, está presente ya que en un principio se utilizó el mensaje de publish y fué más rápido copiarlo , al adaptarlo quedó por error 
+operation : filelistok 
 nfichs : ("Integer")
 fichHash : ("String")
 fichSize : ("Long")
@@ -55,7 +54,7 @@ nPeer : ("Integer")
 fichPeer-1 : ("String")
 ...
 fichPeer-n : ("String")
-fichName : ("String")
+fichName: ("String")
 ...
 
 
@@ -162,36 +161,20 @@ code : ("String")
 
 
 
-#confirmation
+#loginok
 
-operation :confirmation
-code : ("String")
-
-
-##confirmation-loginok
-
-operation : confirmation
-code : "loginok"
+operation : "loginok"
 key : ("Integer")
 
 
-##confirmation-listok
+#listok
 
-operation : confirmation
-code : "listok"
+operation : "listok"
 user : ("String")
 isServer : ("Boolean")
 ...
 
 
-##confirmation-logoutok
+#logoutok
 
-operation : confirmation
-code : "logoutok"
-
-
-
-##confirmation-updateinfook
-
-operation : confirmation
-code : "updateinfook"
+operation : "logoutok"

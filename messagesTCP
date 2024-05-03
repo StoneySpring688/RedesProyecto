@@ -48,10 +48,6 @@ options : ("byte[]")
 
 
 
-# ErrorNickNotFound
-opCode : NNF(0xC)
-
-
 # DownlResponse
 
 opCode : downlRes(0x14)
