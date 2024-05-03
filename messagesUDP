@@ -52,9 +52,10 @@ fichHash : ("String")
 fichSize : ("Long")
 nPeer : ("Integer")
 fichPeer-1 : ("String")
+fichName-1 : ("String")
 ...
 fichPeer-n : ("String")
-fichName : ("String")
+fichName-n : ("String")
 ...
 
 
