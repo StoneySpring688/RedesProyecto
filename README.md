@@ -78,7 +78,8 @@ Ejecutar uno o ambos archivos JAR. En el caso de ejecutar NanoFiles :
 
 ## Software empleado
 
-- [JFLAP](https://www.jflap.org). 
+- [JFLAP](https://www.jflap.org).
+- [WIRESHARK](https://www.wireshark.org/download.html). recomendado para ver el intercambio de paquetes
 
 ## Autores
 
