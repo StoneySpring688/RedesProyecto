@@ -305,3 +305,63 @@ pendiente :
 -----02-05-2024 19:31 (StoneySpring):
 cambios :
 - se solucionó un error por el cual se producía una excepción si se hacía un publish y la carpeta nf-shared estaba vacía, lo que provocaba que stopserver también lanzara una excepción
+
+
+
+-----Descripción de las mejoras :
+
+-fgserve puerto variable :
+  Fué muy sencilla de implementar bastó poner un try catch para capturar bind exception, e inicializar la
+  inetSocketAddress con 0
+
+-download por nickname :
+  Básicamente se comunica con el servidor de directorios y le pasa la sessionKey , el puerto y la ip, al usar bgserve o
+  fgserve( este mediante un hilo), al hacer la descarga y usar un nickname pregunta al servidor de directorios por la ip y
+  el puerto del nickname especificado
+
+-bgserve multihilo :
+  Básicamente establece bgserve en un hilo, que por cada petición aceptada lanza un hilo para servir esa petición
+-bgserve puerto efimero
+  Básicamente inicializa la inetSocketAddress con 0
+
+-stopserver :
+  Hace que el bucle dependa de una variable booleana que stopserver cambia y gracias al timeout el servidor no acepta
+  una última petición.Para fgserve hay un hilo que se dedica a leer de la entrada estandar y en caso de que sea stopserver
+  cambia la variable compartido de la que depende el bucle(el servidor sigue siendo en primer plano, ya que utiliza el hilo
+  principal y la terminal queda bloqueada hasta que el hilo que gestiona su stopserver cambia la variable compartida)
+
+-userlist ampliado con servidores :
+  Consistió en ampliar el mensaje, para sacar de la estructura en la que se dan de alta como servidor de ficheros,(en
+  directory), si su nick está presente
+
+-publish :
+  Consistió en hacer estructuras de datos en Directory para la información de los ficheros, y enviarsela por medio de un
+  mensaje
+
+-filelist ampliado con servidores :
+  Es como la operación de publish pero a la inversa, con la peculiaridad de que para cada fichero se añade todos los peers
+  que lo comparten, para esto se usa la estructura fichPeers de Directory, se accede con el hash y se obtiene la colección
+  con todos los peers que lo comparten
+
+-search :
+  Dado un hash accede a la estructura fichPeer de directory y obtenía los nicks de la colección ligada al hash
+  -bgserve puerto efimero
+  Cuando se detecta stopserver, (ya sea el comando o el hilo que gestiona stopserver para fgserve), envía un mensaje a
+  Directory con todos los hash de los ficheros de la carpeta nf-shared, Directory elimina ese peer de la colección
+  asociada a eseb hash, y en caso de que la colección quede vacía, elimina el hash de fichPeer y elimina su
+  metainformación de el resto de estructuras, para los servidores simplemente elimina su ip y puerto de las estructuras
+  que lo almacenan
+
+-download paralelo :
+  Pregunta a Directory por el número de peers que comparten el fichero, el tamaño del fichero solicitado, el hash
+  completo del fichero, y la ip y el puerto de todos los peers que lo comparten. De cara al cliente de ficheros, este divide
+  el tamaño del fichero entre el número de peers para obtener el segmento, le hace el módulo para obtener los bytes
+  restantes (se asignará al primer hilo en caso de que sobre un byte) se calcula en fin del segmento sumandole el inicio al
+  segmento (que son los bytes por peer) y quitandole 1 para que lea hasta el byte que le corresponde y a todo esto se le
+  resta el inicio al inicializar el hilo para obtener el número real de bytes a descargar, después de esto se nactualiza el
+  inicio como el siguiente byte del último leído (es decir 0 - n, n+1 - m, . . .). Los hilos con los que se inicializa la
+  información calculada hacen lo siguiente, descargan su fragmento del peer que le corresponda (1 hilo por peer) y
+  escribe el fichero médiante un método de sincronización que utiliza : una variable compartida que usando el atributo id
+  del hilo decide quien escribe (para asegurar que el fichero se escriba en orden), un ReentrantLock y una variable
+  Condition para el lock, de esta forma se regula el acceso al fichero y se logra que accedan en orden, y al usar una
+  randomAccessFile se puede escribir en la posición deseada
